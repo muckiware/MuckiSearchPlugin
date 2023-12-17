@@ -20,18 +20,22 @@ class Settings
 {
     const CONFIG_PATH_ACTIVE = 'MuckiSearchPlugin.config.active';
 
+    private SystemConfigService $config;
+
+    private KernelInterface $kernel;
+
     public function __construct(
         SystemConfigService $config,
         KernelInterface $kernel
     )
     {
-        $this->_config = $config;
+        $this->config = $config;
         $this->kernel = $kernel;
     }
     
     public function isEnabled()
     {
-        return $this->_config->get($this::CONFIG_PATH_ACTIVE);
+        return $this->config->get($this::CONFIG_PATH_ACTIVE);
     }
 }
 
