@@ -19,8 +19,13 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
+
         <service id="MuckiSearchPlugin\Elasticsearch\Client" public="true">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+        </service>
+        <service id="MuckiSearchPlugin\Elasticsearch\Delete" public="true">
+            <argument type="service" id="MuckiSearchPlugin\Elasticsearch\Client"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
         </service>
         <service id="MuckiSearchPlugin\Elasticsearch\Index" public="true">
