@@ -45,4 +45,17 @@ class Info
         }
         return null;
     }
+
+    public function getInfoAsObject(): ?object
+    {
+        $client = $this->elasticsearchClient->getClient();
+        try {
+            return $client->info()->asObject();
+        } catch (ClientResponseException $clientEx) {
+            $this->logger->error($clientEx->getMessage());
+        } catch (ServerResponseException $resEx) {
+            $this->logger->error($resEx->getMessage());
+        }
+        return null;
+    }
 }
