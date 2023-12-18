@@ -11,10 +11,12 @@
  *
  */
 
-namespace MuckiSearchPlugin\Elasticsearch;
+namespace MuckiSearchPlugin\Search\Elasticsearch;
 
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Exception\ServerResponseException;
+use Elastic\Elasticsearch\Response\Elasticsearch;
+use Http\Promise\Promise;
 use Psr\Log\LoggerInterface;
 use Elastic\Elasticsearch\ClientBuilder;
 use Elastic\Elasticsearch\ClientInterface;
@@ -22,7 +24,7 @@ use Elastic\Elasticsearch\Exception\AuthenticationException;
 
 use MuckiSearchPlugin\Elasticsearch\Client as ElasticsearchClient;
 
-class Info
+class Search
 {
     public function __construct(
         protected ElasticsearchClient $elasticsearchClient,
@@ -33,29 +35,21 @@ class Info
     /**
      *
      */
-    public function getInfoAsString(): ?string
+    public function searching(array $params): ?array
     {
-        $client = $this->elasticsearchClient->getClient();
         try {
-            return $client->info()->asString();
+            return $this->elasticsearchClient
+                ->getClient()
+                ->search($params)
+                ->asArray();
         } catch (ClientResponseException $clientEx) {
             $this->logger->error($clientEx->getMessage());
         } catch (ServerResponseException $resEx) {
             $this->logger->error($resEx->getMessage());
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
         }
-        return null;
-    }
 
-    public function getInfoAsObject(): ?object
-    {
-        $client = $this->elasticsearchClient->getClient();
-        try {
-            return $client->info()->asObject();
-        } catch (ClientResponseException $clientEx) {
-            $this->logger->error($clientEx->getMessage());
-        } catch (ServerResponseException $resEx) {
-            $this->logger->error($resEx->getMessage());
-        }
         return null;
     }
 }

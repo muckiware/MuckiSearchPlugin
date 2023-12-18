@@ -11,7 +11,7 @@
  *
  */
 
-namespace MuckiSearchPlugin\Elasticsearch;
+namespace MuckiSearchPlugin\Search\Elasticsearch;
 
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Exception\ServerResponseException;
@@ -24,7 +24,7 @@ use Elastic\Elasticsearch\Exception\AuthenticationException;
 
 use MuckiSearchPlugin\Elasticsearch\Client as ElasticsearchClient;
 
-class Search
+class Index
 {
     public function __construct(
         protected ElasticsearchClient $elasticsearchClient,
@@ -35,12 +35,12 @@ class Search
     /**
      *
      */
-    public function searching(array $params): ?array
+    public function indexing(array $params): ?array
     {
         try {
             return $this->elasticsearchClient
                 ->getClient()
-                ->search($params)
+                ->index($params)
                 ->asArray();
         } catch (ClientResponseException $clientEx) {
             $this->logger->error($clientEx->getMessage());

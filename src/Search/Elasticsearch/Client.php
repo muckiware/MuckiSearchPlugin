@@ -11,7 +11,7 @@
  *
  */
 
-namespace MuckiSearchPlugin\Elasticsearch;
+namespace MuckiSearchPlugin\Search\Elasticsearch;
 
 use Psr\Log\LoggerInterface;
 use Elastic\Elasticsearch\ClientBuilder;

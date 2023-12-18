@@ -11,7 +11,7 @@
  *
  */
 
-namespace MuckiSearchPlugin\Elasticsearch;
+namespace MuckiSearchPlugin\Search\Elasticsearch;
 
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Exception\MissingParameterException;
