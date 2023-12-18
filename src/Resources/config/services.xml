@@ -5,6 +5,7 @@
         <service class="MuckiSearchPlugin\Commands\Checkup" id="mucki.search.commands.checkup" public="true">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="MuckiSearchPlugin\Elasticsearch\Info"/>
             <tag name="console.command"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -18,9 +19,16 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
+        <service id="MuckiSearchPlugin\Elasticsearch\Client" public="true">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+        </service>
+        <service id="MuckiSearchPlugin\Elasticsearch\Info" public="true">
+            <argument type="service" id="MuckiSearchPlugin\Elasticsearch\Client"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+        </service>
     	<service id="MuckiSearchPlugin\Services\Settings" public="true">
         	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-        	<argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
         </service>
     </services>
 </container>

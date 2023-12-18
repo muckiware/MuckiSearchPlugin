@@ -13,46 +13,35 @@
 
 namespace MuckiSearchPlugin\Services;
 
-use Symfony\Component\HttpKernel\KernelInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class Settings
 {
     const CONFIG_PATH_ACTIVE = 'MuckiSearchPlugin.config.active';
     const CONFIG_PATH_SERVER_HOST = 'MuckiSearchPlugin.config.serverHost';
-    const CONFIG_PATH_SERVER_Port = 'MuckiSearchPlugin.config.serverPort';
-
-    private SystemConfigService $config;
-
-    private KernelInterface $kernel;
+    const CONFIG_PATH_SERVER_PORT = 'MuckiSearchPlugin.config.serverPort';
 
     public function __construct(
-        SystemConfigService $config,
-        KernelInterface $kernel
-    )
-    {
-        $this->config = $config;
-        $this->kernel = $kernel;
-    }
+        protected SystemConfigService $config
+    ){}
     
-    public function isEnabled()
+    public function isEnabled(): bool
     {
-        return $this->config->get($this::CONFIG_PATH_ACTIVE);
+        return $this->config->getBool($this::CONFIG_PATH_ACTIVE);
     }
 
     public function getServerHost(): string
     {
-
+        return $this->config->getString($this::CONFIG_PATH_SERVER_HOST);
     }
 
     public function getServerPort(): int
     {
-
+        return $this->config->getInt($this::CONFIG_PATH_SERVER_PORT);
     }
 
     public function getServerConnectionString(): string
     {
-       return'';
+       return $this->getServerHost().':'.$this->getServerPort();
     }
 }
-

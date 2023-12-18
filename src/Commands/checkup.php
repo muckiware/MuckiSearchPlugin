@@ -24,9 +24,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 use Shopware\Core\Framework\Context;
-use Elastic\Elasticsearch\ClientBuilder;
 
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
+use MuckiSearchPlugin\Elasticsearch\Client as ElasticsearchClient;
+use MuckiSearchPlugin\Elasticsearch\Info as ElasticsearchInfo;
+
 
 #[AsCommand('muckiware:search:checkup')]
 class Checkup extends Command
@@ -38,7 +40,8 @@ class Checkup extends Command
 
     public function __construct(
         protected PluginSettings $settings,
-        private readonly LoggerInterface $logger
+        protected LoggerInterface $logger,
+        protected ElasticsearchInfo $elasticsearchInfo
     ) {
 
         parent::__construct(self::$defaultName);
@@ -74,14 +77,7 @@ class Checkup extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output): int {
 
-        $client = ClientBuilder::create()
-            ->setHosts(['elasticsearch:9200'])
-            ->build();
-
-        // Info API
-        $response = $client->info()['version'];
-
-
+        $output->writeln($this->elasticsearchInfo->getInfoAsString());
 
         return self::SUCCESS;
     }
