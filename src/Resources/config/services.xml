@@ -23,6 +23,10 @@
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
         </service>
+        <service id="MuckiSearchPlugin\Elasticsearch\Index" public="true">
+            <argument type="service" id="MuckiSearchPlugin\Elasticsearch\Client"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+        </service>
         <service id="MuckiSearchPlugin\Elasticsearch\Info" public="true">
             <argument type="service" id="MuckiSearchPlugin\Elasticsearch\Client"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
