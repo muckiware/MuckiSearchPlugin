@@ -26,6 +26,7 @@ use Symfony\Component\Process\Process;
 use Shopware\Core\Framework\Context;
 
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
+use MuckiSearchPlugin\Indexing\Write as WriteIndex;
 
 #[AsCommand('muckiware:search:indexing')]
 class Indexing extends Command
@@ -37,7 +38,8 @@ class Indexing extends Command
 
     public function __construct(
         protected PluginSettings $settings,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        protected WriteIndex $writeIndex
     ) {
 
         parent::__construct(self::$defaultName);
@@ -78,10 +80,7 @@ class Indexing extends Command
         $output->writeln( 'Starting search indexing');
         $this->logger->info('Starting search indexing', array('mucki','search'));
 
-        /**
-         * Start the run
-         */
-
+        $this->writeIndex->doIndexing();
 
         $executionTime = microtime(true) - $executionStart;
 
