@@ -13,7 +13,6 @@
 
 namespace MuckiSearchPlugin\Search;
 
-use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\Exception\ConfigurationNotFoundException;
 
@@ -30,7 +29,7 @@ class SearchClientFactory
     {}
 
     /**
-     * @throws Exception
+     * @throws ConfigurationNotFoundException
      */
     public function createSearchClient(?string $serverType= null): SearchClientInterface
     {
