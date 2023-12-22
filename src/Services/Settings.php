@@ -18,6 +18,8 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 class Settings
 {
     const CONFIG_PATH_ACTIVE = 'MuckiSearchPlugin.config.active';
+    const CONFIG_PATH_SERVER_TYPE = 'MuckiSearchPlugin.config.serverType';
+
     const CONFIG_PATH_SERVER_HOST = 'MuckiSearchPlugin.config.serverHost';
     const CONFIG_PATH_SERVER_PORT = 'MuckiSearchPlugin.config.serverPort';
 
@@ -43,5 +45,10 @@ class Settings
     public function getServerConnectionString(): string
     {
        return $this->getServerHost().':'.$this->getServerPort();
+    }
+
+    public function getServerType(): string
+    {
+        return $this->config->getString($this::CONFIG_PATH_SERVER_TYPE);
     }
 }

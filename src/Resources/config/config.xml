@@ -8,6 +8,16 @@
             <label>Active</label>
             <label lang="de-DE">Aktiviert</label>
         </input-field>
+        <input-field type="single-select">
+            <name>serverType</name>
+            <options>
+                <option>
+                    <id>elasticsearch</id>
+                    <name>Elasticsearch</name>
+                </option>
+            </options>
+            <label>Server Type</label>
+        </input-field>
     </card>
     <card>
         <title>Server Connection</title>

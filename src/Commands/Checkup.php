@@ -26,8 +26,7 @@ use Symfony\Component\Process\Process;
 use Shopware\Core\Framework\Context;
 
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
-use MuckiSearchPlugin\Elasticsearch\Client as ElasticsearchClient;
-use MuckiSearchPlugin\Elasticsearch\Info as ElasticsearchInfo;
+use MuckiSearchPlugin\Search\SearchClientFactory;
 
 
 #[AsCommand('muckiware:search:checkup')]
@@ -41,7 +40,7 @@ class Checkup extends Command
     public function __construct(
         protected PluginSettings $settings,
         protected LoggerInterface $logger,
-        protected ElasticsearchInfo $elasticsearchInfo
+        protected SearchClientFactory $searchClientFactory
     ) {
 
         parent::__construct(self::$defaultName);
@@ -77,7 +76,7 @@ class Checkup extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output): int {
 
-        $output->writeln($this->elasticsearchInfo->getInfoAsString());
+        $output->writeln($this->searchClientFactory->createSearchClient()->getServerInfoAsString());
 
         return self::SUCCESS;
     }

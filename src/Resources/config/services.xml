@@ -5,7 +5,7 @@
         <service class="MuckiSearchPlugin\Commands\Checkup" id="mucki.search.commands.checkup" public="true">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
-            <argument type="service" id="MuckiSearchPlugin\Search\Elasticsearch\Info"/>
+            <argument type="service" id="searchclient.factory"/>
             <tag name="console.command"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -24,20 +24,8 @@
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
         </service>
-        <service id="MuckiSearchPlugin\Search\Elasticsearch\Delete" public="true">
-            <argument type="service" id="MuckiSearchPlugin\Search\Elasticsearch\Client"/>
-            <argument type="service" id="Psr\Log\LoggerInterface"/>
-        </service>
-        <service id="MuckiSearchPlugin\Search\Elasticsearch\Index" public="true">
-            <argument type="service" id="MuckiSearchPlugin\Search\Elasticsearch\Client"/>
-            <argument type="service" id="Psr\Log\LoggerInterface"/>
-        </service>
-        <service id="MuckiSearchPlugin\Search\Elasticsearch\Info" public="true">
-            <argument type="service" id="MuckiSearchPlugin\Search\Elasticsearch\Client"/>
-            <argument type="service" id="Psr\Log\LoggerInterface"/>
-        </service>
-        <service id="MuckiSearchPlugin\Search\Elasticsearch\Search" public="true">
-            <argument type="service" id="MuckiSearchPlugin\Search\Elasticsearch\Client"/>
+        <service id="searchclient.factory" class="MuckiSearchPlugin\Search\SearchClientFactory" public="true">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
         </service>
 
