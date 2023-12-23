@@ -19,12 +19,11 @@
 	},
 	"require" : {
 		"php" : ">= 8.1",
-		"elasticsearch/elasticsearch": "^8.11",
-		"symfony/runtime": "^5.0|^6.0"
+		"elasticsearch/elasticsearch": "^8.11"
 	},
-	"require-dev" : {
-		"shopware/core" : "*",
-		"shopware/storefront" : "*"
+	"replace": {
+		"psr/log": "*",
+		"symfony/runtime": "*"
 	},
 	"autoload" : {
 		"psr-4" : {
