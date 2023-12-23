@@ -1,0 +1,73 @@
+{% block muwa_search_structure_list %}
+    <sw-page class="muwa-search-structure-list">
+        {% block muwa_search_structure_list_smart_bar_actions %}
+            <template #smart-bar-actions>
+                <sw-button
+                        variant="primary"
+                        position-identifier="muwa-search-structure-create-button"
+                        :routerLink="{name: 'muwa.search.structure.create'}"
+                >
+                    {{ $tc('muwa-search-structure.list.header.createButtonLabel') }}
+                </sw-button>
+            </template>
+            <template #language-switch>
+                <sw-language-switch @on-change="onChangeLanguage"></sw-language-switch>
+            </template>
+        {% endblock %}
+
+        <template #content>
+            {% block muwa_search_structure_list_content %}
+                <sw-card-view>
+                    <sw-card v-if="!indexStructure && !isLoading">
+                        <p>{{ $tc('muwa-search-structure.list.emptyListText') }}</p>
+                    </sw-card>
+                </sw-card-view>
+
+                <sw-entity-listing
+                        v-if="indexStructure"
+                        :isLoading="isLoading"
+                        :items="indexStructure"
+                        :repository="repositorySearchStructure"
+                        :showSelection="false"
+                        :columns="columns"
+                >
+                    <template #column-name="{item}">
+                        <router-link :to="{ name: 'muwa.search.structure.detail', params: { id: item.id } }">
+                            <div v-if="item.name" :title="item.name">
+                                {{ item.name }}
+                            </div>
+                            <div v-else :title="item.name">
+                                <sw-icon class="muwa.search.structure-list-times" name="regular-times" small></sw-icon>
+                            </div>
+                        </router-link>
+                    </template>
+                    <template #column-active="{item}">
+                        <router-link :to="{ name: 'muwa.search.structure.detail', params: { id: item.id } }">
+                            <sw-icon class="muwa-search-structure-list-check" v-if="item.active" name="regular-checkmark"
+                                     small></sw-icon>
+                            <sw-icon class="muwa-search-structure-list-times" v-else name="regular-times" small></sw-icon>
+                        </router-link>
+                    </template>
+                    <template #column-createDate="{item}">
+                        <div :title="item.createDate">
+                            {{ item.createdAt | date({hour: '2-digit', minute: '2-digit'}) }}
+                        </div>
+                    </template>
+                    <template #column-updateDate="{item}">
+                        <div :title="item.updateDate">
+                            {{ item.updatedAt | date({hour: '2-digit', minute: '2-digit'}) }}
+                        </div>
+                    </template>
+                    <template #delete-action="{ item }">
+                        <sw-context-menu-item @click="deleteProductTabs(item)"
+                                              variant="danger"
+                        >
+                            {{ $tc('global.default.delete') }}
+                        </sw-context-menu-item>
+                    </template>
+                </sw-entity-listing>
+            {% endblock %}
+        </template>
+    </sw-page>
+
+{% endblock %}

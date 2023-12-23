@@ -1,0 +1,47 @@
+{% block muwa_search_structure_detail %}
+    <sw-page class="muwa-search-structure-tabs-detail">
+        {% block muwa_search_structure_detail_smart_bar_actions %}
+            <template #smart-bar-actions>
+                <sw-button :routerLink="{ name: 'sw.settings.index.plugins'}">
+                    {{ $tc('muwa-search-structure.list.header.cancelButtonLabel') }}
+                </sw-button>
+
+                <sw-button-process
+                        position-identifier="muwa-search-structure"
+                        :isLoading="isLoading"
+                        :processSuccess="processSuccess"
+                        variant="primary"
+                        @process-finish="saveFinish"
+                        @click="onClickSave"
+                >
+                    {{ $tc('muwa-search-structure.list.header.saveButtonLabel') }}
+                </sw-button-process>
+            </template>
+
+            <template #language-switch>
+                <sw-language-switch @on-change="onChangeLanguage"></sw-language-switch>
+            </template>
+        {% endblock %}
+
+        <template #content>
+            {% block muwa_search_structure_detail_content %}
+                <sw-card-view>
+                    <sw-card positionIdentifier="muwaSearchStructure" v-if="indexStructure" :title="indexStructure.label">
+                        <sw-switch-field
+                                :label="$tc('muwa-search-structure.detail.activeLabel')"
+                                v-model="indexStructure.active"
+                                :helpText="$tc('muwa-search-structure.detail.activeHelpText')"
+                        >
+                        </sw-switch-field>
+                        <sw-field
+                                :label="$tc('muwa-search-structure.detail.nameLabel')"
+                                v-model="indexStructure.name"
+                                maxlength="70"
+                        >
+                        </sw-field>
+                    </sw-card>
+                </sw-card-view>
+            {% endblock %}
+        </template>
+    </sw-page>
+{% endblock %}

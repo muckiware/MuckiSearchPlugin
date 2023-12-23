@@ -1,0 +1,26 @@
+{
+  "muwa-search-structure": {
+    "general" : {
+      "mainMenuLabel": "Such-Index Struktur",
+      "description": "Such-Index Struktur Verwaltung",
+      "saveSuccessAlertTitle": "Erfolgreich gespeichert",
+      "saveSuccessAlertMessage": "Eintrag wurde erfolgreich gespeichert."
+    },
+    "list": {
+      "header": {
+        "createButtonLabel": "Hinzufügen",
+        "cancelButtonLabel": "Abbrechen",
+        "saveButtonLabel": "Speichern"
+      },
+      "emptyListText": "Keine Such-Index Struktur Einträge vorhanden",
+      "nameLabel": "Name",
+      "activeLabel": "Aktiv",
+      "createDateLabel": "Erstellt",
+      "updateDateLabel": "Aktualisiert"
+    },
+    "detail": {
+      "activeLabel": "Aktiv",
+      "nameLabel": "Technischer Name"
+    }
+  }
+}
