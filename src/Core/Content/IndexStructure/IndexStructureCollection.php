@@ -2,7 +2,7 @@
 
 namespace MuckiSearchPlugin\Core\Content\IndexStructure;
 
-use MuckiSearchPlugin\Core\Content\Banner\IndexStructureEntity;
+use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 class IndexStructureCollection extends EntityCollection

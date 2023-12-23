@@ -21,6 +21,10 @@
             </call>
         </service>
 
+        <service id="MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureDefinition">
+            <tag name="shopware.entity.definition" entity="muwa_index_structure"/>
+        </service>
+
         <service id="MuckiSearchPlugin\Indexing\Write" public="true">
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Content\Products"/>
