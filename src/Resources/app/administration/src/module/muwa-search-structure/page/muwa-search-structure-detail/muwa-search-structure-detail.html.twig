@@ -39,6 +39,12 @@
                                 maxlength="70"
                         >
                         </sw-field>
+                        <sw-select-field
+                                :label="$tc('muwa-search-structure.detail.entityLabel')"
+                                v-model="indexStructure.entity"
+                        >
+                            <option value="product">{{ $tc('muwa-search-structure.detail.entity.product') }}</option>
+                        </sw-select-field>
                     </sw-card>
                 </sw-card-view>
             {% endblock %}

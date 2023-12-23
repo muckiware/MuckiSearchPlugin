@@ -44,6 +44,7 @@ class IndexStructureDefinition extends EntityDefinition
                 new Inherited(),
                 new SearchRanking(SearchRanking::MIDDLE_SEARCH_RANKING, false)
             ),
+            (new StringField('entity', 'entity'))->addFlags(new ApiAware()),
             new JsonField('mappings', 'mappings'),
             new CreatedAtField(),
             new UpdatedAtField()

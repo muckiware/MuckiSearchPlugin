@@ -41,6 +41,10 @@ Component.register('muwa-search-structure-list', {
                 label: this.$tc('muwa-search-structure.list.activeLabel'),
                 allowResize: true,
             },{
+                property: 'entity',
+                label: this.$tc('muwa-search-structure.list.entityLabel'),
+                allowResize: true,
+            },{
                 property: 'createDate',
                 label: this.$tc('muwa-search-structure.list.createDateLabel'),
                 allowResize: true,

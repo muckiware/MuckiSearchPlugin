@@ -41,6 +41,11 @@
                             </div>
                         </router-link>
                     </template>
+                    <template #column-entity="{item}">
+                        <div v-if="item.entity" :title="item.entity">
+                            {{ item.entity }}
+                        </div>
+                    </template>
                     <template #column-active="{item}">
                         <router-link :to="{ name: 'muwa.search.structure.detail', params: { id: item.id } }">
                             <sw-icon class="muwa-search-structure-list-check" v-if="item.active" name="regular-checkmark"

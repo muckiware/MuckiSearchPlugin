@@ -14,13 +14,18 @@
       },
       "emptyListText": "Keine Such-Index Struktur Einträge vorhanden",
       "nameLabel": "Name",
+      "entityLabel": "Entität",
       "activeLabel": "Aktiv",
       "createDateLabel": "Erstellt",
       "updateDateLabel": "Aktualisiert"
     },
     "detail": {
       "activeLabel": "Aktiv",
-      "nameLabel": "Technischer Name"
+      "nameLabel": "Technischer Name",
+      "entityLabel": "Entität",
+      "entity": {
+        "product": "Product"
+      }
     }
   }
 }
