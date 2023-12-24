@@ -24,6 +24,9 @@
         <service id="MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureDefinition">
             <tag name="shopware.entity.definition" entity="muwa_index_structure"/>
         </service>
+        <service id="MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureTranslation\IndexStructureTranslationDefinition">
+            <tag name="shopware.entity.definition" entity="muwa_index_structure_translation"/>
+        </service>
 
         <service id="MuckiSearchPlugin\Indexing\Write" public="true">
             <argument type="service" id="Psr\Log\LoggerInterface"/>

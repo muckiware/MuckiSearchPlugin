@@ -8,7 +8,8 @@ Component.register('muwa-search-structure-create', {
     template,
 
     inject: [
-        'repositoryFactory'
+        'repositoryFactory',
+        'salesChannelService'
     ],
 
 
@@ -24,6 +25,7 @@ Component.register('muwa-search-structure-create', {
 
     data() {
         return {
+            salesChannels: null,
             indexStructure: null,
             isLoading: false,
             processSuccess: false
@@ -31,19 +33,28 @@ Component.register('muwa-search-structure-create', {
     },
 
     computed: {
+
         repositorySearchStructure() {
             return this.repositoryFactory.create('muwa_index_structure');
         },
+        ...mapPropertyErrors('salesChannel', ['name']),
+        ...mapPropertyErrors('indexStructure', ['mappings']),
 
-        ...mapPropertyErrors('indexStructure', [
-            'type',
-            'label',
-            'content'
-        ]),
+        salesChannelRepository() {
+            return this.repositoryFactory.create('sales_channel');
+        },
 
+        salesChannelCriteria() {
+            const criteria = new Criteria(1, 500);
+            criteria.addFilter(Criteria.equals('active', true));
+
+            return criteria;
+        },
     },
 
     created() {
+
+        console.log('this in created()', this);
 
         if (!Shopware.State.getters['context/isSystemDefaultLanguage']) {
             Shopware.State.commit('context/resetLanguageToDefault');
@@ -56,14 +67,25 @@ Component.register('muwa-search-structure-create', {
     methods: {
         createdComponent() {
             this.getSearchStructure();
+            this.getSalesChannels();
         },
 
         getSearchStructure() {
             this.indexStructure = this.repositorySearchStructure.create(Shopware.Context.api);
         },
 
+        getSalesChannels() {
+
+           this.salesChannelRepository.search(this.salesChannelCriteria, Shopware.Context.api).then(res => {
+                this.salesChannels = res;
+            }).finally(() => {
+                this.isLoading = false;
+            });
+        },
+
         onClickSave() {
 
+            console.log('this.indexStructure', this.indexStructure);
             this.isLoading = true;
             this.repositorySearchStructure.save(this.indexStructure, Shopware.Context.api).then(() => {
 
@@ -90,6 +112,10 @@ Component.register('muwa-search-structure-create', {
 
         saveFinish() {
             this.processSuccess = false;
+        },
+
+        setSalesChannel() {
+            console.log('setSalesChannel');
         }
     }
 });

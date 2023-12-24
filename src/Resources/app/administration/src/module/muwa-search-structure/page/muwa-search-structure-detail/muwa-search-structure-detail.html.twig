@@ -45,6 +45,20 @@
                         >
                             <option value="product">{{ $tc('muwa-search-structure.detail.entity.product') }}</option>
                         </sw-select-field>
+                        <sw-single-select
+                                v-model="indexStructure.salesChannelId"
+                                labelProperty="translated.name"
+                                valueProperty="id"
+                                :isLoading="isLoading"
+                                :options="salesChannels"
+                        >
+                        </sw-single-select>
+                        <sw-field
+                                :label="$tc('muwa-search-structure.detail.mappingsLabel')"
+                                v-model="indexStructure.translated.mappings"
+                                maxlength="70"
+                        >
+                        </sw-field>
                     </sw-card>
                 </sw-card-view>
             {% endblock %}

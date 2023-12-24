@@ -8,7 +8,8 @@ Component.register('muwa-search-structure-detail', {
     template,
 
     inject: [
-        'repositoryFactory'
+        'repositoryFactory',
+        'salesChannelService'
     ],
 
     mixins: [
@@ -29,7 +30,7 @@ Component.register('muwa-search-structure-detail', {
 
             isLoading: false,
             processSuccess: false,
-
+            salesChannels: null,
             indexStructure: {
                 type: null,
                 label: null,
@@ -49,6 +50,23 @@ Component.register('muwa-search-structure-detail', {
             'label',
             'content'
         ]),
+
+        salesChannelRepository() {
+            return this.repositoryFactory.create('sales_channel');
+        },
+
+        salesChannelCriteria() {
+            const criteria = new Criteria(1, 500);
+            criteria.addFilter(Criteria.equals('active', true));
+
+            return criteria;
+        },
+
+        criteria() {
+            const criteria = new Criteria();
+            criteria.addAssociation('translations');
+            return criteria;
+        },
     },
 
 
@@ -59,12 +77,24 @@ Component.register('muwa-search-structure-detail', {
     methods: {
         createdComponent() {
             this.getIndexStructure();
+            this.getSalesChannels();
         },
 
 
         getIndexStructure() {
-            this.repositoryIndexStructure.get(this.$route.params.id, Shopware.Context.api).then((entity) => {
-                this.indexStructure = entity;
+            this.repositoryIndexStructure
+                .get(this.$route.params.id, Shopware.Context.api, this.criteria)
+                .then((entity) => {
+                    this.indexStructure = entity;
+                });
+        },
+
+        getSalesChannels() {
+
+            this.salesChannelRepository.search(this.salesChannelCriteria, Shopware.Context.api).then(res => {
+                this.salesChannels = res;
+            }).finally(() => {
+                this.isLoading = false;
             });
         },
 
