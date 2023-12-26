@@ -21,6 +21,13 @@
             </call>
         </service>
 
+        <service id="MuckiSearchPlugin\Controller\MappingsController" public="true">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
         <service id="MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureDefinition">
             <tag name="shopware.entity.definition" entity="muwa_index_structure"/>
         </service>

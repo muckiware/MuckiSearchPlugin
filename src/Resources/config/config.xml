@@ -25,10 +25,22 @@
         <input-field type="text">
             <name>serverHost</name>
             <label>Host</label>
+            <defaultValue>localhost</defaultValue>
         </input-field>
         <input-field type="int">
             <name>serverPort</name>
             <label>Port</label>
+            <defaultValue>9200</defaultValue>
+        </input-field>
+    </card>
+    <card>
+        <title>Search Field Mappings</title>
+        <title lang="de-DE">Suchfelder Zuordnung</title>
+        <input-field type="text">
+            <name>mappingProductFields</name>
+            <label>Product fields for mapping</label>
+            <label lang="de-DE">Produktfelder für Zuordnung</label>
+            <defaultValue>id,productNumber</defaultValue>
         </input-field>
     </card>
 </config>

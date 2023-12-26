@@ -17,21 +17,6 @@ Component.register('muwa-search-structure-detail', {
         Mixin.getByName('notification')
     ],
 
-    // props: {
-    //     profile: {
-    //         type: Object,
-    //         required: false,
-    //         default: null,
-    //     },
-    //     systemRequiredFields: {
-    //         type: Object,
-    //         required: false,
-    //         default() {
-    //             return {};
-    //         },
-    //     },
-    // },
-
     metaInfo() {
 
         return {

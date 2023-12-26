@@ -28,7 +28,8 @@ Component.register('muwa-search-structure-create', {
             salesChannels: null,
             indexStructure: null,
             isLoading: false,
-            processSuccess: false
+            processSuccess: false,
+            httpClient: null
         };
     },
 
@@ -54,7 +55,7 @@ Component.register('muwa-search-structure-create', {
 
     created() {
 
-        console.log('this in created()', this);
+        this.httpClient = Shopware.Application.getContainer('init').httpClient;
 
         if (!Shopware.State.getters['context/isSystemDefaultLanguage']) {
             Shopware.State.commit('context/resetLanguageToDefault');
@@ -87,21 +88,29 @@ Component.register('muwa-search-structure-create', {
 
             console.log('this.indexStructure', this.indexStructure);
             this.isLoading = true;
-            this.repositorySearchStructure.save(this.indexStructure, Shopware.Context.api).then(() => {
 
-                this.isLoading = false;
-                this.createNotificationSuccess({
-                    title: this.$tc('muwa-search-structure.general.saveSuccessAlertTitle'),
-                    message: this.$tc('muwa-search-structure.general.saveSuccessAlertMessage')
-                });
-                this.$router.push({name: 'muwa.search.structure.detail', params: { id: this.indexStructure.id }});
+            this.httpClient.get(
+                '/_action/muwa/search/default-product-mappings',
+                this.getApiHeader()
+            ).then((response) => {
 
-            }).catch((exception) => {
 
-                this.isLoading = false;
-                this.createNotificationError({
-                    title: this.$tc('muwa-search-structure.create.errorTitle'),
-                    message: exception
+                this.repositorySearchStructure.save(this.indexStructure, Shopware.Context.api).then(() => {
+
+                    this.isLoading = false;
+                    this.createNotificationSuccess({
+                        title: this.$tc('muwa-search-structure.general.saveSuccessAlertTitle'),
+                        message: this.$tc('muwa-search-structure.general.saveSuccessAlertMessage')
+                    });
+                    this.$router.push({name: 'muwa.search.structure.detail', params: { id: this.indexStructure.id }});
+
+                }).catch((exception) => {
+
+                    this.isLoading = false;
+                    this.createNotificationError({
+                        title: this.$tc('muwa-search-structure.create.errorTitle'),
+                        message: exception
+                    });
                 });
             });
         },
@@ -116,6 +125,15 @@ Component.register('muwa-search-structure-create', {
 
         setSalesChannel() {
             console.log('setSalesChannel');
+        },
+
+        getApiHeader() {
+
+            return {
+                Accept: 'application/vnd.api+json',
+                Authorization: `Bearer ${ Shopware.Context.api.authToken.access }`,
+                'Content-Type': 'application/json'
+            }
         }
     }
 });
