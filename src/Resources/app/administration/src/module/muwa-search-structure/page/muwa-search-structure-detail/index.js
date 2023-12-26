@@ -3,6 +3,7 @@ import template from './muwa-search-structure-detail.html.twig';
 const {Criteria} = Shopware.Data;
 const {Component, Mixin} = Shopware;
 const {mapPropertyErrors} = Shopware.Component.getComponentHelper();
+const { debounce, createId, object: { cloneDeep } } = Shopware.Utils;
 
 Component.register('muwa-search-structure-detail', {
     template,
@@ -16,6 +17,20 @@ Component.register('muwa-search-structure-detail', {
         Mixin.getByName('notification')
     ],
 
+    // props: {
+    //     profile: {
+    //         type: Object,
+    //         required: false,
+    //         default: null,
+    //     },
+    //     systemRequiredFields: {
+    //         type: Object,
+    //         required: false,
+    //         default() {
+    //             return {};
+    //         },
+    //     },
+    // },
 
     metaInfo() {
 
@@ -32,9 +47,23 @@ Component.register('muwa-search-structure-detail', {
             processSuccess: false,
             salesChannels: null,
             indexStructure: {
-                type: null,
-                label: null,
-                content: null,
+                mappings: null,
+                translated: {
+                    mappings: null
+                }
+            },
+            searchTerm: null,
+            mappings: [],
+            currencies: [],
+            languages: [],
+            customFieldSets: [],
+            addMappingEnabled: false,
+            systemRequiredFields: {
+                type: Object,
+                required: false,
+                default() {
+                    return {};
+                }
             }
         };
     },
@@ -45,30 +74,71 @@ Component.register('muwa-search-structure-detail', {
             return this.repositoryFactory.create('muwa_index_structure');
         },
 
-        ...mapPropertyErrors('indexStructure', [
-            'type',
-            'label',
-            'content'
-        ]),
+        ...mapPropertyErrors('indexStructure', ['translated',]),
 
         salesChannelRepository() {
             return this.repositoryFactory.create('sales_channel');
         },
 
         salesChannelCriteria() {
-            const criteria = new Criteria(1, 500);
+            const criteria = new Criteria(1, 50);
             criteria.addFilter(Criteria.equals('active', true));
 
             return criteria;
         },
 
-        criteria() {
+        customFieldSetRepository() {
+            return this.repositoryFactory.create('custom_field_set');
+        },
+
+        indexStructureCriteria() {
             const criteria = new Criteria();
             criteria.addAssociation('translations');
             return criteria;
         },
-    },
 
+        customFieldSetCriteria() {
+            const criteria = new Criteria(1, 500);
+            criteria.addAssociation('relations');
+            criteria.addAssociation('customFields');
+
+            return criteria;
+        },
+
+        getMappings() {
+
+            console.log('this.indexStructure in getMappings()', this.indexStructure);
+            console.log('this.indexStructure.translated.mappings', this.indexStructure.translated.mappings);
+            return this.indexStructure.translated.mappings;
+        },
+
+        mappingColumns() {
+            let columns = [
+                {
+                    property: 'entry',
+                    label: 'sw-import-export.profile.mapping.entityLabel',
+                    allowResize: true,
+                    width: '300px',
+                },
+                {
+                    property: 'defaultValue',
+                    label: 'sw-import-export.profile.mapping.defaultValue',
+                    allowResize: true,
+                    width: '300px',
+                }
+            ];
+
+            return columns;
+        },
+
+        mappingsExist() {
+
+            if(this.indexStructure.translated.mappings) {
+                return this.indexStructure.translated.mappings.length > 0;
+            }
+            return false;
+        }
+    },
 
     created() {
         this.createdComponent();
@@ -76,14 +146,16 @@ Component.register('muwa-search-structure-detail', {
 
     methods: {
         createdComponent() {
+
             this.getIndexStructure();
             this.getSalesChannels();
+            this.loadMappings();
         },
 
 
         getIndexStructure() {
             this.repositoryIndexStructure
-                .get(this.$route.params.id, Shopware.Context.api, this.criteria)
+                .get(this.$route.params.id, Shopware.Context.api, this.indexStructureCriteria)
                 .then((entity) => {
                     this.indexStructure = entity;
                 });
@@ -125,6 +197,59 @@ Component.register('muwa-search-structure-detail', {
         onChangeLanguage(languageId) {
             Shopware.State.commit('context/setApiLanguageId', languageId);
             this.createdComponent();
+        },
+
+        toggleAddMappingActionState(sourceEntity) {
+            this.addMappingEnabled = !!sourceEntity;
+        },
+
+        onDeleteMapping(id) {
+
+            this.mappings = this.mappings.filter((mapping) => {
+                return mapping.id !== id;
+            });
+
+            this.loadMappings();
+        },
+
+        loadMappings() {
+
+            // console.log('load mappings');
+            // console.log('mappings', this.indexStructure.mappings);
+
+            // if(this.indexStructure) {
+            //
+            //     if(this.indexStructure.mappings) {
+            //
+            //         this.indexStructure.mappings.forEach((mapping) => {
+            //             if (!mapping.id) {
+            //                 mapping.id = createId();
+            //             }
+            //             this.indexStructure.mappings.push(mapping);
+            //         });
+            //     }
+            // }
+        },
+
+        onAddMapping() {
+
+            console.log('onAddMapping()');
+            console.log('this.mappings', this.mappings)
+
+            if(this.mappings.length >= 1) {
+                this.mappings.forEach(currentMapping => { currentMapping.position += 1; });
+            } else {
+                console.log('this.mappings is empty');
+            }
+
+            console.log('this.mappings is empty');
+            this.mappings.unshift({ id: createId(), key: '', mappedKey: '', position: 0 });
+
+            // this.loadMappings();
+        },
+
+        isDefaultValueTextFieldDisabled(item) {
+            // return this.profile.systemDefault || !item.useDefaultValue;
         }
     }
 });

@@ -17,6 +17,7 @@ namespace MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureTranslatio
 use Shopware\Core\Framework\DataAbstractionLayer\EntityTranslationDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\CreatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\JsonField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\UpdatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\LongTextField;
@@ -49,7 +50,7 @@ class IndexStructureTranslationDefinition extends EntityTranslationDefinition
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
-            (new LongTextField('mappings', 'mappings'))->addFlags(new ApiAware()),
+            (new JsonField('mappings', 'mappings', [], []))->addFlags(new ApiAware()),
             new CreatedAtField(),
             new UpdatedAtField()
         ]);

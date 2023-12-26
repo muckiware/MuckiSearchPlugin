@@ -20,6 +20,8 @@
       "updateDateLabel": "Aktualisiert"
     },
     "detail": {
+      "mappingLabel": "Mappings",
+      "generalLabel": "Allgemeines",
       "activeLabel": "Aktiv",
       "nameLabel": "Technischer Name",
       "entityLabel": "Entität",
