@@ -76,6 +76,7 @@ class Settings
             $searchMapping->setKey($mappingProductField);
             $searchMapping->setMappedKey($mappingProductField);
             $searchMapping->setPosition($positionCounter);
+            $searchMapping->setIsDefault(true);
             $defaultProductMappings[] = $searchMapping->getMappingObject();
         }
 

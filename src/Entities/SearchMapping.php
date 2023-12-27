@@ -16,6 +16,14 @@ class SearchMapping
 
     protected int $position;
 
+    protected bool $isDefault;
+
+    public function __construct()
+    {
+        $this->isDefault = false;
+    }
+
+
     /**
      * @return string
      */
@@ -80,13 +88,30 @@ class SearchMapping
         $this->position = $position;
     }
 
+    /**
+     * @return bool
+     */
+    public function isDefault(): bool
+    {
+        return $this->isDefault;
+    }
+
+    /**
+     * @param bool $isDefault
+     */
+    public function setIsDefault(bool $isDefault): void
+    {
+        $this->isDefault = $isDefault;
+    }
+
     public function getMappingObject(): array
     {
         return array(
             'id' => $this->getId(),
             'key' => $this->getKey(),
             'mappedKey' => $this->getMappedKey(),
-            'position' => $this->getPosition()
+            'position' => $this->getPosition(),
+            'isDefault' => $this->isDefault()
         );
     }
 
@@ -108,6 +133,9 @@ class SearchMapping
                     break;
                 case 'position':
                     $this->setPosition($mappingValue);
+                    break;
+                case 'isDefault':
+                    $this->setIsDefault($mappingValue);
                     break;
             }
         }
