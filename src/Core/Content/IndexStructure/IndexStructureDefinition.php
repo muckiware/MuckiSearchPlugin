@@ -53,11 +53,10 @@ class IndexStructureDefinition extends EntityDefinition
                 new SearchRanking(SearchRanking::MIDDLE_SEARCH_RANKING, false)
             ),
             (new StringField('entity', 'entity'))->addFlags(new ApiAware()),
+            (new TranslatedField('mappings')),
             (new TranslationsAssociationField(IndexStructureTranslationDefinition::class, 'muwa_index_structure_id'))->addFlags(new Required()),
-            //(new TranslationsAssociationField(PseudoProductTranslationDefinition::class, 'lightson_pseudo_product_id'))->addFlags(new Required()),
 
             new ManyToOneAssociationField('salesChannel', 'sales_channel_id', SalesChannelDefinition::class),
-            (new TranslatedField('mappings')),
             new CreatedAtField(),
             new UpdatedAtField()
         ]);

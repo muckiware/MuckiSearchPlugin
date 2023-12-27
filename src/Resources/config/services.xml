@@ -23,6 +23,7 @@
 
         <service id="MuckiSearchPlugin\Controller\MappingsController" public="true">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -49,6 +50,11 @@
             <argument type="service" id="Psr\Log\LoggerInterface"/>
         </service>
 
+        <service id="MuckiSearchPlugin\Services\Content\IndexStructure">
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="muwa_index_structure.repository"/>
+            <argument type="service" id="muwa_index_structure_translation.repository"/>
+        </service>
         <service id="MuckiSearchPlugin\Services\Content\Products" public="true">
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="product.repository"/>
