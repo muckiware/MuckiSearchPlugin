@@ -28,6 +28,9 @@
       "entity": {
         "product": "Product"
       }
+    },
+    "create": {
+      "errorTitle": "Speicherproblem aufgetreten"
     }
   }
 }

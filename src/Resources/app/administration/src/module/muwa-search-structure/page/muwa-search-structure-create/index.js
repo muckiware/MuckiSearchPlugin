@@ -94,7 +94,7 @@ Component.register('muwa-search-structure-create', {
                 this.getApiHeader()
             ).then((response) => {
 
-
+                this.indexStructure.mappings = response.data;
                 this.repositorySearchStructure.save(this.indexStructure, Shopware.Context.api).then(() => {
 
                     this.isLoading = false;
