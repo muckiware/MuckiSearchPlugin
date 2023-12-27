@@ -86,7 +86,6 @@ Component.register('muwa-search-structure-create', {
 
         onClickSave() {
 
-            console.log('this.indexStructure', this.indexStructure);
             this.isLoading = true;
 
             this.httpClient.get(

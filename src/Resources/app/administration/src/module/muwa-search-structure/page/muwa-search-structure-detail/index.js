@@ -91,9 +91,6 @@ Component.register('muwa-search-structure-detail', {
         },
 
         getMappings() {
-
-            console.log('this.indexStructure in getMappings()', this.indexStructure);
-            console.log('this.indexStructure.translated.mappings', this.indexStructure.translated.mappings);
             return this.indexStructure.translated.mappings;
         },
 
@@ -157,22 +154,30 @@ Component.register('muwa-search-structure-detail', {
 
         onClickSave() {
 
-            this.isLoading = true;
-            this.repositoryIndexStructure.save(this.indexStructure, Shopware.Context.api).then(() => {
-                this.isLoading = false;
-                this.getIndexStructure();
-                this.createNotificationSuccess({
-                    title: this.$tc('muwa-search-structure.general.saveSuccessAlertTitle'),
-                    message: this.$tc('muwa-search-structure.general.saveSuccessAlertMessage')
-                });
-            }).catch((exception) => {
-                this.isLoading = false;
+            // console.log('Before - this.indexStructure', this.indexStructure);
+            //
+            // this.indexStructure.translated.mappings = this.indexStructure.translated;
+            //
+            // console.log('After - this.indexStructure', this.indexStructure);
 
-                this.createNotificationError({
-                    title: this.$tc('muwa-search-structure.create.errorTitle'),
-                    message: exception
+            this.isLoading = true;
+            this.repositoryIndexStructure
+                .save(this.indexStructure, Shopware.Context.api, this.indexStructureCriteria)
+                .then(() => {
+                    this.isLoading = false;
+                    this.getIndexStructure();
+                    this.createNotificationSuccess({
+                        title: this.$tc('muwa-search-structure.general.saveSuccessAlertTitle'),
+                        message: this.$tc('muwa-search-structure.general.saveSuccessAlertMessage')
+                    });
+                }).catch((exception) => {
+                    this.isLoading = false;
+
+                    this.createNotificationError({
+                        title: this.$tc('muwa-search-structure.create.errorTitle'),
+                        message: exception
+                    });
                 });
-            });
         },
 
         saveFinish() {
@@ -190,7 +195,7 @@ Component.register('muwa-search-structure-detail', {
 
         onDeleteMapping(id) {
 
-            this.mappings = this.mappings.filter((mapping) => {
+            this.indexStructure.translated.mappings = this.indexStructure.translated.mappings.filter((mapping) => {
                 return mapping.id !== id;
             });
 
@@ -199,38 +204,33 @@ Component.register('muwa-search-structure-detail', {
 
         loadMappings() {
 
-            // console.log('load mappings');
-            // console.log('mappings', this.indexStructure.mappings);
+            if(this.indexStructure) {
 
-            // if(this.indexStructure) {
-            //
-            //     if(this.indexStructure.mappings) {
-            //
-            //         this.indexStructure.mappings.forEach((mapping) => {
-            //             if (!mapping.id) {
-            //                 mapping.id = createId();
-            //             }
-            //             this.indexStructure.mappings.push(mapping);
-            //         });
-            //     }
-            // }
+                if(this.indexStructure.translated.mappings) {
+
+                    this.indexStructure.translated.mappings.forEach((mapping) => {
+                        if (!mapping.id) {
+                            mapping.id = createId();
+                        }
+                        // this.indexStructure.translated.mappings.push(mapping);
+                    });
+                }
+            }
         },
 
         onAddMapping() {
 
-            console.log('onAddMapping()');
-            console.log('this.mappings', this.mappings)
 
-            if(this.mappings.length >= 1) {
-                this.mappings.forEach(currentMapping => { currentMapping.position += 1; });
-            } else {
-                console.log('this.mappings is empty');
-            }
+            this.indexStructure.translated.mappings.forEach(currentMapping => { currentMapping.position += 1; });
+            this.indexStructure.translated.mappings.unshift({
+                id: createId(),
+                isDefault: false,
+                key: '',
+                mappedKey: '',
+                position: 0
+            });
 
-            console.log('this.mappings is empty');
-            this.mappings.unshift({ id: createId(), key: '', mappedKey: '', position: 0 });
-
-            // this.loadMappings();
+            this.loadMappings();
         },
 
         isDefaultValueTextFieldDisabled(item) {

@@ -78,6 +78,8 @@ class Settings
             $searchMapping->setPosition($positionCounter);
             $searchMapping->setIsDefault(true);
             $defaultProductMappings[] = $searchMapping->getMappingObject();
+
+            $positionCounter ++;
         }
 
         return $defaultProductMappings;
