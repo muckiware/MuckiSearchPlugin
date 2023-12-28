@@ -107,18 +107,18 @@
                                     <template #column-inputDataType="{ item }">
                                         <div class="sw-cms-list__actions-sorting">
                                             <sw-select-field
-                                                name="sortType"
+                                                name="dataType"
                                                 :value="sortingConditionConcatenation"
                                                 :aside="true"
                                             >
                                                 <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
                                                 {% block wuwa_search_structure_mapping_select_options %}
                                                     <option
-                                                        v-for="sortOption in dataTypeOptions()"
-                                                        :key="sortOption.value"
-                                                        :value="sortOption.value"
+                                                        v-for="dataTypeOption in dataTypeOptions"
+                                                        :key="dataTypeOption.key"
+                                                        :value="dataTypeOption.label"
                                                     >
-                                                        {{ sortOption.name }}
+                                                        {{ dataTypeOption.label }}
                                                     </option>
                                                 {% endblock %}
                                             </sw-select-field>

@@ -51,6 +51,7 @@ Component.register('muwa-search-structure-detail', {
                 }
             },
             httpClient: null,
+            dataTypeOptions: null,
             sortBy: {
                 type: String,
                 default: 'createdAt',
@@ -118,7 +119,7 @@ Component.register('muwa-search-structure-detail', {
                     property: 'inputDataType',
                     label: 'muwa-search-structure.mappingList.inputDataTypeLabel',
                     allowResize: true,
-                    width: '300px',
+                    width: '180px',
                 },
                 {
                     property: 'defaultValue',
@@ -151,11 +152,13 @@ Component.register('muwa-search-structure-detail', {
     },
 
     methods: {
+
         createdComponent() {
 
             this.getIndexStructure();
             this.getSalesChannels();
             this.loadMappings();
+            this.getDataTypeOptions();
         },
 
 
@@ -209,23 +212,15 @@ Component.register('muwa-search-structure-detail', {
                 });
         },
 
-        dataTypeOptions() {
+        getDataTypeOptions() {
 
             this.httpClient.get(
                 '/_action/muwa/server/mapping-input-data-types',
                 this.getApiHeader()
             ).then((response) => {
 
-                console.log('res', response);
-
-                return [
-                    { value: 'name:ASC', name: 'test' },
-                    { value: 'name:DESC', name: this.$tc('sw-cms.sorting.labelSortByNameDesc') },
-                    { value: 'createdAt:DESC', name: this.$tc('sw-cms.sorting.labelSortByCreatedDsc') },
-                    { value: 'createdAt:ASC', name: this.$tc('sw-cms.sorting.labelSortByCreatedAsc') },
-                    { value: 'updatedAt:DESC', name: this.$tc('sw-cms.sorting.labelSortByUpdatedDsc') },
-                    { value: 'updatedAt:ASC', name: this.$tc('sw-cms.sorting.labelSortByUpdatedAsc') },
-                ];
+                console.log('response', response);
+                this.dataTypeOptions = response.data;
             });
         },
 
