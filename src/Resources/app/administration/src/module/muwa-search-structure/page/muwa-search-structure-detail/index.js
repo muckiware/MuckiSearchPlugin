@@ -50,7 +50,18 @@ Component.register('muwa-search-structure-detail', {
                     return {};
                 }
             },
-            httpClient: null
+            httpClient: null,
+            sortBy: {
+                type: String,
+                default: 'createdAt',
+                required: false,
+            },
+
+            sortDirection: {
+                type: String,
+                default: 'DESC',
+                required: false,
+            }
         };
     },
 
@@ -99,13 +110,19 @@ Component.register('muwa-search-structure-detail', {
             let columns = [
                 {
                     property: 'entry',
-                    label: 'sw-import-export.profile.mapping.entityLabel',
+                    label: 'muwa-search-structure.mappingList.entityLabel',
+                    allowResize: true,
+                    width: '300px',
+                },
+                {
+                    property: 'inputDataType',
+                    label: 'muwa-search-structure.mappingList.inputDataTypeLabel',
                     allowResize: true,
                     width: '300px',
                 },
                 {
                     property: 'defaultValue',
-                    label: 'sw-import-export.profile.mapping.defaultValue',
+                    label: 'muwa-search-structure.mappingList.defaultValue',
                     allowResize: true,
                     width: '300px',
                 }
@@ -120,7 +137,11 @@ Component.register('muwa-search-structure-detail', {
                 return this.indexStructure.translated.mappings.length > 0;
             }
             return false;
-        }
+        },
+
+        sortingConditionConcatenation() {
+            return `${this.sortBy}:${this.sortDirection}`;
+        },
     },
 
     created() {
@@ -188,6 +209,26 @@ Component.register('muwa-search-structure-detail', {
                 });
         },
 
+        dataTypeOptions() {
+
+            this.httpClient.get(
+                '/_action/muwa/server/mapping-input-data-types',
+                this.getApiHeader()
+            ).then((response) => {
+
+                console.log('res', response);
+
+                return [
+                    { value: 'name:ASC', name: 'test' },
+                    { value: 'name:DESC', name: this.$tc('sw-cms.sorting.labelSortByNameDesc') },
+                    { value: 'createdAt:DESC', name: this.$tc('sw-cms.sorting.labelSortByCreatedDsc') },
+                    { value: 'createdAt:ASC', name: this.$tc('sw-cms.sorting.labelSortByCreatedAsc') },
+                    { value: 'updatedAt:DESC', name: this.$tc('sw-cms.sorting.labelSortByUpdatedDsc') },
+                    { value: 'updatedAt:ASC', name: this.$tc('sw-cms.sorting.labelSortByUpdatedAsc') },
+                ];
+            });
+        },
+
         saveFinish() {
             this.processSuccess = false;
         },
@@ -220,7 +261,6 @@ Component.register('muwa-search-structure-detail', {
                         if (!mapping.id) {
                             mapping.id = createId();
                         }
-                        // this.indexStructure.translated.mappings.push(mapping);
                     });
                 }
             }

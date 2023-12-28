@@ -42,6 +42,7 @@ class Migration1703322259 extends MigrationStep
                 `muwa_index_structure_id` binary(16) NOT NULL,
                 `language_id` binary(16) NOT NULL,
                 `mappings` longtext DEFAULT NULL,
+                `settings` longtext DEFAULT NULL,
                 `created_at` datetime(3) NOT NULL,
                 `updated_at` datetime(3) DEFAULT NULL,
                 PRIMARY KEY (`index_structure_id`,`language_id`),

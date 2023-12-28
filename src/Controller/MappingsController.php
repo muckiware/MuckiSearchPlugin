@@ -12,6 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Services\Content\IndexStructure as IndexStructureService;
+use MuckiSearchPlugin\Core\Content\ServerOptions\ServerOptionsFactory;
 
 
 #[Route(defaults: ['_routeScope' => ['api']])]
@@ -23,7 +24,8 @@ class MappingsController extends AbstractController
      */
     public function __construct(
         protected PluginSettings $pluginSettings,
-        protected IndexStructureService $indexStructureService
+        protected IndexStructureService $indexStructureService,
+        protected ServerOptionsFactory $serverOptionsFactory
     ) {
     }
 
@@ -35,6 +37,16 @@ class MappingsController extends AbstractController
     public function defaultProductMappings(): JsonResponse
     {
         return new JsonResponse($this->pluginSettings->getDefaultProductMapping());
+    }
+
+    #[Route(
+        path: '/api/_action/muwa/server/mapping-input-data-types',
+        name: 'api.action.muwa_server.mapping-input-data-types',
+        methods: ['GET']
+    )]
+    public function serverMappingInputDataTypes(): JsonResponse
+    {
+        return new JsonResponse($this->serverOptionsFactory->createServerOptions()->getDataTypes());
     }
 
     /**

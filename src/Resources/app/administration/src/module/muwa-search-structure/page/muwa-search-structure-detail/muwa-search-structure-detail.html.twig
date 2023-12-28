@@ -74,7 +74,7 @@
                         </sw-button>
 
                         <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
-                        {% block sw_import_export_edit_profile_modal_mapping_grid %}
+                        {% block wuwa_search_structure_mapping_grid %}
                             <sw-data-grid
                                     v-if="mappingsExist"
                                     :data-source="getMappings"
@@ -86,7 +86,7 @@
                             >
 
                                 <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
-                                {% block sw_import_export_edit_profile_modal_mapping_grid_entry_column %}
+                                {% block wuwa_search_structure_mapping_grid_entity_column %}
                                     <template #column-entry="{ item }">
                                         <muwa-search-structure-entity-path-select
                                                 {% if VUE3 %}
@@ -103,8 +103,31 @@
                                     </template>
                                 {% endblock %}
 
+                                {% block wuwa_search_structure_mapping_grid_data_type_column %}
+                                    <template #column-inputDataType="{ item }">
+                                        <div class="sw-cms-list__actions-sorting">
+                                            <sw-select-field
+                                                name="sortType"
+                                                :value="sortingConditionConcatenation"
+                                                :aside="true"
+                                            >
+                                                <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+                                                {% block wuwa_search_structure_mapping_select_options %}
+                                                    <option
+                                                        v-for="sortOption in dataTypeOptions()"
+                                                        :key="sortOption.value"
+                                                        :value="sortOption.value"
+                                                    >
+                                                        {{ sortOption.name }}
+                                                    </option>
+                                                {% endblock %}
+                                            </sw-select-field>
+                                        </div>
+                                    </template>
+                                {% endblock %}
+
                                 <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
-                                {% block sw_import_export_edit_profile_modal_mapping_grid_default_value_column %}
+                                {% block wuwa_search_structure_mapping_grid_default_value_column %}
                                     <template #column-defaultValue="{ item, itemIndex }">
                                         <sw-switch-field
                                                 {% if VUE3 %}
@@ -130,7 +153,7 @@
                                 {% endblock %}
 
                                 <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
-                                {% block sw_import_export_edit_profile_modal_mapping_grid_context_menu_delete %}
+                                {% block wuwa_search_structure_mapping_grid_context_menu_delete %}
                                     <template #actions="{ item }">
                                         <sw-context-menu-item
                                                 variant="danger"
@@ -146,7 +169,7 @@
                         {% endblock %}
 
                         <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
-                        {% block sw_import_export_edit_profile_modal_mapping_empty_state %}
+                        {% block wuwa_search_structure_mapping_empty_state %}
                             <sw-empty-state
                                     v-else
                                     class="sw-import-export-edit-profile-modal-mapping__empty-state"

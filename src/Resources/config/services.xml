@@ -24,6 +24,7 @@
         <service id="MuckiSearchPlugin\Controller\MappingsController" public="true">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
+            <argument type="service" id="serverOptions.factory"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -34,6 +35,10 @@
         </service>
         <service id="MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureTranslation\IndexStructureTranslationDefinition">
             <tag name="shopware.entity.definition" entity="muwa_index_structure_translation"/>
+        </service>
+        <service id="serverOptions.factory" class="MuckiSearchPlugin\Core\Content\ServerOptions\ServerOptionsFactory">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
         </service>
 
         <service id="MuckiSearchPlugin\Indexing\Write" public="true">
