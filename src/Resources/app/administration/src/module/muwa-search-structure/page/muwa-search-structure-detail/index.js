@@ -49,7 +49,8 @@ Component.register('muwa-search-structure-detail', {
                 default() {
                     return {};
                 }
-            }
+            },
+            httpClient: null
         };
     },
 
@@ -123,6 +124,8 @@ Component.register('muwa-search-structure-detail', {
     },
 
     created() {
+
+        this.httpClient = Shopware.Application.getContainer('init').httpClient;
         this.createdComponent();
     },
 
@@ -154,22 +157,27 @@ Component.register('muwa-search-structure-detail', {
 
         onClickSave() {
 
-            // console.log('Before - this.indexStructure', this.indexStructure);
-            //
-            // this.indexStructure.translated.mappings = this.indexStructure.translated;
-            //
-            // console.log('After - this.indexStructure', this.indexStructure);
-
             this.isLoading = true;
             this.repositoryIndexStructure
                 .save(this.indexStructure, Shopware.Context.api, this.indexStructureCriteria)
                 .then(() => {
-                    this.isLoading = false;
-                    this.getIndexStructure();
-                    this.createNotificationSuccess({
-                        title: this.$tc('muwa-search-structure.general.saveSuccessAlertTitle'),
-                        message: this.$tc('muwa-search-structure.general.saveSuccessAlertMessage')
-                    });
+
+                    this.httpClient.post(
+                        '/_action/muwa/search/save-mappings',
+                        this.indexStructure,
+                        {
+                            headers: this.getApiHeader()
+                        }
+
+                    ).then((response) => {
+
+                        this.isLoading = false;
+                        this.getIndexStructure();
+                        this.createNotificationSuccess({
+                            title: this.$tc('muwa-search-structure.general.saveSuccessAlertTitle'),
+                            message: this.$tc('muwa-search-structure.general.saveSuccessAlertMessage')
+                        });
+                    })
                 }).catch((exception) => {
                     this.isLoading = false;
 
@@ -220,7 +228,6 @@ Component.register('muwa-search-structure-detail', {
 
         onAddMapping() {
 
-
             this.indexStructure.translated.mappings.forEach(currentMapping => { currentMapping.position += 1; });
             this.indexStructure.translated.mappings.unshift({
                 id: createId(),
@@ -235,6 +242,15 @@ Component.register('muwa-search-structure-detail', {
 
         isDefaultValueTextFieldDisabled(item) {
             // return this.profile.systemDefault || !item.useDefaultValue;
+        },
+
+        getApiHeader() {
+
+            return {
+                Accept: 'application/vnd.api+json',
+                Authorization: `Bearer ${ Shopware.Context.api.authToken.access }`,
+                'Content-Type': 'application/json'
+            }
         }
     }
 });
