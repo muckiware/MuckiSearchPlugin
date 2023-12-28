@@ -26,7 +26,10 @@
       "nameLabel": "Technischer Name",
       "entityLabel": "Entität",
       "entity": {
-        "product": "Product"
+        "product": "Product",
+        "cms": "CMS",
+        "category": "Kategorie",
+        "manufacturer": "Hersteller"
       }
     },
     "create": {

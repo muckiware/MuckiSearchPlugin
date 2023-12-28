@@ -42,8 +42,12 @@
                         <sw-select-field
                                 :label="$tc('muwa-search-structure.detail.entityLabel')"
                                 v-model="indexStructure.entity"
+                                :disabled="true"
                         >
                             <option value="product">{{ $tc('muwa-search-structure.detail.entity.product') }}</option>
+                            <option value="category">{{ $tc('muwa-search-structure.detail.entity.category') }}</option>
+                            <option value="product_manufacturer">{{ $tc('muwa-search-structure.detail.entity.manufacturer') }}</option>
+                            <option value="cms_slot">{{ $tc('muwa-search-structure.detail.entity.cms') }}</option>
                         </sw-select-field>
                         <sw-single-select
                                 v-model="indexStructure.salesChannelId"
@@ -84,7 +88,7 @@
                                 <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
                                 {% block sw_import_export_edit_profile_modal_mapping_grid_entry_column %}
                                     <template #column-entry="{ item }">
-                                        <sw-import-export-entity-path-select
+                                        <muwa-search-structure-entity-path-select
                                                 {% if VUE3 %}
                                                     v-model:value="item.key"
                                                 {% else %}

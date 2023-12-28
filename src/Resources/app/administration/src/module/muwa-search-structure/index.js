@@ -7,6 +7,8 @@ import './page/muwa-search-structure-detail';
 import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';
 
+Shopware.Component.register('muwa-search-structure-entity-path-select', () => import('./component/muwa-search-structure-entity-path-select'));
+
 
 Module.register('muwa-search-structure', {
     type: 'plugin',
