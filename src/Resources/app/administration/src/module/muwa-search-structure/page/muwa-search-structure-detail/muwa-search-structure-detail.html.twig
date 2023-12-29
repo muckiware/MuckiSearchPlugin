@@ -110,51 +110,26 @@
                                 {% endblock %}
 
                                 {% block wuwa_search_structure_mapping_grid_data_type_column %}
-                                    <template #column-inputDataType="{ item }">
-                                        <div class="sw-cms-list__actions-sorting">
+                                    <template #column-dataType="{ item }">
+                                        <div class="sw-cms-list__actions-data-type">
                                             <sw-select-field
                                                 name="dataType"
-                                                :value="sortingConditionConcatenation"
                                                 :aside="true"
+                                                v-model="item.dataType"
                                             >
                                                 <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
                                                 {% block wuwa_search_structure_mapping_select_options %}
                                                     <option
                                                         v-for="dataTypeOption in dataTypeOptions"
                                                         :key="dataTypeOption.key"
-                                                        :value="dataTypeOption.label"
+                                                        :value="dataTypeOption.key"
+                                                        :selected="dataTypeOption.key === item.dataType"
                                                     >
                                                         {{ dataTypeOption.label }}
                                                     </option>
                                                 {% endblock %}
                                             </sw-select-field>
                                         </div>
-                                    </template>
-                                {% endblock %}
-
-                                <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
-                                {% block wuwa_search_structure_mapping_grid_default_value_column %}
-                                    <template #column-defaultValue="{ item, itemIndex }">
-                                        <sw-switch-field
-                                                {% if VUE3 %}
-                                                    v-model:value="item.useDefaultValue"
-                                                {% else %}
-                                                    v-model="item.useDefaultValue"
-                                                {% endif %}
-                                                :name="`useDefaultValue-${itemIndex}`"
-                                                :disabled="false"
-                                                class="sw-import-export-edit-profile-modal-mapping__default-value-switch"
-                                        />
-
-                                        <sw-text-field
-                                                {% if VUE3 %}
-                                                    v-model:value="item.defaultValue"
-                                                {% else %}
-                                                    v-model="item.defaultValue"
-                                                {% endif %}
-                                                :name="`defaultValue-${itemIndex}`"
-                                                :disabled="false"
-                                        />
                                     </template>
                                 {% endblock %}
 

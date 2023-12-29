@@ -4,7 +4,7 @@
       "mainMenuLabel": "Such-Index Struktur",
       "description": "Such-Index Struktur Verwaltung",
       "saveSuccessAlertTitle": "Erfolgreich gespeichert",
-      "saveSuccessAlertMessage": "Eintrag wurde erfolgreich gespeichert."
+      "saveSuccessAlertMessage": "Such-Index Struktur wurde erfolgreich gespeichert."
     },
     "list": {
       "header": {
@@ -12,7 +12,7 @@
         "cancelButtonLabel": "Abbrechen",
         "saveButtonLabel": "Speichern"
       },
-      "emptyListText": "Keine Such-Index Struktur Einträge vorhanden",
+      "emptyListText": "Keine Such-Index Struktur Einträge vorhanden.",
       "nameLabel": "Name",
       "entityLabel": "Entität",
       "activeLabel": "Aktiv",
@@ -32,12 +32,12 @@
         "category": "Kategorie",
         "manufacturer": "Hersteller"
       },
-      "mappingEmptyState": "Keine Zuweisungen vorhanden",
-      "settingsEmptyState": "Keine Einstellungen vorhanden",
+      "mappingEmptyState": "Keine Zuweisungen vorhanden.",
+      "settingsEmptyState": "Keine Einstellungen vorhanden.",
       "addMappingLabel": "Zuordnung hinzufügen",
       "addSettingLabel": "Einstellung hinzufügen",
-      "mappingsDescription": "Weitere Informationen zu möglichen Zuweisungen eines Index: <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/8.11/mapping.html\" target=\"_blank\">Index Mappings</a>",
-      "settingsDescription": "Weitere Informationen zu möglichen Einstellungen eines Index: <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/8.11/index-modules.html#index-modules-settings\" target=\"_blank\">Index Settings</a>"
+      "mappingsDescription": "Weitere Informationen zu möglichen Zuweisungen eines Index: <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/8.11/mapping.html\" target=\"_blank\">Index Mappings</a>.",
+      "settingsDescription": "Weitere Informationen zu möglichen Einstellungen eines Index: <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/8.11/index-modules.html#index-modules-settings\" target=\"_blank\">Index Settings</a>."
     },
     "create": {
       "errorTitle": "Speicherproblem aufgetreten"

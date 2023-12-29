@@ -18,6 +18,8 @@ class SearchMapping
 
     protected bool $isDefault;
 
+    protected string $dataType;
+
     public function __construct()
     {
         $this->isDefault = false;
@@ -104,6 +106,22 @@ class SearchMapping
         $this->isDefault = $isDefault;
     }
 
+    /**
+     * @return string
+     */
+    public function getDataType(): string
+    {
+        return $this->dataType;
+    }
+
+    /**
+     * @param string $dataType
+     */
+    public function setDataType(string $dataType): void
+    {
+        $this->dataType = $dataType;
+    }
+
     public function getMappingObject(): array
     {
         return array(
@@ -111,7 +129,8 @@ class SearchMapping
             'key' => $this->getKey(),
             'mappedKey' => $this->getMappedKey(),
             'position' => $this->getPosition(),
-            'isDefault' => $this->isDefault()
+            'isDefault' => $this->isDefault(),
+            'dataType' => $this->getDataType()
         );
     }
 
@@ -136,6 +155,9 @@ class SearchMapping
                     break;
                 case 'isDefault':
                     $this->setIsDefault($mappingValue);
+                    break;
+                case 'dataType':
+                    $this->setDataType($mappingValue);
                     break;
             }
         }
