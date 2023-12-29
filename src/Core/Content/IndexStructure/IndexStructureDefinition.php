@@ -54,6 +54,7 @@ class IndexStructureDefinition extends EntityDefinition
             ),
             (new StringField('entity', 'entity'))->addFlags(new ApiAware()),
             (new TranslatedField('mappings')),
+            (new TranslatedField('settings')),
             (new TranslationsAssociationField(IndexStructureTranslationDefinition::class, 'muwa_index_structure_id'))->addFlags(new Required()),
 
             new ManyToOneAssociationField('salesChannel', 'sales_channel_id', SalesChannelDefinition::class),

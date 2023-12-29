@@ -53,20 +53,17 @@ class MappingsController extends AbstractController
      * @throws WriteException|\Exception
      */
     #[Route(
-        path: '/api/_action/muwa/search/save-mappings',
-        name: 'api.action.muwa_search.save-mappings',
+        path: '/api/_action/muwa/search/save-mappings-settings',
+        name: 'api.action.muwa_search.save-mappings-settings',
         methods: ['POST']
     )]
-    public function saveMappings(RequestDataBag $requestDataBag, Context $context): JsonResponse
+    public function saveMappingsSettingsSettings(RequestDataBag $requestDataBag, Context $context): JsonResponse
     {
-        $mappings = $this->getMappings($requestDataBag);
-        $languageId = $this->getLanguageId($requestDataBag);
-        $indexStructureId = $requestDataBag->get('id');
-
-        $saveMappingsResults = $this->indexStructureService->saveMappingsByLanguageId(
-            $mappings,
-            $indexStructureId,
-            $languageId,
+        $saveMappingsResults = $this->indexStructureService->saveMappingsSettingsByLanguageId(
+            $this->getMappings($requestDataBag),
+            $this->getSettings($requestDataBag),
+            $requestDataBag->get('id'),
+            $this->getLanguageId($requestDataBag),
             $context
         );
 
@@ -85,5 +82,12 @@ class MappingsController extends AbstractController
         /** @var RequestDataBag $mappings */
         $translations = $requestDataBag->get('translations')->all();
         return $translations[0]['languageId'];
+    }
+
+    protected function getSettings(RequestDataBag $requestDataBag): array
+    {
+        /** @var RequestDataBag $settings */
+        $settings = $requestDataBag->get('translated')->get('settings');
+        return $settings->all();
     }
 }

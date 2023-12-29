@@ -1,4 +1,5 @@
 import template from './muwa-search-structure-detail.html.twig';
+import './muwa-search-structure-detail.html.scss';
 
 const {Criteria} = Shopware.Data;
 const {Component, Mixin} = Shopware;
@@ -34,15 +35,18 @@ Component.register('muwa-search-structure-detail', {
             indexStructure: {
                 mappings: null,
                 translated: {
-                    mappings: null
-                }
+                    mappings: null,
+                    settings: null
+                },
             },
             searchTerm: null,
             mappings: [],
+            settings: [],
             currencies: [],
             languages: [],
             customFieldSets: [],
             addMappingEnabled: false,
+            addSettingEnabled: false,
             systemRequiredFields: {
                 type: Object,
                 required: false,
@@ -107,6 +111,10 @@ Component.register('muwa-search-structure-detail', {
             return this.indexStructure.translated.mappings;
         },
 
+        getSettings() {
+            return this.indexStructure.translated.settings;
+        },
+
         mappingColumns() {
             let columns = [
                 {
@@ -132,10 +140,37 @@ Component.register('muwa-search-structure-detail', {
             return columns;
         },
 
+        settingColumns() {
+            let columns = [
+                {
+                    property: 'settingKey',
+                    label: 'muwa-search-structure.settingList.settingKey',
+                    allowResize: true,
+                    width: '300px',
+                },
+                {
+                    property: 'settingValue',
+                    label: 'muwa-search-structure.settingList.settingValue',
+                    allowResize: true,
+                    width: '300px',
+                }
+            ];
+
+            return columns;
+        },
+
         mappingsExist() {
 
             if(this.indexStructure.translated.mappings) {
                 return this.indexStructure.translated.mappings.length > 0;
+            }
+            return false;
+        },
+
+        settingsExist() {
+
+            if(this.indexStructure.translated.settings) {
+                return this.indexStructure.translated.settings.length > 0;
             }
             return false;
         },
@@ -158,6 +193,7 @@ Component.register('muwa-search-structure-detail', {
             this.getIndexStructure();
             this.getSalesChannels();
             this.loadMappings();
+            this.loadSettings();
             this.getDataTypeOptions();
         },
 
@@ -182,12 +218,14 @@ Component.register('muwa-search-structure-detail', {
         onClickSave() {
 
             this.isLoading = true;
+
+            console.log('this.indexStructure', this.indexStructure);
             this.repositoryIndexStructure
                 .save(this.indexStructure, Shopware.Context.api, this.indexStructureCriteria)
                 .then(() => {
 
                     this.httpClient.post(
-                        '/_action/muwa/search/save-mappings',
+                        '/_action/muwa/search/save-mappings-settings',
                         this.indexStructure,
                         {
                             headers: this.getApiHeader()
@@ -233,10 +271,6 @@ Component.register('muwa-search-structure-detail', {
             this.createdComponent();
         },
 
-        toggleAddMappingActionState(sourceEntity) {
-            this.addMappingEnabled = !!sourceEntity;
-        },
-
         onDeleteMapping(id) {
 
             this.indexStructure.translated.mappings = this.indexStructure.translated.mappings.filter((mapping) => {
@@ -244,6 +278,15 @@ Component.register('muwa-search-structure-detail', {
             });
 
             this.loadMappings();
+        },
+
+        onDeleteSetting(id) {
+
+            this.indexStructure.translated.settings = this.indexStructure.translated.settings.filter((setting) => {
+                return setting.id !== id;
+            });
+
+            this.loadSettings();
         },
 
         loadMappings() {
@@ -261,18 +304,50 @@ Component.register('muwa-search-structure-detail', {
             }
         },
 
+        loadSettings() {
+
+            if(this.indexStructure) {
+
+                if(this.indexStructure.translated.settings) {
+
+                    this.indexStructure.translated.settings.forEach((setting) => {
+                        if (!setting.id) {
+                            setting.id = createId();
+                        }
+                    });
+                }
+            }
+        },
+
         onAddMapping() {
 
             this.indexStructure.translated.mappings.forEach(currentMapping => { currentMapping.position += 1; });
             this.indexStructure.translated.mappings.unshift({
                 id: createId(),
                 isDefault: false,
+                dataType: '',
                 key: '',
                 mappedKey: '',
                 position: 0
             });
 
             this.loadMappings();
+        },
+
+        onAddSetting() {
+
+            this.indexStructure.translated.settings.forEach(currentSetting => { currentSetting.position += 1; });
+            this.indexStructure.translated.settings.unshift({
+                id: createId(),
+                isDefault: false,
+                key: '',
+                mappedKey: '',
+                settingKey: '',
+                settingValue: '',
+                position: 0
+            });
+
+            this.loadSettings();
         },
 
         isDefaultValueTextFieldDisabled(item) {

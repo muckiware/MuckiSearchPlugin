@@ -70,8 +70,14 @@
                                 size="small"
                                 @click="onAddMapping"
                         >
-                            {{ $tc('sw-import-export.profile.addMappingLabel') }}
+                            {{ $tc('muwa-search-structure.detail.addMappingLabel') }}
                         </sw-button>
+                        {% block muwa_search_structure_detail_mappings_description %}
+                            <div
+                                    v-html="$tc('muwa-search-structure.detail.mappingsDescription')"
+                                    class="muwa-search-structure-detail-mappings__description"
+                            ></div>
+                        {% endblock %}
 
                         <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
                         {% block wuwa_search_structure_mapping_grid %}
@@ -160,7 +166,7 @@
                                                 :disabled="false"
                                                 @click="onDeleteMapping(item.id)"
                                         >
-                                            {{ $tc('sw-import-export.profile.deleteMappingLabel') }}
+                                            {{ $tc('muwa-search-structure.mappingList.deleteMappingLabel') }}
                                         </sw-context-menu-item>
                                     </template>
                                 {% endblock %}
@@ -171,10 +177,100 @@
                         <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
                         {% block wuwa_search_structure_mapping_empty_state %}
                             <sw-empty-state
-                                    v-else
-                                    class="sw-import-export-edit-profile-modal-mapping__empty-state"
-                                    :title="$tc('sw-import-export.profile.mappingEmptyState')"
-                                    :absolute="false"
+                                v-else
+                                class="sw-import-export-edit-profile-modal-mapping__empty-state"
+                                :title="$tc('muwa-search-structure.detail.mappingEmptyState')"
+                                :absolute="false"
+                                icon="regular-database"
+                            />
+                        {% endblock %}
+                    </sw-card>
+
+                    <sw-card positionIdentifier="muwaSearchStructureSettings" v-if="indexStructure" :title="$tc('muwa-search-structure.detail.settingsLabel')">
+                        <sw-button
+                                v-tooltip="{
+                            message: $tc('sw-import-export.profile.addSettingsTooltipText'),
+                            showOnDisabledElements: true
+                        }"
+                                class="sw-import-export-edit-profile-modal-settings__add-action"
+                                variant="ghost"
+                                size="small"
+                                @click="onAddSetting"
+                        >
+                            {{ $tc('muwa-search-structure.detail.addSettingLabel') }}
+                        </sw-button>
+                        {% block muwa_search_structure_detail_settings_description %}
+                            <div
+                                v-html="$tc('muwa-search-structure.detail.settingsDescription')"
+                                class="muwa-search-structure-detail-settings__description"
+                            ></div>
+                        {% endblock %}
+
+                        <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+                        {% block wuwa_search_structure_setting_grid %}
+                            <sw-data-grid
+                                    v-if="settingsExist"
+                                    :data-source="getSettings"
+                                    :compact-mode="false"
+                                    :show-selection="false"
+                                    :columns="settingColumns"
+                                    plain-appearance
+                                    class="sw-import-export-edit-profile-modal-settings__grid"
+                            >
+                                <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+                                {% block wuwa_search_structure_settings_grid_setting_key_column %}
+                                    <template #column-settingKey="{ item, itemIndex }">
+                                        <sw-text-field
+                                            {% if VUE3 %}
+                                                v-model:value="item.settingKey"
+                                            {% else %}
+                                                v-model="item.settingKey"
+                                            {% endif %}
+                                            :name="`settingKey-${itemIndex}`"
+                                            :disabled="false"
+                                        />
+                                    </template>
+                                {% endblock %}
+
+                                <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+                                {% block wuwa_search_structure_settings_grid_setting_value_column %}
+                                    <template #column-settingValue="{ item, itemIndex }">
+                                        <sw-text-field
+                                                {% if VUE3 %}
+                                                    v-model:value="item.settingValue"
+                                                {% else %}
+                                                    v-model="item.settingValue"
+                                                {% endif %}
+                                                :name="`settingValue-${itemIndex}`"
+                                                :disabled="false"
+                                        />
+                                    </template>
+                                {% endblock %}
+
+                                <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+                                {% block wuwa_search_structure_settings_grid_context_menu_delete %}
+                                    <template #actions="{ item }">
+                                        <sw-context-menu-item
+                                                variant="danger"
+                                                :disabled="false"
+                                                @click="onDeleteSetting(item.id)"
+                                        >
+                                            {{ $tc('muwa-search-structure.settingList.deleteSettingLabel') }}
+                                        </sw-context-menu-item>
+                                    </template>
+                                {% endblock %}
+
+                            </sw-data-grid>
+                        {% endblock %}
+
+                        <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+                        {% block wuwa_search_structure_settings_empty_state %}
+                            <sw-empty-state
+                                v-else
+                                class="sw-import-export-edit-profile-modal-settings__empty-state"
+                                :title="$tc('muwa-search-structure.detail.settingsEmptyState')"
+                                :absolute="false"
+                                icon="regular-cog"
                             />
                         {% endblock %}
                     </sw-card>

@@ -30,8 +30,9 @@ class IndexStructure
     /**
      * @throws \Exception
      */
-    public function saveMappingsByLanguageId(
+    public function saveMappingsSettingsByLanguageId(
         array $mapping,
+        array $settings,
         string $indexStructureId,
         string $languageId,
         Context $context
@@ -44,7 +45,8 @@ class IndexStructure
                         'muwaIndexStructureId' => $indexStructureId,
                         'languageId' => $languageId,
                         'updated_at' => new \DateTime(),
-                        'mappings' => $mapping
+                        'mappings' => $mapping,
+                        'settings' => $settings
                     ),
                 ),
                 $context

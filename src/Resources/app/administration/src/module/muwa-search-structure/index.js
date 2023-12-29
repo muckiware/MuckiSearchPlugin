@@ -15,7 +15,7 @@ Module.register('muwa-search-structure', {
     name: 'muwaSearchStructure',
     title: 'muwa-search-structure.general.mainMenuLabel',
     description: 'muwa-search-structure.general.description',
-    color: '#4d1e00',
+    color: '#c04d01',
     icon: 'regular-search',
 
     snippets: {

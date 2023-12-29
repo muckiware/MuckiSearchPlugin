@@ -51,6 +51,7 @@ class IndexStructureTranslationDefinition extends EntityTranslationDefinition
     {
         return new FieldCollection([
             (new JsonField('mappings', 'mappings', [], []))->addFlags(new ApiAware()),
+            (new JsonField('settings', 'settings', [], []))->addFlags(new ApiAware()),
             new CreatedAtField(),
             new UpdatedAtField()
         ]);
