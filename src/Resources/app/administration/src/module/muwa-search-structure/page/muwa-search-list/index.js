@@ -53,11 +53,7 @@ Component.register('muwa-search-structure-list', {
                 label: this.$tc('muwa-search-structure.list.updateDateLabel'),
                 allowResize: true,
             }];
-        },
-
-        tab() {
-            return this.$route.params.tab || 'structureList';
-        },
+        }
     },
 
     created() {
@@ -66,11 +62,8 @@ Component.register('muwa-search-structure-list', {
 
     methods: {
         createdComponent() {
-
-            if (!this.$route.params.tab) {
-                this.$router.push({ name: 'muwa-search-structure-list', params: { tab: 'structureList' } });
-            }
             this.getList();
+
         },
 
         getList() {

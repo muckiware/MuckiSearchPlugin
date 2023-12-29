@@ -21,26 +21,26 @@
                     <sw-card v-if="!indexStructure && !isLoading">
                         <p>{{ $tc('muwa-search-structure.list.emptyListText') }}</p>
                     </sw-card>
-                </sw-card-view>
 
-                {% block muwa_search_structure_content_tabs %}
-                    <sw-tabs default-item="structureList" class="muwa-search-structure-content-tabs" position-identifier="muwa-search-structure-content-tabs">
-                        <template #default="{ active }">
-                            <sw-tabs-item
-                                    key="structureList"
-                                    :active-tab="active"
-                                    :route="{ name: 'muwa.search.structure.index', params: { tab: 'structureList' } }">
-                                {{ $tc('muwa-search-structure.tabs.structureList') }}
-                            </sw-tabs-item>
-                            <sw-tabs-item
-                                    key="structureIndex"
-                                    :active-tab="active"
-                                    :route="{ name: 'muwa.search.structure.index', params: { tab: 'structureIndex' } }">
-                                {{ $tc('muwa-search-structure.tabs.structureIndex') }}
-                            </sw-tabs-item>
-                        </template>
-                    </sw-tabs>
-                {% endblock %}
+                    {% block muwa_search_structure_content_tabs %}
+                        <sw-tabs default-item="structureList" position-identifier="muwa-search-structure-content-tabs">
+                            <template #default="{ active }">
+                                <sw-tabs-item
+                                        key="structureList"
+                                        :active-tab="active"
+                                        :route="{ name: 'muwa.search.structure.index', params: { tab: 'structureList' } }">
+                                    {{ $tc('muwa-search-structure.tabs.structureList') }}
+                                </sw-tabs-item>
+                                <sw-tabs-item
+                                        key="structureIndex"
+                                        :active-tab="active"
+                                        :route="{ name: 'muwa.search.structure.index', params: { tab: 'structureIndex' } }">
+                                    {{ $tc('muwa-search-structure.tabs.structureIndex') }}
+                                </sw-tabs-item>
+                            </template>
+                        </sw-tabs>
+                    {% endblock %}
+                </sw-card-view>
 
                 <sw-entity-listing
                         v-if="indexStructure && tab === 'structureList'"

@@ -6,6 +6,10 @@
       "saveSuccessAlertTitle": "Erfolgreich gespeichert",
       "saveSuccessAlertMessage": "Such-Index Struktur wurde erfolgreich gespeichert."
     },
+    "tabs": {
+      "structureList": "Index Konfigurationen",
+      "structureIndex": "Index Strukturen"
+    },
     "list": {
       "header": {
         "createButtonLabel": "Hinzufügen",

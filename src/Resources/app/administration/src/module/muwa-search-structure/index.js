@@ -25,7 +25,7 @@ Module.register('muwa-search-structure', {
     routes: {
         index: {
             component: 'muwa-search-structure-list',
-            path: 'list',
+            path: ':tab?',
             meta: {
                 parentPath: 'sw.settings.index.plugins'
             }
@@ -51,6 +51,7 @@ Module.register('muwa-search-structure', {
             to: 'muwa.search.structure.index',
             group: 'plugins',
             icon: 'regular-search',
+            backgroundEnabled: true,
             label: 'muwa-search-structure.general.mainMenuLabel',
         }
     ]
