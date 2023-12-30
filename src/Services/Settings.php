@@ -17,6 +17,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 use MuckiSearchPlugin\Entities\SearchMapping;
+use MuckiSearchPlugin\Entities\SearchSetting;
 
 class Settings
 {
@@ -27,6 +28,8 @@ class Settings
     const CONFIG_PATH_SERVER_PORT = 'MuckiSearchPlugin.config.serverPort';
 
     const CONFIG_PATH_MAPPING_PRODUCT_FIELDS = 'MuckiSearchPlugin.config.mappingProductFields';
+    const CONFIG_PATH_DEFAULT_NUMBER_SHARDS = 'MuckiSearchPlugin.config.defaultNumberShards';
+    const CONFIG_PATH_DEFAULT_NUMBER_REPLICAS = 'MuckiSearchPlugin.config.defaultNumberReplicas';
 
     public function __construct(
         protected SystemConfigService $config
@@ -63,6 +66,32 @@ class Settings
             ',',
             $this->config->getString($this::CONFIG_PATH_MAPPING_PRODUCT_FIELDS)
         );
+    }
+
+    public function getDefaultNumberOfShards(): int
+    {
+        return $this->config->getInt($this::CONFIG_PATH_DEFAULT_NUMBER_SHARDS);
+    }
+
+    public function getDefaultNumberOfReplicas(): int
+    {
+        return $this->config->getInt($this::CONFIG_PATH_DEFAULT_NUMBER_REPLICAS);
+    }
+
+    public function getDefaultIndicesSettings(): array
+    {
+        $defaultSettings = array();
+        $searchMapping_1 = new SearchSetting();
+        $searchMapping_1->setSettingKey('numbers_of_shards');
+        $searchMapping_1->setSettingValue($this->getDefaultNumberOfShards());
+        $defaultSettings[] = $searchMapping_1->getSettingObject();
+
+        $searchMapping_2 = new SearchSetting();
+        $searchMapping_2->setSettingKey('numbers_of_replicas');
+        $searchMapping_2->setSettingValue($this->getDefaultNumberOfReplicas());
+        $defaultSettings[] = $searchMapping_2->getSettingObject();
+
+        return $defaultSettings;
     }
 
     public function getDefaultProductMapping(): array

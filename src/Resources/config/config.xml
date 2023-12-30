@@ -34,6 +34,22 @@
         </input-field>
     </card>
     <card>
+        <title>Indices Default Settings</title>
+        <title lang="de-DE">Indices Standard Einstellungen</title>
+        <input-field type="int">
+            <name>defaultNumberShards</name>
+            <label>Default numbers of Shards</label>
+            <label lang="de-DE">Standard Anzahl an Shards</label>
+            <defaultValue>2</defaultValue>
+        </input-field>
+        <input-field type="int">
+            <name>defaultNumberReplicas</name>
+            <label>Default numbers of Replicas</label>
+            <label lang="de-DE">Standard Anzahl an Replicas</label>
+            <defaultValue>1</defaultValue>
+        </input-field>
+    </card>
+    <card>
         <title>Search Field Mappings</title>
         <title lang="de-DE">Suchfelder Zuordnung</title>
         <input-field type="text">

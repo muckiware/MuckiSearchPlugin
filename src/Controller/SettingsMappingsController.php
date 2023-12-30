@@ -17,7 +17,7 @@ use MuckiSearchPlugin\Core\Content\ServerOptions\ServerOptionsFactory;
 
 #[Route(defaults: ['_routeScope' => ['api']])]
 #[Package('services-settings')]
-class MappingsController extends AbstractController
+class SettingsMappingsController extends AbstractController
 {
     /**
      * @internal
@@ -37,6 +37,16 @@ class MappingsController extends AbstractController
     public function defaultProductMappings(): JsonResponse
     {
         return new JsonResponse($this->pluginSettings->getDefaultProductMapping());
+    }
+
+    #[Route(
+        path: '/api/_action/muwa/search/default-indices-settings',
+        name: 'api.action.muwa_search.default-indices-settings',
+        methods: ['GET']
+    )]
+    public function defaultIndicesSettings(): JsonResponse
+    {
+        return new JsonResponse($this->pluginSettings->getDefaultIndicesSettings());
     }
 
     #[Route(
