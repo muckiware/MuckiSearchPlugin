@@ -27,16 +27,19 @@
                     <sw-tabs default-item="structureList" class="muwa-search-structure-content-tabs" position-identifier="muwa-search-structure-content-tabs">
                         <template #default="{ active }">
                             <sw-tabs-item
-                                    key="structureList"
-                                    :active-tab="active"
-                                    :route="{ name: 'muwa.search.structure.index', params: { tab: 'structureList' } }">
+                                key="structureList"
+                                :active-tab="active"
+                                :route="{ name: 'muwa.search.structure.index', params: { tab: 'structureList' } }"
+                            >
                                 {{ $tc('muwa-search-structure.tabs.structureList') }}
                             </sw-tabs-item>
                             <sw-tabs-item
-                                    key="structureIndex"
-                                    :active-tab="active"
-                                    :route="{ name: 'muwa.search.structure.index', params: { tab: 'structureIndex' } }">
-                                {{ $tc('muwa-search-structure.tabs.structureIndex') }}
+                                key="structureIndices"
+                                :active-tab="active"
+                                :route="{ name: 'muwa.search.structure.index', params: { tab: 'structureIndices' } }"
+                                @click="getIndices()"
+                            >
+                                {{ $tc('muwa-search-structure.tabs.structureIndices') }}
                             </sw-tabs-item>
                         </template>
                     </sw-tabs>
@@ -80,6 +83,42 @@
                     <template #column-updateDate="{item}">
                         <div :title="item.updateDate">
                             {{ item.updatedAt | date({hour: '2-digit', minute: '2-digit'}) }}
+                        </div>
+                    </template>
+                    <template #delete-action="{ item }">
+                        <sw-context-menu-item @click="deleteProductTabs(item)"
+                                              variant="danger"
+                        >
+                            {{ $tc('global.default.delete') }}
+                        </sw-context-menu-item>
+                    </template>
+                </sw-entity-listing>
+
+                <sw-entity-listing
+                        v-if="indexStructure && tab === 'structureIndices'"
+                        :isLoading="isLoading"
+                        :items="indicesStructure"
+                        :showSelection="false"
+                        :columns="indicesColumns"
+                >
+                    <template #column-name="{item}">
+                        <router-link :to="{ index: 'muwa.search.structure.detail', params: { id: item.uuid } }">
+                            <div v-if="item.index" :title="item.index">
+                                {{ item.index }}
+                            </div>
+                        </router-link>
+                    </template>
+                    <template #column-health="{item}">
+                        <div v-if="item.health" :title="item.health">
+                            <span v-if="item.health === 'green'" class="indices-health-check-green">
+                                <sw-icon class="muwa-search-structure-indices-health-check-green" name="regular-check-circle" small></sw-icon>
+                            </span>
+                            <span v-if="item.health === 'yellow'" class="indices-health-check-yellow">
+                                <sw-icon class="muwa-search-structure-indices-health-check-yellow" name="regular-exclamation-circle" small></sw-icon>
+                            </span>
+                            <span v-if="item.health === 'red'" class="indices-health-check-red">
+                                <sw-icon class="muwa-search-structure-indices-health-check-red" name="regular-x-circle" small></sw-icon>
+                            </span>
                         </div>
                     </template>
                     <template #delete-action="{ item }">

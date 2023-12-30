@@ -1,10 +1,16 @@
 div.sw-tabs.muwa-search-structure-content-tabs {
   margin-top: 20px;
 }
+span.indices-health-check-green,
 .muwa-search-structure-list-check {
   color: #37d046;
 }
 
+span.indices-health-check-red,
 .muwa-search-structure-list-times {
   color: #de294c;
+}
+
+span.indices-health-check-yellow {
+  color: #faa135;
 }

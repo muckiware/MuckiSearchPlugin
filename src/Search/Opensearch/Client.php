@@ -55,4 +55,9 @@ class Client implements SearchClientInterface
     {
         return null;
     }
+
+    public function getIndices(): ?array
+    {
+        return null;
+    }
 }

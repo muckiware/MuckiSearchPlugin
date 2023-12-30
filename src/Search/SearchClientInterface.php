@@ -14,6 +14,7 @@
 namespace MuckiSearchPlugin\Search;
 
 use Elastic\Elasticsearch\ClientInterface as ElasticsearchClient;
+use Elastic\Elasticsearch\Response\Elasticsearch;
 use OpenSearch\Client as OpenSearchClient;
 
 interface SearchClientInterface
@@ -29,4 +30,6 @@ interface SearchClientInterface
     public function getServerInfoAsObject(): ?object;
 
     public function indexing(array $params): ?array;
+
+    public function getIndices(): ?array;
 }

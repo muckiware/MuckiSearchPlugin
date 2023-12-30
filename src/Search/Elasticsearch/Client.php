@@ -20,6 +20,7 @@ use Psr\Log\LoggerInterface;
 use Elastic\Elasticsearch\ClientBuilder;
 use Elastic\Elasticsearch\ClientInterface;
 use Elastic\Elasticsearch\Exception\AuthenticationException;
+use Elastic\Elasticsearch\Response\Elasticsearch;
 
 use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
@@ -117,6 +118,33 @@ class Client implements SearchClientInterface
     {
         try {
             return $this->getClient()->index($params)->asArray();
+        } catch (ClientResponseException $clientEx) {
+            $this->logger->error($clientEx->getMessage());
+        } catch (ServerResponseException $resEx) {
+            $this->logger->error($resEx->getMessage());
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+
+        return null;
+    }
+
+    public function getIndices(): ?array
+    {
+        try {
+            $indices = $this->getClient()
+                ->cat()
+                ->indices(array(
+                    'expand_wildcards'=> 'open',
+                    'format' => 'JSON',
+                    'pri' => true,
+                    'v' => true,
+                    's' => 'index'
+                ))->asString()
+            ;
+
+            return json_decode($indices, true);
+
         } catch (ClientResponseException $clientEx) {
             $this->logger->error($clientEx->getMessage());
         } catch (ServerResponseException $resEx) {

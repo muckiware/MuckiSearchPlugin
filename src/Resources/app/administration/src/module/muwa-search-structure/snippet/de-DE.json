@@ -8,7 +8,7 @@
     },
     "tabs": {
       "structureList": "Index Konfigurationen",
-      "structureIndex": "Index Strukturen"
+      "structureIndices": "Indices Strukturen"
     },
     "list": {
       "header": {
@@ -21,7 +21,14 @@
       "entityLabel": "Entität",
       "activeLabel": "Aktiv",
       "createDateLabel": "Erstellt",
-      "updateDateLabel": "Aktualisiert"
+      "updateDateLabel": "Aktualisiert",
+      "healthLabel": "Zustand",
+      "statusLabel": "Status",
+      "primariesLabel": "Primär",
+      "replicasLabel": "Kopien",
+      "docsCountLabel": "Anzahl Dokumente",
+      "storageSizeLabel": "Speichergröße",
+      "docsDeletedLabel": "gelöschte Dokumente"
     },
     "detail": {
       "mappingLabel": "Zuweisungen",

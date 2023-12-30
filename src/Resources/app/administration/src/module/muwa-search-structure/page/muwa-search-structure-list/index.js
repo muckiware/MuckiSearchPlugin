@@ -15,6 +15,8 @@ Component.register('muwa-search-structure-list', {
         return {
             isLoading: true,
             indexStructure: null,
+            indicesStructure: null,
+            httpClient: null
         };
     },
 
@@ -55,22 +57,83 @@ Component.register('muwa-search-structure-list', {
             }];
         },
 
+        indicesColumns() {
+            return [{
+                property: 'index',
+                label: this.$tc('muwa-search-structure.list.nameLabel'),
+                routerLink: 'muwa.search.structure.detail',
+                allowResize: true,
+                primary: true,
+            },{
+                property: 'health',
+                label: this.$tc('muwa-search-structure.list.healthLabel'),
+                allowResize: true,
+            },{
+                property: 'status',
+                label: this.$tc('muwa-search-structure.list.statusLabel'),
+                allowResize: true,
+            },{
+                property: 'pri',
+                label: this.$tc('muwa-search-structure.list.primariesLabel'),
+                allowResize: true,
+            },{
+                property: 'rep',
+                label: this.$tc('muwa-search-structure.list.replicasLabel'),
+                allowResize: true,
+            },{
+                property: 'docscount',
+                label: this.$tc('muwa-search-structure.list.docsCountLabel'),
+                allowResize: true,
+            },{
+                property: 'storesize',
+                label: this.$tc('muwa-search-structure.list.storageSizeLabel'),
+                allowResize: true,
+            },{
+                property: 'docsdeleted',
+                label: this.$tc('muwa-search-structure.list.docsDeletedLabel'),
+                allowResize: true,
+            }];
+        },
+
         tab() {
             return this.$route.params.tab || 'structureList';
         },
     },
 
     created() {
+
+        this.httpClient = Shopware.Application.getContainer('init').httpClient;
         this.createdComponent();
     },
 
     methods: {
+
+        getIndices() {
+
+            this.httpClient.get(
+                '/_action/muwa/search/indices',
+                this.getApiHeader()
+            ).then((response) => {
+
+                this.indicesStructure = response.data;
+                this.indicesStructure.forEach((indices, key) => {
+
+                    Object.entries(indices).forEach(([indicesKey, indicesValue]) => {
+
+                        if (indicesKey.includes('.')) {
+                            this.indicesStructure[key][indicesKey.replaceAll('.','')] = indicesValue;
+                        }
+                    });
+                });
+            });
+        },
         createdComponent() {
 
-            if (!this.$route.params.tab) {
-                this.$router.push({ name: 'muwa-search-structure-list', params: { tab: 'structureList' } });
-            }
+            // if (!this.$route.params.tab) {
+            //     this.$router.push({ name: 'muwa-search-structure-list', params: { tab: 'structureList' } });
+            // }
             this.getList();
+            this.getIndices();
         },
 
         getList() {
@@ -94,6 +157,15 @@ Component.register('muwa-search-structure-list', {
         onChangeLanguage(languageId) {
             Shopware.State.commit('context/setApiLanguageId', languageId);
             this.createdComponent();
+        },
+
+        getApiHeader() {
+
+            return {
+                Accept: 'application/vnd.api+json',
+                Authorization: `Bearer ${ Shopware.Context.api.authToken.access }`,
+                'Content-Type': 'application/json'
+            }
         }
     }
 });
