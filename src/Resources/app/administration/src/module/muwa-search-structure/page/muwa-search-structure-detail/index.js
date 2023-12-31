@@ -78,6 +78,14 @@ Component.register('muwa-search-structure-detail', {
             return criteria;
         },
 
+        languageRepository() {
+            return this.repositoryFactory.create('language');
+        },
+
+        currencyRepository() {
+            return this.repositoryFactory.create('currency');
+        },
+
         customFieldSetRepository() {
             return this.repositoryFactory.create('custom_field_set');
         },
@@ -86,6 +94,17 @@ Component.register('muwa-search-structure-detail', {
             const criteria = new Criteria();
             criteria.addAssociation('translations');
             return criteria;
+        },
+
+        languageCriteria() {
+            const criteria = new Criteria(1, 500);
+            criteria.addAssociation('locale');
+
+            return criteria;
+        },
+
+        currencyCriteria() {
+            return new Criteria(1, 500);
         },
 
         customFieldSetCriteria() {
@@ -110,7 +129,7 @@ Component.register('muwa-search-structure-detail', {
                     property: 'entry',
                     label: 'muwa-search-structure.mappingList.entityLabel',
                     allowResize: true,
-                    width: '300px',
+                    width: '420px',
                 },
                 {
                     property: 'dataType',
@@ -172,6 +191,20 @@ Component.register('muwa-search-structure-detail', {
     methods: {
 
         createdComponent() {
+
+            this.languageRepository.search(this.languageCriteria).then(languages => {
+                this.languages = languages;
+                this.languages.push({ locale: { code: 'DEFAULT' } });
+            });
+
+            this.currencyRepository.search(this.currencyCriteria).then(currencies => {
+                this.currencies = currencies;
+                this.currencies.push({ isoCode: 'DEFAULT' });
+            });
+
+            this.customFieldSetRepository.search(this.customFieldSetCriteria).then((customFieldSets) => {
+                this.customFieldSets = customFieldSets;
+            });
 
             this.getIndexStructure();
             this.getSalesChannels();

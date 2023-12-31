@@ -62,10 +62,22 @@ class Settings
 
     public function getMappingProductFields(): array
     {
-        return explode(
+        $mappingProductFields = array();
+        $mappingFields = explode(
             ',',
             $this->config->getString($this::CONFIG_PATH_MAPPING_PRODUCT_FIELDS)
         );
+
+        foreach ($mappingFields as $mappingField) {
+
+            $mappingFieldKeyType = explode(':', $mappingField);
+            $mappingProductFields[] = array(
+                'field' => $mappingFieldKeyType[0],
+                'type' => $mappingFieldKeyType[1]
+            );
+        }
+
+        return $mappingProductFields;
     }
 
     public function getDefaultNumberOfShards(): int
@@ -108,11 +120,11 @@ class Settings
 
             $searchMapping = new SearchMapping();
             $searchMapping->setId(Uuid::randomHex());
-            $searchMapping->setKey($mappingProductField);
-            $searchMapping->setMappedKey($mappingProductField);
+            $searchMapping->setKey($mappingProductField['field']);
+            $searchMapping->setMappedKey($mappingProductField['field']);
             $searchMapping->setPosition($positionCounter);
             $searchMapping->setIsDefault(true);
-            $searchMapping->setdataType($mappingProductField);
+            $searchMapping->setdataType($mappingProductField['type']);
             $defaultProductMappings[] = $searchMapping->getMappingObject();
 
             $positionCounter ++;
