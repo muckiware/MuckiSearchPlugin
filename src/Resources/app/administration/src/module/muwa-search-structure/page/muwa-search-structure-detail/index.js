@@ -129,13 +129,13 @@ Component.register('muwa-search-structure-detail', {
                     property: 'entry',
                     label: 'muwa-search-structure.mappingList.entityLabel',
                     allowResize: true,
-                    width: '420px',
+                    width: '400px',
                 },
                 {
                     property: 'dataType',
                     label: 'muwa-search-structure.mappingList.inputDataTypeLabel',
                     allowResize: true,
-                    width: '180px',
+                    width: '170px',
                 }
             ];
 
