@@ -48,7 +48,8 @@
       "addMappingLabel": "Zuordnung hinzufügen",
       "addSettingLabel": "Einstellung hinzufügen",
       "mappingsDescription": "Weitere Informationen zu möglichen Zuweisungen eines Index: <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/8.11/mapping.html\" target=\"_blank\">Index Mappings</a>.",
-      "settingsDescription": "Weitere Informationen zu möglichen Einstellungen eines Index: <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/8.11/index-modules.html#index-modules-settings\" target=\"_blank\">Index Settings</a>."
+      "settingsDescription": "Weitere Informationen zu möglichen Einstellungen eines Index: <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/8.11/index-modules.html#index-modules-settings\" target=\"_blank\">Index Settings</a>.",
+      "salesChannelLabel": "Verkaufskanal"
     },
     "create": {
       "errorTitle": "Speicherproblem aufgetreten"

@@ -28,21 +28,24 @@
                 <sw-card-view>
                     <sw-card positionIdentifier="muwaSearchStructure" v-if="indexStructure" :title="$tc('muwa-search-structure.detail.generalLabel')">
                         <sw-switch-field
-                                :label="$tc('muwa-search-structure.detail.activeLabel')"
-                                v-model="indexStructure.active"
-                                :helpText="$tc('muwa-search-structure.detail.activeHelpText')"
+                            :label="$tc('muwa-search-structure.detail.activeLabel')"
+                            v-model="indexStructure.active"
                         >
                         </sw-switch-field>
                         <sw-field
-                                :label="$tc('muwa-search-structure.detail.nameLabel')"
-                                v-model="indexStructure.name"
-                                maxlength="70"
+                            :label="$tc('muwa-search-structure.detail.nameLabel')"
+                            v-model="indexStructure.name"
+                            maxlength="70"
+                            validation="required"
+                            required
                         >
                         </sw-field>
                         <sw-select-field
-                                :label="$tc('muwa-search-structure.detail.entityLabel')"
-                                v-model="indexStructure.entity"
-                                :disabled="true"
+                            validation="required"
+                            required
+                            :label="$tc('muwa-search-structure.detail.entityLabel')"
+                            v-model="indexStructure.entity"
+                            :disabled="true"
                         >
                             <option value="product">{{ $tc('muwa-search-structure.detail.entity.product') }}</option>
                             <option value="category">{{ $tc('muwa-search-structure.detail.entity.category') }}</option>
@@ -50,11 +53,14 @@
                             <option value="cms_slot">{{ $tc('muwa-search-structure.detail.entity.cms') }}</option>
                         </sw-select-field>
                         <sw-single-select
-                                v-model="indexStructure.salesChannelId"
-                                labelProperty="translated.name"
-                                valueProperty="id"
-                                :isLoading="isLoading"
-                                :options="salesChannels"
+                            :label="$tc('muwa-search-structure.detail.salesChannelLabel')"
+                            v-model="indexStructure.salesChannelId"
+                            labelProperty="translated.name"
+                            valueProperty="id"
+                            :isLoading="isLoading"
+                            :options="salesChannels"
+                            validation="required"
+                            required
                         >
                         </sw-single-select>
                     </sw-card>
