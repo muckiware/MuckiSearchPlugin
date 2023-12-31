@@ -1,8 +1,8 @@
 import template from './muwa-search-structure-create.html.twig';
 
-const {Criteria} = Shopware.Data;
-const {Component, Mixin} = Shopware;
-const {mapPropertyErrors} = Shopware.Component.getComponentHelper();
+const { Criteria } = Shopware.Data;
+const { Component, Mixin } = Shopware;
+const { mapPropertyErrors } = Shopware.Component.getComponentHelper();
 
 Component.register('muwa-search-structure-create', {
     template,
@@ -11,7 +11,6 @@ Component.register('muwa-search-structure-create', {
         'repositoryFactory',
         'salesChannelService'
     ],
-
 
     mixins: [
         Mixin.getByName('notification')
@@ -29,7 +28,9 @@ Component.register('muwa-search-structure-create', {
             indexStructure: null,
             isLoading: false,
             processSuccess: false,
-            httpClient: null
+            httpClient: null,
+            requestUrlMapping: '/_action/muwa/search/default-product-mappings',
+            requestUrlSetting: '/_action/muwa/search/default-indices-settings'
         };
     },
 
@@ -84,34 +85,35 @@ Component.register('muwa-search-structure-create', {
             });
         },
 
-        onClickSave() {
+        async onClickSave() {
 
             this.isLoading = true;
+            let apiHeader = this.getApiHeader();
 
-            this.httpClient.get(
-                '/_action/muwa/search/default-product-mappings',
-                this.getApiHeader()
-            ).then((response) => {
+            try {
 
-                this.indexStructure.mappings = response.data;
-                this.repositorySearchStructure.save(this.indexStructure, Shopware.Context.api).then(() => {
+                let defaultMappingsResponse = await this.httpClient.get(this.requestUrlMapping, apiHeader);
+                let defaultSettingsResponse = await this.httpClient.get(this.requestUrlSetting, apiHeader);
 
-                    this.isLoading = false;
-                    this.createNotificationSuccess({
-                        title: this.$tc('muwa-search-structure.general.saveSuccessAlertTitle'),
-                        message: this.$tc('muwa-search-structure.general.saveSuccessAlertMessage')
-                    });
-                    this.$router.push({name: 'muwa.search.structure.detail', params: { id: this.indexStructure.id }});
+                this.indexStructure.mappings = defaultMappingsResponse.data;
+                this.indexStructure.settings = defaultSettingsResponse.data;
+                await this.repositorySearchStructure.save(this.indexStructure, Shopware.Context.api);
 
-                }).catch((exception) => {
+            } catch(exception) {
 
-                    this.isLoading = false;
-                    this.createNotificationError({
-                        title: this.$tc('muwa-search-structure.create.errorTitle'),
-                        message: exception
-                    });
+                this.isLoading = false;
+                this.createNotificationError({
+                    title: this.$tc('muwa-search-structure.create.errorTitle'),
+                    message: exception
                 });
+            }
+
+            this.isLoading = false;
+            this.createNotificationSuccess({
+                title: this.$tc('muwa-search-structure.general.saveSuccessAlertTitle'),
+                message: this.$tc('muwa-search-structure.general.saveSuccessAlertMessage')
             });
+            this.$router.push({name: 'muwa.search.structure.detail', params: { id: this.indexStructure.id }});
         },
 
         onChangeLanguage(languageId) {

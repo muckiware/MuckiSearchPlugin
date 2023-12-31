@@ -82,13 +82,19 @@ class Settings
     {
         $defaultSettings = array();
         $searchMapping_1 = new SearchSetting();
+        $searchMapping_1->setId(Uuid::randomHex());
         $searchMapping_1->setSettingKey('numbers_of_shards');
         $searchMapping_1->setSettingValue($this->getDefaultNumberOfShards());
+        $searchMapping_1->setIsDefault(true);
+        $searchMapping_1->setPosition(0);
         $defaultSettings[] = $searchMapping_1->getSettingObject();
 
         $searchMapping_2 = new SearchSetting();
+        $searchMapping_2->setId(Uuid::randomHex());
         $searchMapping_2->setSettingKey('numbers_of_replicas');
         $searchMapping_2->setSettingValue($this->getDefaultNumberOfReplicas());
+        $searchMapping_2->setIsDefault(true);
+        $searchMapping_2->setPosition(1);
         $defaultSettings[] = $searchMapping_2->getSettingObject();
 
         return $defaultSettings;

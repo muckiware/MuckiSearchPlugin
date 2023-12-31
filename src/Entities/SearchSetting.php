@@ -10,9 +10,9 @@ class SearchSetting
      */
     protected string $id;
 
-    protected string $key;
+    protected ?string $key;
 
-    protected string $mappedKey;
+    protected ?string $mappedKey;
 
     protected int $position;
 
@@ -24,6 +24,8 @@ class SearchSetting
 
     public function __construct()
     {
+        $this->key = null;
+        $this->mappedKey = null;
         $this->isDefault = false;
     }
 
@@ -44,9 +46,9 @@ class SearchSetting
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getKey(): string
+    public function getKey(): ?string
     {
         return $this->key;
     }
@@ -60,9 +62,9 @@ class SearchSetting
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getMappedKey(): string
+    public function getMappedKey(): ?string
     {
         return $this->mappedKey;
     }
@@ -143,11 +145,10 @@ class SearchSetting
     {
         return array(
             'id' => $this->getId(),
-            'key' => $this->getKey(),
-            'mappedKey' => $this->getMappedKey(),
             'position' => $this->getPosition(),
             'isDefault' => $this->isDefault(),
-            $this->getSettingKey() => $this->getSettingValue()
+            'settingKey' => $this->getSettingKey(),
+            'settingValue' => $this->getSettingValue()
         );
     }
 }
