@@ -46,18 +46,28 @@ class IndicesController extends AbstractController
         name: 'api.action.muwa_search.create.indices',
         methods: ['POST']
     )]
-    public function createIndices(RequestDataBag $requestDataBag, Context $context): JsonResponse
+    public function saveIndices(RequestDataBag $requestDataBag, Context $context): JsonResponse
     {
 
-        // $this->searchClientFactory->createSearchClient()->getClient()->create()
+//        $this->searchClientFactory->createSearchClient()->getClient()->exists()
         return new JsonResponse(
             $this->searchClientFactory
                 ->createSearchClient()
-                ->createIndicesByIndexStructureId(
+                ->saveIndicesByIndexStructureId(
                     $requestDataBag->get('id'),
                     $requestDataBag->get('languageId'),
                     $context
                 )
         );
+    }
+
+    #[Route(
+        path: '/api/_action/muwa/search/remove-indices',
+        name: 'api.action.muwa_search.remove.indices',
+        methods: ['POST']
+    )]
+    public function removeIndices(RequestDataBag $requestDataBag, Context $context): JsonResponse
+    {
+        return new JsonResponse(array());
     }
 }

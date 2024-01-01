@@ -162,36 +162,23 @@ class Client implements SearchClientInterface
         return null;
     }
 
-    public function createIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
+    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
     {
-
         $indexStructure = $this->indexStructure->getIndexStructureById($indexStructureId, $languageId, $context);
-        $createBody = array();
         /** @var IndexStructureTranslationEntity $indexStructureTranslation */
         foreach ($indexStructure->get('translations') as $indexStructureTranslation) {
 
-            $createBody = new CreateIndicesBody($this->settings);
-            $createBody->setIndex($this->settings->getIndexName(
+            $indexName = $this->settings->getIndexName(
                 $indexStructure->getEntity(),
                 $indexStructure->getSalesChannelId(),
                 $indexStructureTranslation->getLanguageId()
-            ));
+            );
 
-            $this->setIndicesSettings($indexStructureTranslation->get('settings'), $createBody);
-            $this->setIndicesMappings($indexStructureTranslation->get('mappings'), $createBody);
-        }
-
-        try {
-            $indices = $this->getClient()->create($createBody->getCreateBody());
-
-            return json_decode($indices, true);
-
-        } catch (ClientResponseException $clientEx) {
-            $this->logger->error($clientEx->getMessage());
-        } catch (ServerResponseException $resEx) {
-            $this->logger->error($resEx->getMessage());
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+            if(!$this->checkIfIndicesExists($indexName)) {
+                $this->createNewIndices($indexStructureTranslation, $indexName);
+            } else {
+                $this->updateNewIndices($indexStructureTranslation, $indexName);
+            }
         }
 
         return null;
@@ -227,8 +214,69 @@ class Client implements SearchClientInterface
 
             $indicesMappings[] = $indicesMappingProperty->getProperty();
         }
-        $checker = true;
 
         $createBody->setMappings($indicesMappings);
+    }
+
+    protected function checkIfIndicesExists($indexName): bool
+    {
+        try {
+            return $this->getClient()->exists($indexName);
+
+        } catch (ClientResponseException $clientEx) {
+            $this->logger->error($clientEx->getMessage());
+        } catch (ServerResponseException $resEx) {
+            $this->logger->error($resEx->getMessage());
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+
+        return false;
+    }
+
+    protected function createNewIndices(IndexStructureTranslationEntity $indexStructureTranslation, string $indexName)
+    {
+        $createBody = new CreateIndicesBody($this->settings);
+        $createBody->setIndex($indexName);
+        $this->setIndicesSettings($indexStructureTranslation->get('settings'), $createBody);
+        $this->setIndicesMappings($indexStructureTranslation->get('mappings'), $createBody);
+
+        try {
+            $indices = $this->getClient()->create($createBody->getCreateBody());
+
+            return json_decode($indices, true);
+
+        } catch (ClientResponseException $clientEx) {
+            $this->logger->error($clientEx->getMessage());
+        } catch (ServerResponseException $resEx) {
+            $this->logger->error($resEx->getMessage());
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+
+        return null;
+    }
+
+    protected function updateNewIndices(IndexStructureTranslationEntity $indexStructureTranslation, string $indexName)
+    {
+        $createBody = new CreateIndicesBody($this->settings);
+        $createBody->setIndex($indexName);
+        $this->setIndicesSettings($indexStructureTranslation->get('settings'), $createBody);
+        $this->setIndicesMappings($indexStructureTranslation->get('mappings'), $createBody);
+
+        try {
+            $indices = $this->getClient()->update($createBody->getCreateBody());
+
+            return json_decode($indices, true);
+
+        } catch (ClientResponseException $clientEx) {
+            $this->logger->error($clientEx->getMessage());
+        } catch (ServerResponseException $resEx) {
+            $this->logger->error($resEx->getMessage());
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+
+        return null;
     }
 }

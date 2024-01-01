@@ -63,7 +63,7 @@ class Client implements SearchClientInterface
         return null;
     }
 
-    public function createIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
+    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
     {
         return null;
     }

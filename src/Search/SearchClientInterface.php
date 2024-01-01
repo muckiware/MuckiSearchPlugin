@@ -34,5 +34,5 @@ interface SearchClientInterface
 
     public function getIndices(): ?array;
 
-    public function createIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context);
+    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context);
 }
