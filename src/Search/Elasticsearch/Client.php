@@ -181,9 +181,6 @@ class Client implements SearchClientInterface
             $this->setIndicesMappings($indexStructureTranslation->get('mappings'), $createBody);
         }
 
-//        $checker = $createBody->getCreateBody();
-//        $test = 1;
-
         try {
             $indices = $this->getClient()->create($createBody->getCreateBody());
 
