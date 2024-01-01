@@ -19,12 +19,14 @@ use Shopware\Core\System\SystemConfig\Exception\ConfigurationNotFoundException;
 use MuckiSearchPlugin\Search\Elasticsearch\Client as ElasticsearchClient;
 use MuckiSearchPlugin\Search\Opensearch\Client as OpensearchClient;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
+use MuckiSearchPlugin\Services\Content\IndexStructure;
 
 class SearchClientFactory
 {
     public function __construct(
         protected PluginSettings $settings,
-        protected LoggerInterface $logger
+        protected LoggerInterface $logger,
+        protected IndexStructure $indexStructure
     )
     {}
 
@@ -38,7 +40,7 @@ class SearchClientFactory
         }
         return match ($serverType) {
             'opensearch' => new OpensearchClient($this->settings, $this->logger),
-            'elasticsearch' => new ElasticsearchClient($this->settings, $this->logger),
+            'elasticsearch' => new ElasticsearchClient($this->settings, $this->logger, $this->indexStructure),
             default => throw new ConfigurationNotFoundException('Missing server type'),
         };
     }

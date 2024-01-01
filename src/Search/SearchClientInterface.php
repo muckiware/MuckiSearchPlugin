@@ -16,6 +16,7 @@ namespace MuckiSearchPlugin\Search;
 use Elastic\Elasticsearch\ClientInterface as ElasticsearchClient;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use OpenSearch\Client as OpenSearchClient;
+use Shopware\Core\Framework\Context;
 
 interface SearchClientInterface
 {
@@ -32,4 +33,6 @@ interface SearchClientInterface
     public function indexing(array $params): ?array;
 
     public function getIndices(): ?array;
+
+    public function createIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context);
 }

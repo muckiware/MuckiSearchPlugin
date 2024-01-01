@@ -21,22 +21,22 @@ class IndexStructureTranslationEntity extends Entity
 {
     use EntityIdTrait;
 
-    protected string $mappings;
+    protected string $languageId;
 
     /**
      * @return string
      */
-    public function getMappings(): string
+    public function getLanguageId(): string
     {
-        return $this->mappings;
+        return $this->languageId;
     }
 
     /**
-     * @param string $mappings
+     * @param string $languageId
      */
-    public function setMappings(string $mappings): void
+    public function setLanguageId(string $languageId): void
     {
-        $this->mappings = $mappings;
+        $this->languageId = $languageId;
     }
 }
 

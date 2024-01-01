@@ -55,7 +55,9 @@ Component.register('muwa-search-structure-detail', {
                 }
             },
             httpClient: null,
-            dataTypeOptions: null
+            dataTypeOptions: null,
+            requestUrlCreateIndices: '/_action/muwa/search/create-indices',
+            requestUrlSaveMappingsSettings: '/_action/muwa/search/save-mappings-settings'
         };
     },
 
@@ -231,39 +233,33 @@ Component.register('muwa-search-structure-detail', {
             });
         },
 
-        onClickSave() {
+        async onClickSave() {
 
             this.isLoading = true;
+            let apiHeader = this.getApiHeader();
+            this.indexStructure.languageId = Shopware.Context.api.languageId
 
-            console.log('this.indexStructure', this.indexStructure);
-            this.repositoryIndexStructure
-                .save(this.indexStructure, Shopware.Context.api, this.indexStructureCriteria)
-                .then(() => {
+            try {
 
-                    this.httpClient.post(
-                        '/_action/muwa/search/save-mappings-settings',
-                        this.indexStructure,
-                        {
-                            headers: this.getApiHeader()
-                        }
+                await this.repositoryIndexStructure.save(this.indexStructure, Shopware.Context.api, this.indexStructureCriteria);
+                await this.httpClient.post(this.requestUrlSaveMappingsSettings, this.indexStructure, {headers: apiHeader});
+                await this.httpClient.post(this.requestUrlCreateIndices, this.indexStructure, {headers: apiHeader});
 
-                    ).then((response) => {
-
-                        this.isLoading = false;
-                        this.getIndexStructure();
-                        this.createNotificationSuccess({
-                            title: this.$tc('muwa-search-structure.general.saveSuccessAlertTitle'),
-                            message: this.$tc('muwa-search-structure.general.saveSuccessAlertMessage')
-                        });
-                    })
-                }).catch((exception) => {
-                    this.isLoading = false;
-
-                    this.createNotificationError({
-                        title: this.$tc('muwa-search-structure.create.errorTitle'),
-                        message: exception
-                    });
+                this.isLoading = false;
+                this.getIndexStructure();
+                this.createNotificationSuccess({
+                    title: this.$tc('muwa-search-structure.general.saveSuccessAlertTitle'),
+                    message: this.$tc('muwa-search-structure.general.saveSuccessAlertMessage')
                 });
+
+            } catch (exception) {
+
+                this.isLoading = false;
+                this.createNotificationError({
+                    title: this.$tc('muwa-search-structure.create.errorTitle'),
+                    message: exception
+                });
+            }
         },
 
         getDataTypeOptions() {

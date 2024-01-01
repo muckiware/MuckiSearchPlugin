@@ -13,6 +13,7 @@
 
 namespace MuckiSearchPlugin\Search\Elasticsearch;
 
+use Shopware\Core\Framework\Context;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Exception\MissingParameterException;
 use Elastic\Elasticsearch\Exception\ServerResponseException;
@@ -24,12 +25,17 @@ use Elastic\Elasticsearch\Response\Elasticsearch;
 
 use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
+use MuckiSearchPlugin\Services\Content\IndexStructure;
+use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureTranslation\IndexStructureTranslationEntity;
+use MuckiSearchPlugin\Entities\CreateIndicesBody;
+use MuckiSearchPlugin\Entities\IndicesMappingProperty;
 
 class Client implements SearchClientInterface
 {
     public function __construct(
         protected PluginSettings $settings,
-        protected LoggerInterface $logger
+        protected LoggerInterface $logger,
+        protected IndexStructure $indexStructure
     )
     {}
 
@@ -154,5 +160,78 @@ class Client implements SearchClientInterface
         }
 
         return null;
+    }
+
+    public function createIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
+    {
+
+        $indexStructure = $this->indexStructure->getIndexStructureById($indexStructureId, $languageId, $context);
+        $createBody = array();
+        /** @var IndexStructureTranslationEntity $indexStructureTranslation */
+        foreach ($indexStructure->get('translations') as $indexStructureTranslation) {
+
+            $createBody = new CreateIndicesBody($this->settings);
+            $createBody->setIndex($this->settings->getIndexName(
+                $indexStructure->getEntity(),
+                $indexStructure->getSalesChannelId(),
+                $indexStructureTranslation->getLanguageId()
+            ));
+
+            $this->setIndicesSettings($indexStructureTranslation->get('settings'), $createBody);
+            $this->setIndicesMappings($indexStructureTranslation->get('mappings'), $createBody);
+        }
+
+//        $checker = $createBody->getCreateBody();
+//        $test = 1;
+
+        try {
+            $indices = $this->getClient()->create($createBody->getCreateBody());
+
+            return json_decode($indices, true);
+
+        } catch (ClientResponseException $clientEx) {
+            $this->logger->error($clientEx->getMessage());
+        } catch (ServerResponseException $resEx) {
+            $this->logger->error($resEx->getMessage());
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+
+        return null;
+    }
+
+    protected function setIndicesSettings(array $settings, CreateIndicesBody $createBody): void
+    {
+        foreach ($settings as $setting) {
+
+            if (array_key_exists('settingKey', $setting) && array_key_exists('settingValue', $setting)) {
+
+                switch ($setting['settingKey']) {
+
+                    case $this->settings::INDICES_SETTINGS_NUMBER_SHARDS:
+                        $createBody->setNumberOfShards($setting['settingValue']);
+                        break;
+                    case $this->settings::INDICES_SETTINGS_NUMBER_REPLICAS:
+                        $createBody->setNumberOfReplicas($setting['settingValue']);
+                        break;
+                }
+            }
+        }
+    }
+
+    protected function setIndicesMappings(array $mappings, CreateIndicesBody $createBody): void
+    {
+        $indicesMappings = array();
+        foreach ($mappings as $mapping) {
+
+            $indicesMappingProperty = new IndicesMappingProperty();
+            $indicesMappingProperty->setPropertyName($mapping['key']);
+            $indicesMappingProperty->setPropertyType($mapping['dataType']);
+
+            $indicesMappings[] = $indicesMappingProperty->getProperty();
+        }
+        $checker = true;
+
+        $createBody->setMappings($indicesMappings);
     }
 }

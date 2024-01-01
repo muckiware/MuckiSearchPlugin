@@ -14,7 +14,9 @@
 namespace MuckiSearchPlugin\Search\Opensearch;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Context;
 use OpenSearch\Client as OpenSearchClient;
+
 use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 
@@ -57,6 +59,11 @@ class Client implements SearchClientInterface
     }
 
     public function getIndices(): ?array
+    {
+        return null;
+    }
+
+    public function createIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
     {
         return null;
     }

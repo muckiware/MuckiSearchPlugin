@@ -19,6 +19,8 @@ class IndexStructureEntity extends Entity
 
     protected string $name;
 
+    protected string $salesChannelId;
+
     /**
      * @return string
      */
@@ -65,6 +67,22 @@ class IndexStructureEntity extends Entity
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSalesChannelId(): string
+    {
+        return $this->salesChannelId;
+    }
+
+    /**
+     * @param string $salesChannelId
+     */
+    public function setSalesChannelId(string $salesChannelId): void
+    {
+        $this->salesChannelId = $salesChannelId;
     }
 }
 

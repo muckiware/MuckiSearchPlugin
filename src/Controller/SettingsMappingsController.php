@@ -73,7 +73,7 @@ class SettingsMappingsController extends AbstractController
             $this->getMappings($requestDataBag),
             $this->getSettings($requestDataBag),
             $requestDataBag->get('id'),
-            $this->getLanguageId($requestDataBag),
+            $requestDataBag->get('languageId'),
             $context
         );
 

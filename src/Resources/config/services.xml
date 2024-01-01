@@ -54,13 +54,10 @@
             <argument type="service" id="MuckiSearchPlugin\Services\Content\Products"/>
         </service>
 
-        <service id="MuckiSearchPlugin\Search\Elasticsearch\Client" public="true">
-            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
-            <argument type="service" id="Psr\Log\LoggerInterface"/>
-        </service>
         <service id="searchclient.factory" class="MuckiSearchPlugin\Search\SearchClientFactory" public="true">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
         </service>
 
         <service id="MuckiSearchPlugin\Services\Content\IndexStructure">

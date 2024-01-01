@@ -31,6 +31,9 @@ class Settings
     const CONFIG_PATH_DEFAULT_NUMBER_SHARDS = 'MuckiSearchPlugin.config.defaultNumberShards';
     const CONFIG_PATH_DEFAULT_NUMBER_REPLICAS = 'MuckiSearchPlugin.config.defaultNumberReplicas';
 
+    const INDICES_SETTINGS_NUMBER_SHARDS = 'numbers_of_shards';
+    const INDICES_SETTINGS_NUMBER_REPLICAS = 'numbers_of_replicas';
+
     public function __construct(
         protected SystemConfigService $config
     ){}
@@ -131,5 +134,14 @@ class Settings
         }
 
         return $defaultProductMappings;
+    }
+
+    public function getIndexName(string $entityName, string $salesChannelId, string $languageId): ?string
+    {
+        if($entityName === '' || !Uuid::isValid($salesChannelId) || !Uuid::isValid($languageId)) {
+            return null;
+        }
+
+        return $salesChannelId.'-'.$entityName.'-'.$languageId;
     }
 }

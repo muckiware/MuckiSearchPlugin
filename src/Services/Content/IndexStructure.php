@@ -16,6 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEve
 
 use MuckiSearchPlugin\Entities\SearchMapping;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\WriteException;
+use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureEntity;
 
 class IndexStructure
 {
@@ -57,6 +58,35 @@ class IndexStructure
         }
 
         return null;
+    }
+
+    public function getAllActiveIndexStructure(): EntitySearchResult
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('active', true));
+        $criteria->addAssociation('translations');
+
+        return $this->indexStructureRepository->search($criteria, Context::createDefaultContext());
+    }
+
+    public function getIndexStructureById(
+        string $indexStructureId,
+        string $languageId,
+        Context $context
+    ): ?IndexStructureEntity
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('id', [$indexStructureId]));
+        $criteria->addFilter(new EqualsAnyFilter('translations.languageId', [$languageId]));
+        $criteria->addAssociation('translations');
+        $criteria->addAssociation('translations.mappings');
+
+        $indexStructureResult = $this->indexStructureRepository->search($criteria, $context);
+        if ($indexStructureResult->count() >= 1) {
+            return $indexStructureResult->first();
+        } else {
+            return null;
+        }
     }
 }
 

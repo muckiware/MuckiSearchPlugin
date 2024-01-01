@@ -1,0 +1,114 @@
+<?php declare(strict_types=1);
+
+namespace MuckiSearchPlugin\Entities;
+
+use MuckiSearchPlugin\Services\Settings as PluginSettings;
+use Shopware\Core\Framework\Uuid\Uuid;
+
+class CreateIndicesBody
+{
+    /**
+     * UUID for a search mapping object
+     * @var string
+     */
+    protected string $index;
+
+    protected int $numberOfShards;
+
+    protected int $numberOfReplicas;
+
+    protected array $mappings;
+
+    /**
+     * @param PluginSettings $pluginSettings
+     */
+    public function __construct(
+        protected PluginSettings $pluginSettings)
+    {}
+
+
+    /**
+     * @return int
+     */
+    public function getNumberOfShards(): int
+    {
+        return $this->numberOfShards;
+    }
+
+    /**
+     * @param int $numberOfShards
+     */
+    public function setNumberOfShards(int $numberOfShards): void
+    {
+        $this->numberOfShards = $numberOfShards;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfReplicas(): int
+    {
+        return $this->numberOfReplicas;
+    }
+
+    /**
+     * @param int $numberOfReplicas
+     */
+    public function setNumberOfReplicas(int $numberOfReplicas): void
+    {
+        $this->numberOfReplicas = $numberOfReplicas;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIndex(): string
+    {
+        return $this->index;
+    }
+
+    /**
+     * @param string $index
+     */
+    public function setIndex(string $index): void
+    {
+        $this->index = $index;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMappings(): array
+    {
+        return $this->mappings;
+    }
+
+    /**
+     * @param array $mappings
+     */
+    public function setMappings(array $mappings): void
+    {
+        $this->mappings = $mappings;
+    }
+
+    public function getCreateBody(): array
+    {
+        return array(
+            'id' => Uuid::randomHex(),
+            'index' => $this->getIndex(),
+            'body' => array(
+                'settings' => array(
+                    'index' => array(
+                        $this->pluginSettings::INDICES_SETTINGS_NUMBER_SHARDS => $this->getNumberOfShards(),
+                        $this->pluginSettings::INDICES_SETTINGS_NUMBER_REPLICAS => $this->getNumberOfReplicas()
+                    )
+                ),
+                'mappings' => array(
+                    '_doc' => array(
+                        'properties' => $this->getMappings()
+                    )
+                )
+            )
+        );
+    }
+}

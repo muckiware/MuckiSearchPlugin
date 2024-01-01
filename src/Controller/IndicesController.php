@@ -40,4 +40,24 @@ class IndicesController extends AbstractController
             $this->searchClientFactory->createSearchClient()->getIndices()
         );
     }
+
+    #[Route(
+        path: '/api/_action/muwa/search/create-indices',
+        name: 'api.action.muwa_search.create.indices',
+        methods: ['POST']
+    )]
+    public function createIndices(RequestDataBag $requestDataBag, Context $context): JsonResponse
+    {
+
+        // $this->searchClientFactory->createSearchClient()->getClient()->create()
+        return new JsonResponse(
+            $this->searchClientFactory
+                ->createSearchClient()
+                ->createIndicesByIndexStructureId(
+                    $requestDataBag->get('id'),
+                    $requestDataBag->get('languageId'),
+                    $context
+                )
+        );
+    }
 }
