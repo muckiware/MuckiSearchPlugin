@@ -174,7 +174,7 @@ class Client implements SearchClientInterface
                 $indexStructureTranslation->getLanguageId()
             );
 
-            if(!$this->checkIfIndicesExists($indexName)) {
+            if(!$this->checkIfIndicesExists(array('index' => $indexName))) {
                 $this->createNewIndices($indexStructureTranslation, $indexName);
             } else {
                 $this->updateNewIndices($indexStructureTranslation, $indexName);
