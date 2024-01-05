@@ -112,19 +112,34 @@ Component.register('muwa-search-structure-list', {
 
         getIndices() {
 
+            this.isLoading = true;
+
             const apiHeader = this.getApiHeader();
             this.httpClient.get(this.requestUrlIndices, apiHeader).then((response) => {
 
-                this.indicesStructure = response.data;
-                this.indicesStructure.forEach((indices, key) => {
+                let prepareIndicesStructure = response.data;
+                this.indicesStructure = [];
+                if(this.$route.params.tab === 'structureIndices') {
 
-                    Object.entries(indices).forEach(([indicesKey, indicesValue]) => {
+                    prepareIndicesStructure.forEach((indices, key) => {
 
-                        if (indicesKey.includes('.')) {
-                            this.indicesStructure[key][indicesKey.replaceAll('.','')] = indicesValue;
+                        //Add item only, if them not are hidden indices
+                        if(!prepareIndicesStructure[key]['index'].startsWith('.')) {
+
+                            Object.entries(indices).forEach(([indicesKey, indicesValue]) => {
+
+                                if (indicesKey.includes('.')) {
+                                    prepareIndicesStructure[key][indicesKey.replaceAll('.','')] = indicesValue;
+                                }
+                            });
+                            this.indicesStructure.push(prepareIndicesStructure[key]);
                         }
                     });
-                });
+                } else {
+                    this.indicesStructure = prepareIndicesStructure;
+                }
+            }).finally(() => {
+                this.isLoading = false;
             });
         },
         createdComponent() {
@@ -140,9 +155,11 @@ Component.register('muwa-search-structure-list', {
 
             this.isLoading = true;
             let criteria = new Criteria();
+            this.indexStructure = [];
 
             this.repositorySearchStructure.search(criteria, Shopware.Context.api).then((result) => {
                 this.indexStructure = result;
+            }).finally(() => {
                 this.isLoading = false;
             });
         },
