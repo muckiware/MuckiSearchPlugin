@@ -7,6 +7,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\WriteException;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -69,14 +70,22 @@ class IndicesController extends AbstractController
     )]
     public function removeIndices(RequestDataBag $requestDataBag, Context $context): JsonResponse
     {
-        return new JsonResponse(
-            $this->searchClientFactory
+        $indexStructureId = $requestDataBag->get('id', '');
+        $indexStructureIndexName = $requestDataBag->get('index');
+        $languageId = $requestDataBag->get('languageId', Defaults::LANGUAGE_SYSTEM);
+
+        if($indexStructureId !== '' && Uuid::isValid($indexStructureId) && !$indexStructureIndexName) {
+
+            $responseContent = $this->searchClientFactory
                 ->createSearchClient()
-                ->removeIndicesByIndexStructureId(
-                    $requestDataBag->get('id', ''),
-                    $requestDataBag->get('languageId', Defaults::LANGUAGE_SYSTEM),
-                    $context
-                )
-        );
+                ->removeIndicesByIndexStructureId($indexStructureId, $languageId, $context);
+        } else {
+
+            $responseContent = $this->searchClientFactory
+                ->createSearchClient()
+                ->removeIndicesByIndexName($indexStructureIndexName);
+        }
+
+        return new JsonResponse($responseContent);
     }
 }

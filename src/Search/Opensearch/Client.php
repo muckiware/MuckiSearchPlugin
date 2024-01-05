@@ -72,4 +72,9 @@ class Client implements SearchClientInterface
     {
         return null;
     }
+
+    public function removeIndicesByIndexName(string $indexName)
+    {
+        return null;
+    }
 }

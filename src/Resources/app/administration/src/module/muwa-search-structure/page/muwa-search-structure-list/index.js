@@ -137,6 +137,7 @@ Component.register('muwa-search-structure-list', {
         },
 
         getList() {
+
             this.isLoading = true;
             let criteria = new Criteria();
 
@@ -148,9 +149,12 @@ Component.register('muwa-search-structure-list', {
 
         async deleteIndices(item) {
 
+            this.isLoading = true;
             const apiHeader = this.getApiHeader();
             item.languageId = Shopware.Context.api.languageId;
             await this.httpClient.post(this.requestUrlRemove, item, {headers: apiHeader});
+
+            this.createdComponent();
         },
 
         onChangeLanguage(languageId) {

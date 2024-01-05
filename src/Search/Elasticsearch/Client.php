@@ -33,6 +33,7 @@ use MuckiSearchPlugin\Entities\CreateIndicesBody;
 use MuckiSearchPlugin\Entities\IndicesMappingProperty;
 use MuckiSearchPlugin\Entities\Indices;
 use MuckiSearchPlugin\Services\IndicesSettings;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class Client implements SearchClientInterface
 {
@@ -198,22 +199,32 @@ class Client implements SearchClientInterface
 
     public function removeIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
     {
-        $indexStructure = $this->indexStructure->getIndexStructureById($indexStructureId, $languageId, $context);
-        /** @var IndexStructureTranslationEntity $indexStructureTranslation */
-        foreach ($indexStructure->get('translations') as $indexStructureTranslation) {
+        if(Uuid::isValid($indexStructureId)) {
 
-            $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
-            $this->indicesSettings->setTemplateVariable('languageId', $indexStructureTranslation->getLanguageId());
-            $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
+            $indexStructure = $this->indexStructure->getIndexStructureById($indexStructureId, $languageId, $context);
+            /** @var IndexStructureTranslationEntity $indexStructureTranslation */
+            foreach ($indexStructure->get('translations') as $indexStructureTranslation) {
 
-            $indexName = $this->indicesSettings->getIndexNameByTemplate();
+                $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
+                $this->indicesSettings->setTemplateVariable('languageId', $indexStructureTranslation->getLanguageId());
+                $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
 
-            if($this->checkIndicesExists($indexName)) {
-                $this->removeIndices($indexName);
+                $indexName = $this->indicesSettings->getIndexNameByTemplate();
+
+                if($this->checkIndicesExists($indexName)) {
+                    $this->removeIndices($indexName);
+                }
             }
-        }
 
-        $this->indexStructure->removeIndexStructureById($indexStructureId, $context);
+            $this->indexStructure->removeIndexStructureById($indexStructureId, $context);
+        }
+    }
+
+    public function removeIndicesByIndexName(string $indexName)
+    {
+        if($indexName !== '' && $this->checkIndicesExists($indexName)) {
+            $this->removeIndices($indexName);
+        }
     }
 
     protected function setIndicesSettings(array $settings, CreateIndicesBody $createBody): void

@@ -14,7 +14,6 @@ use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Services\Content\IndexStructure as IndexStructureService;
 use MuckiSearchPlugin\Core\Content\ServerOptions\ServerOptionsFactory;
 
-
 #[Route(defaults: ['_routeScope' => ['api']])]
 #[Package('services-settings')]
 class SettingsMappingsController extends AbstractController
