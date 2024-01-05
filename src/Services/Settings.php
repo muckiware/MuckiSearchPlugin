@@ -18,6 +18,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 use MuckiSearchPlugin\Entities\SearchMapping;
 use MuckiSearchPlugin\Entities\SearchSetting;
+use MuckiSearchPlugin\Core\Defaults;
 
 class Settings
 {
@@ -48,12 +49,18 @@ class Settings
 
     public function getServerHost(): string
     {
-        return $this->config->getString($this::CONFIG_PATH_SERVER_HOST);
+        if($this->config->getString($this::CONFIG_PATH_SERVER_HOST) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SERVER_HOST);
+        }
+        return Defaults::DEFAULT_SERVER_HOST;
     }
 
     public function getServerPort(): int
     {
-        return $this->config->getInt($this::CONFIG_PATH_SERVER_PORT);
+        if($this->config->getInt($this::CONFIG_PATH_SERVER_PORT) >= 1) {
+            $this->config->getInt($this::CONFIG_PATH_SERVER_PORT);
+        }
+        return Defaults::DEFAULT_SERVER_PORT;
     }
 
     public function getServerConnectionString(): string
@@ -88,12 +95,18 @@ class Settings
 
     public function getDefaultNumberOfShards(): int
     {
-        return $this->config->getInt($this::CONFIG_PATH_DEFAULT_NUMBER_SHARDS);
+        if($this->config->getInt($this::CONFIG_PATH_DEFAULT_NUMBER_SHARDS) >= 1) {
+            return $this->config->getInt($this::CONFIG_PATH_DEFAULT_NUMBER_SHARDS);
+        }
+        return Defaults::DEFAULT_NUMBER_SHARDS;
     }
 
     public function getDefaultNumberOfReplicas(): int
     {
-        return $this->config->getInt($this::CONFIG_PATH_DEFAULT_NUMBER_REPLICAS);
+        if($this->config->getInt($this::CONFIG_PATH_DEFAULT_NUMBER_REPLICAS) >= 1) {
+            return $this->config->getInt($this::CONFIG_PATH_DEFAULT_NUMBER_REPLICAS);
+        }
+        return Defaults::DEFAULT_NUMBER_REPLICAS;
     }
 
     public function getDefaultIndicesSettings(): array
@@ -143,18 +156,9 @@ class Settings
     {
         $indexNamePattern = $this->config->getString($this::CONFIG_PATH_INDICES_SETTINGS_INDEX_NAME_PATTERN);
         if($indexNamePattern === '') {
-            return $this::DEFAULT_INDEX_NAME_PATTERN;
+            return Defaults::DEFAULT_INDEX_NAME_PATTERN;
         }
 
         return $indexNamePattern;
-    }
-
-    public function getIndexName(string $entityName, string $salesChannelId, string $languageId): ?string
-    {
-        if($entityName === '' || !Uuid::isValid($salesChannelId) || !Uuid::isValid($languageId)) {
-            return null;
-        }
-
-        return $salesChannelId.'-'.$entityName.'-'.$languageId;
     }
 }
