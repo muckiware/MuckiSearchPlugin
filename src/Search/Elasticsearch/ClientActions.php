@@ -130,7 +130,7 @@ class ClientActions
         return null;
     }
 
-    protected function checkIndicesExists(string $indexName): bool
+    public function checkIndicesExists(string $indexName): bool
     {
         try {
             return $this->getClient()->indices()->exists(array(

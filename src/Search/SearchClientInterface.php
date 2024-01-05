@@ -37,4 +37,6 @@ interface SearchClientInterface
     public function removeIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context);
 
     public function removeIndicesByIndexName(string $indexName);
+
+    public function checkIndicesExists(string $indexName): bool;
 }

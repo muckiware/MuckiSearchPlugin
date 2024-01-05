@@ -80,7 +80,7 @@ class Indexing extends Command
         $output->writeln( 'Starting search indexing');
         $this->logger->info('Starting search indexing', array('mucki','search'));
 
-        $this->writeIndex->doIndexing();
+        $this->writeIndex->doIndexing($output);
 
         $executionTime = microtime(true) - $executionStart;
 

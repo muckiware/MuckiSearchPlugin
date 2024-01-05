@@ -72,4 +72,9 @@ class Client implements SearchClientInterface
     {
         return null;
     }
+
+    public function checkIndicesExists(string $indexName): bool
+    {
+        return false;
+    }
 }

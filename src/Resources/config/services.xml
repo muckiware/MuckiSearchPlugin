@@ -52,6 +52,11 @@
         <service id="MuckiSearchPlugin\Indexing\Write" public="true">
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Content\Products"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\CliOutput"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
+            <argument type="service" id="searchclient.factory"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
         </service>
 
         <service id="searchclient.factory" class="MuckiSearchPlugin\Search\SearchClientFactory" public="true">
@@ -61,6 +66,10 @@
             <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
         </service>
 
+        <service id="MuckiSearchPlugin\Services\CliOutput">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+        </service>
         <service id="MuckiSearchPlugin\Services\Content\IndexStructure">
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="muwa_index_structure.repository"/>
