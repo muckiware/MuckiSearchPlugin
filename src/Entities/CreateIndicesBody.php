@@ -2,6 +2,7 @@
 
 namespace MuckiSearchPlugin\Entities;
 
+use MuckiSearchPlugin\Core\Defaults;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use Shopware\Core\Framework\Uuid\Uuid;
 
@@ -117,8 +118,8 @@ class CreateIndicesBody
             'body' => array(
                 'settings' => array(
                     'index' => array(
-                        $this->pluginSettings::INDICES_SETTINGS_NUMBER_SHARDS => $this->getNumberOfShards(),
-                        $this->pluginSettings::INDICES_SETTINGS_NUMBER_REPLICAS => $this->getNumberOfReplicas()
+                        Defaults::INDICES_SETTINGS_NUMBER_SHARDS => $this->getNumberOfShards(),
+                        Defaults::INDICES_SETTINGS_NUMBER_REPLICAS => $this->getNumberOfReplicas()
                     )
                 ),
                 'mappings' => array(

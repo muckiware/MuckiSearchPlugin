@@ -14,7 +14,8 @@
       "header": {
         "createButtonLabel": "Hinzufügen",
         "cancelButtonLabel": "Abbrechen",
-        "saveButtonLabel": "Speichern"
+        "saveButtonLabel": "Struktur / Indices speichern",
+        "createStructureLabel" : "Struktur hinzufügen"
       },
       "emptyListText": "Keine Such-Index Struktur Einträge vorhanden.",
       "nameLabel": "Name",

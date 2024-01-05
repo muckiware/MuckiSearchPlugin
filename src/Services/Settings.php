@@ -16,9 +16,9 @@ namespace MuckiSearchPlugin\Services;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
+use MuckiSearchPlugin\Core\Defaults;
 use MuckiSearchPlugin\Entities\SearchMapping;
 use MuckiSearchPlugin\Entities\SearchSetting;
-use MuckiSearchPlugin\Core\Defaults;
 
 class Settings
 {
@@ -33,10 +33,6 @@ class Settings
     const CONFIG_PATH_DEFAULT_NUMBER_REPLICAS = 'MuckiSearchPlugin.config.defaultNumberReplicas';
 
     const CONFIG_PATH_INDICES_SETTINGS_INDEX_NAME_PATTERN = 'MuckiSearchPlugin.config.indexNamePattern';
-    const DEFAULT_INDEX_NAME_PATTERN = '{{salesChannelId}}-{{entity}}-{{languageId}}';
-
-    const INDICES_SETTINGS_NUMBER_SHARDS = 'numbers_of_shards';
-    const INDICES_SETTINGS_NUMBER_REPLICAS = 'numbers_of_replicas';
 
     public function __construct(
         protected SystemConfigService $config
@@ -114,7 +110,7 @@ class Settings
         $defaultSettings = array();
         $searchMapping_1 = new SearchSetting();
         $searchMapping_1->setId(Uuid::randomHex());
-        $searchMapping_1->setSettingKey('numbers_of_shards');
+        $searchMapping_1->setSettingKey(Defaults::INDICES_SETTINGS_NUMBER_SHARDS);
         $searchMapping_1->setSettingValue($this->getDefaultNumberOfShards());
         $searchMapping_1->setIsDefault(true);
         $searchMapping_1->setPosition(0);
@@ -122,7 +118,7 @@ class Settings
 
         $searchMapping_2 = new SearchSetting();
         $searchMapping_2->setId(Uuid::randomHex());
-        $searchMapping_2->setSettingKey('numbers_of_replicas');
+        $searchMapping_2->setSettingKey(Defaults::INDICES_SETTINGS_NUMBER_REPLICAS);
         $searchMapping_2->setSettingValue($this->getDefaultNumberOfReplicas());
         $searchMapping_2->setIsDefault(true);
         $searchMapping_2->setPosition(1);

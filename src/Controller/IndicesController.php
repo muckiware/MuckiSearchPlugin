@@ -3,6 +3,7 @@
 namespace MuckiSearchPlugin\Controller;
 
 use MuckiSearchPlugin\Search\SearchClientFactory;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\WriteException;
 use Shopware\Core\Framework\Log\Package;
@@ -72,8 +73,8 @@ class IndicesController extends AbstractController
             $this->searchClientFactory
                 ->createSearchClient()
                 ->removeIndicesByIndexStructureId(
-                    $requestDataBag->get('id'),
-                    $requestDataBag->get('languageId'),
+                    $requestDataBag->get('id', ''),
+                    $requestDataBag->get('languageId', Defaults::LANGUAGE_SYSTEM),
                     $context
                 )
         );

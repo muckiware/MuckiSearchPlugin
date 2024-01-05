@@ -24,6 +24,7 @@ use Elastic\Elasticsearch\ClientInterface;
 use Elastic\Elasticsearch\Exception\AuthenticationException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 
+use MuckiSearchPlugin\Core\Defaults;
 use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Services\Content\IndexStructure;
@@ -223,10 +224,10 @@ class Client implements SearchClientInterface
 
                 switch ($setting['settingKey']) {
 
-                    case $this->settings::INDICES_SETTINGS_NUMBER_SHARDS:
+                    case Defaults::INDICES_SETTINGS_NUMBER_SHARDS:
                         $createBody->setNumberOfShards($setting['settingValue']);
                         break;
-                    case $this->settings::INDICES_SETTINGS_NUMBER_REPLICAS:
+                    case Defaults::INDICES_SETTINGS_NUMBER_REPLICAS:
                         $createBody->setNumberOfReplicas($setting['settingValue']);
                         break;
                 }

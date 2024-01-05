@@ -16,4 +16,7 @@ final class Defaults
     public const DEFAULT_NUMBER_SHARDS = 2;
 
     public const DEFAULT_NUMBER_REPLICAS = 1;
+
+    public const INDICES_SETTINGS_NUMBER_SHARDS = 'numbers_of_shards';
+    public const INDICES_SETTINGS_NUMBER_REPLICAS = 'numbers_of_replicas';
 }
