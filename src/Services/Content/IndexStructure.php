@@ -88,5 +88,19 @@ class IndexStructure
             return null;
         }
     }
+
+    public function removeIndexStructureById(string $indexStructureId, Context $context): ?EntityWrittenContainerEvent
+    {
+        try {
+            return $this->indexStructureRepository->delete(
+                array(array('id' => $indexStructureId)), $context
+            );
+        } catch (WriteException $exception) {
+            $this->logger->error('Update mapping not possible');
+            $this->logger->error($exception->getMessage());
+        }
+
+        return null;
+    }
 }
 

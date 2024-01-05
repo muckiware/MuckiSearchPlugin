@@ -11,7 +11,9 @@ class CreateIndicesBody
      * UUID for a search mapping object
      * @var string
      */
-    protected string $index;
+    protected string $indexName;
+
+    protected string $indexId;
 
     protected int $numberOfShards;
 
@@ -62,17 +64,33 @@ class CreateIndicesBody
     /**
      * @return string
      */
-    public function getIndex(): string
+    public function getIndexName(): string
     {
-        return $this->index;
+        return $this->indexName;
     }
 
     /**
-     * @param string $index
+     * @param string $indexName
      */
-    public function setIndex(string $index): void
+    public function setIndexName(string $indexName): void
     {
-        $this->index = $index;
+        $this->indexName = $indexName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIndexId(): string
+    {
+        return $this->indexId;
+    }
+
+    /**
+     * @param string $indexId
+     */
+    public function setIndexId(string $indexId): void
+    {
+        $this->indexId = $indexId;
     }
 
     /**
@@ -94,8 +112,8 @@ class CreateIndicesBody
     public function getCreateBody(): array
     {
         return array(
-            'id' => Uuid::randomHex(),
-            'index' => $this->getIndex(),
+            'id' => $this->getIndexId(),
+            'index' => $this->getIndexName(),
             'body' => array(
                 'settings' => array(
                     'index' => array(

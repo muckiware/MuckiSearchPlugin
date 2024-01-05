@@ -49,7 +49,7 @@ class IndicesController extends AbstractController
     public function saveIndices(RequestDataBag $requestDataBag, Context $context): JsonResponse
     {
 
-//        $this->searchClientFactory->createSearchClient()->getClient()->exists()
+//        $this->searchClientFactory->createSearchClient()->getClient()->indices()->exists()
         return new JsonResponse(
             $this->searchClientFactory
                 ->createSearchClient()
@@ -68,6 +68,14 @@ class IndicesController extends AbstractController
     )]
     public function removeIndices(RequestDataBag $requestDataBag, Context $context): JsonResponse
     {
-        return new JsonResponse(array());
+        return new JsonResponse(
+            $this->searchClientFactory
+                ->createSearchClient()
+                ->removeIndicesByIndexStructureId(
+                    $requestDataBag->get('id'),
+                    $requestDataBag->get('languageId'),
+                    $context
+                )
+        );
     }
 }

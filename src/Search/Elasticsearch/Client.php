@@ -13,6 +13,7 @@
 
 namespace MuckiSearchPlugin\Search\Elasticsearch;
 
+use Http\Promise\Promise;
 use Shopware\Core\Framework\Context;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Exception\MissingParameterException;
@@ -29,13 +30,16 @@ use MuckiSearchPlugin\Services\Content\IndexStructure;
 use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureTranslation\IndexStructureTranslationEntity;
 use MuckiSearchPlugin\Entities\CreateIndicesBody;
 use MuckiSearchPlugin\Entities\IndicesMappingProperty;
+use MuckiSearchPlugin\Entities\Indices;
+use MuckiSearchPlugin\Services\IndicesSettings;
 
 class Client implements SearchClientInterface
 {
     public function __construct(
         protected PluginSettings $settings,
         protected LoggerInterface $logger,
-        protected IndexStructure $indexStructure
+        protected IndexStructure $indexStructure,
+        protected IndicesSettings $indicesSettings
     )
     {}
 
@@ -168,20 +172,47 @@ class Client implements SearchClientInterface
         /** @var IndexStructureTranslationEntity $indexStructureTranslation */
         foreach ($indexStructure->get('translations') as $indexStructureTranslation) {
 
-            $indexName = $this->settings->getIndexName(
-                $indexStructure->getEntity(),
-                $indexStructure->getSalesChannelId(),
-                $indexStructureTranslation->getLanguageId()
-            );
+            $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
+            $this->indicesSettings->setTemplateVariable('languageId', $indexStructureTranslation->getLanguageId());
+            $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
 
-            if(!$this->checkIfIndicesExists(array('index' => $indexName))) {
-                $this->createNewIndices($indexStructureTranslation, $indexName);
+            $indexName = $this->indicesSettings->getIndexNameByTemplate();
+            $indexId = $this->indicesSettings->getIndexId();
+
+            $createBody = new CreateIndicesBody($this->settings);
+            $createBody->setIndexName($indexName);
+            $createBody->setIndexId($indexId);
+            $this->setIndicesSettings($indexStructureTranslation->get('settings'), $createBody);
+            $this->setIndicesMappings($indexStructureTranslation->get('mappings'), $createBody);
+
+            if(!$this->checkIndicesExists($indexName)) {
+                $this->createNewIndices($createBody);
             } else {
-                $this->updateNewIndices($indexStructureTranslation, $indexName);
+                $this->updateIndices($createBody);
             }
         }
 
         return null;
+    }
+
+    public function removeIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
+    {
+        $indexStructure = $this->indexStructure->getIndexStructureById($indexStructureId, $languageId, $context);
+        /** @var IndexStructureTranslationEntity $indexStructureTranslation */
+        foreach ($indexStructure->get('translations') as $indexStructureTranslation) {
+
+            $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
+            $this->indicesSettings->setTemplateVariable('languageId', $indexStructureTranslation->getLanguageId());
+            $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
+
+            $indexName = $this->indicesSettings->getIndexNameByTemplate();
+
+            if($this->checkIndicesExists($indexName)) {
+                $this->removeIndices($indexName);
+            }
+        }
+
+        $this->indexStructure->removeIndexStructureById($indexStructureId, $context);
     }
 
     protected function setIndicesSettings(array $settings, CreateIndicesBody $createBody): void
@@ -218,10 +249,12 @@ class Client implements SearchClientInterface
         $createBody->setMappings($indicesMappings);
     }
 
-    protected function checkIfIndicesExists($indexName): bool
+    protected function checkIndicesExists(string $indexName): bool
     {
         try {
-            return $this->getClient()->exists($indexName);
+            return $this->getClient()->indices()->exists(array(
+                'index' => $indexName
+            ))->asBool();
 
         } catch (ClientResponseException $clientEx) {
             $this->logger->error($clientEx->getMessage());
@@ -234,13 +267,8 @@ class Client implements SearchClientInterface
         return false;
     }
 
-    protected function createNewIndices(IndexStructureTranslationEntity $indexStructureTranslation, string $indexName)
+    protected function createNewIndices(CreateIndicesBody $createBody): array | null
     {
-        $createBody = new CreateIndicesBody($this->settings);
-        $createBody->setIndex($indexName);
-        $this->setIndicesSettings($indexStructureTranslation->get('settings'), $createBody);
-        $this->setIndicesMappings($indexStructureTranslation->get('mappings'), $createBody);
-
         try {
             $indices = $this->getClient()->create($createBody->getCreateBody());
 
@@ -257,13 +285,8 @@ class Client implements SearchClientInterface
         return null;
     }
 
-    protected function updateNewIndices(IndexStructureTranslationEntity $indexStructureTranslation, string $indexName)
+    protected function updateIndices(CreateIndicesBody $createBody): array| null
     {
-        $createBody = new CreateIndicesBody($this->settings);
-        $createBody->setIndex($indexName);
-        $this->setIndicesSettings($indexStructureTranslation->get('settings'), $createBody);
-        $this->setIndicesMappings($indexStructureTranslation->get('mappings'), $createBody);
-
         try {
             $indices = $this->getClient()->update($createBody->getCreateBody());
 
@@ -278,5 +301,23 @@ class Client implements SearchClientInterface
         }
 
         return null;
+    }
+
+    protected function removeIndices(string $indexName): bool
+    {
+        try {
+            return $this->getClient()->indices()->delete(array(
+                'index' => $indexName
+            ))->asBool();
+
+        } catch (ClientResponseException $clientEx) {
+            $this->logger->error($clientEx->getMessage());
+        } catch (ServerResponseException $resEx) {
+            $this->logger->error($resEx->getMessage());
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+
+        return false;
     }
 }

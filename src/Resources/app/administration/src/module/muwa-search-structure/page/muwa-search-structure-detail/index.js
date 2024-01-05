@@ -237,7 +237,7 @@ Component.register('muwa-search-structure-detail', {
 
             this.isLoading = true;
             let apiHeader = this.getApiHeader();
-            this.indexStructure.languageId = Shopware.Context.api.languageId
+            this.indexStructure.languageId = Shopware.Context.api.languageId;
 
             try {
 

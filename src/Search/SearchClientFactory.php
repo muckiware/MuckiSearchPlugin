@@ -20,13 +20,15 @@ use MuckiSearchPlugin\Search\Elasticsearch\Client as ElasticsearchClient;
 use MuckiSearchPlugin\Search\Opensearch\Client as OpensearchClient;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Services\Content\IndexStructure;
+use MuckiSearchPlugin\Services\IndicesSettings;
 
 class SearchClientFactory
 {
     public function __construct(
         protected PluginSettings $settings,
         protected LoggerInterface $logger,
-        protected IndexStructure $indexStructure
+        protected IndexStructure $indexStructure,
+        protected IndicesSettings $indicesSettings
     )
     {}
 
@@ -40,7 +42,12 @@ class SearchClientFactory
         }
         return match ($serverType) {
             'opensearch' => new OpensearchClient($this->settings, $this->logger),
-            'elasticsearch' => new ElasticsearchClient($this->settings, $this->logger, $this->indexStructure),
+            'elasticsearch' => new ElasticsearchClient(
+                $this->settings,
+                $this->logger,
+                $this->indexStructure,
+                $this->indicesSettings
+            ),
             default => throw new ConfigurationNotFoundException('Missing server type'),
         };
     }

@@ -16,7 +16,9 @@ Component.register('muwa-search-structure-list', {
             isLoading: true,
             indexStructure: null,
             indicesStructure: null,
-            httpClient: null
+            httpClient: null,
+            requestUrlRemove: '/_action/muwa/search/remove-indices',
+            requestUrlIndices: '/_action/muwa/search/indices'
         };
     },
 
@@ -110,10 +112,8 @@ Component.register('muwa-search-structure-list', {
 
         getIndices() {
 
-            this.httpClient.get(
-                '/_action/muwa/search/indices',
-                this.getApiHeader()
-            ).then((response) => {
+            const apiHeader = this.getApiHeader();
+            this.httpClient.get(this.requestUrlIndices, apiHeader).then((response) => {
 
                 this.indicesStructure = response.data;
                 this.indicesStructure.forEach((indices, key) => {
@@ -146,12 +146,11 @@ Component.register('muwa-search-structure-list', {
             });
         },
 
-        deleteProductTabs(item) {
+        async deleteIndices(item) {
 
-            let that = this;
-            that.repositorySearchStructure.delete(item.id, Shopware.Context.api).then(() => {
-                this.createdComponent();
-            });
+            const apiHeader = this.getApiHeader();
+            item.languageId = Shopware.Context.api.languageId;
+            await this.httpClient.post(this.requestUrlRemove, item, {headers: apiHeader});
         },
 
         onChangeLanguage(languageId) {

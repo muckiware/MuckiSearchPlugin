@@ -58,6 +58,7 @@
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
         </service>
 
         <service id="MuckiSearchPlugin\Services\Content\IndexStructure">
@@ -68,6 +69,11 @@
         <service id="MuckiSearchPlugin\Services\Content\Products" public="true">
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="product.repository"/>
+        </service>
+        <service id="MuckiSearchPlugin\Services\IndicesSettings">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="twig"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
         </service>
     	<service id="MuckiSearchPlugin\Services\Settings" public="true">
         	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>

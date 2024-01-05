@@ -34,6 +34,15 @@
         </input-field>
     </card>
     <card>
+        <title>Indices Settings</title>
+        <title lang="de-DE">Indices Einstellungen</title>
+        <input-field type="text">
+            <name>indexNamePattern</name>
+            <label>Index Name Pattern</label>
+            <defaultValue>{$salesChannelId}-{$entityName}-{$languageId}</defaultValue>
+        </input-field>
+    </card>
+    <card>
         <title>Indices Default Settings</title>
         <title lang="de-DE">Indices Standard Einstellungen</title>
         <input-field type="int">
