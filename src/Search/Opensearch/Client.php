@@ -38,11 +38,6 @@ class Client implements SearchClientInterface
         return null;
     }
 
-    public function deleting(array $params): bool
-    {
-        return false;
-    }
-
     public function getServerInfoAsString(): ?string
     {
         return null;

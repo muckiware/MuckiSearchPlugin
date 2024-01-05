@@ -24,8 +24,6 @@ interface SearchClientInterface
 
     public function searching(array $params): ?array;
 
-    public function deleting(array $params): bool;
-
     public function getServerInfoAsString(): ?string;
 
     public function getServerInfoAsObject(): ?object;
