@@ -122,93 +122,11 @@ class Client extends ClientActions implements SearchClientInterface
 
     protected function setIndicesMappings(array $mappings, CreateIndicesBody $createBody): void
     {
-
         $mappedKeys = array_column($mappings, 'key');
         $propertyPaths = array_map(fn (string $key): array => explode('.', $key), $mappedKeys);
-//        $bodyStructure = array('properties' => null);
 
-//        array(
-//            0 => array(
-//                0 => 'cover',
-//                1 => 'product',
-//                2 => 'categoryIds'
-//            ),
-//            1 => array(
-//                0 => 'id'
-//            ),
-//            2 => array(
-//                0 => 'translate',
-//                1 => 'desc'
-//            )
-//        );
-//
-//        array(
-//            'properties' => array(
-//                'cover' => array(
-//                    'properties' => array(
-//                        'product' => array(
-//                            'properties' => array(
-//                                'categoryIds' => null
-//                            )
-//                        )
-//                    )
-//                ),
-//                'id' => array(),
-//                'translate' => array(
-//                    'properties' => array(
-//                        'desc' => null
-//                    )
-//                )
-//            )
-//        );
-
-        $indicesMappings = $this->pluginHelper->convertBodyArray($propertyPaths, $mappings);
-
-//        foreach ($propertyPaths as $propertiesKey => $propertiesValue) {
-
-//            array_push($bodyStructure, $this->pluginHelper->convertBodyArray($propertyPaths[$propertiesKey]));
-
-//            $prePropertyValue = null;
-//
-//            foreach ($propertiesValues as $propertyKey => $propertyValue) {
-//
-//                if(!$prePropertyValue) {
-//
-//                    $bodyStructure['properties'] = array($propertiesValues[$propertyKey] => null);
-//                    $prePropertyValue = $propertyValue;
-//                }
-//
-//                $check = 1;
-//            }
-//        }
-
-//        $checker = $bodyStructure;
-//
-//        $indicesMappings = array();
-//        foreach ($mappings as $mapping) {
-
-//            $indicesMappingProperty = new IndicesMappingProperty();
-//            $indicesMappingProperty->setPropertyName(str_replace('.','_', $mapping['key']));
-//            $indicesMappingProperty->setPropertyType($mapping['dataType']);
-
-//            $indicesMappings[str_replace('.','_', $mapping['key'])] = array(
-//                'type' => $mapping['dataType']
-//            );
-//        }
-
-        $createBody->setMappings($indicesMappings);
-    }
-
-    protected function convertArray($inputArray)
-    {
-        if (empty($inputArray)) {
-            return null;
-        }
-
-        $outputArray = [];
-        $currentProperty = array_shift($inputArray);
-        $outputArray['properties'][$currentProperty] = $this->convertArray($inputArray);
-
-        return $outputArray;
+        $createBody->setMappings(
+            $this->pluginHelper->convertBodyArray($propertyPaths, $mappings)
+        );
     }
 }
