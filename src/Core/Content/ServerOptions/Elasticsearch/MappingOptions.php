@@ -20,8 +20,8 @@ class MappingOptions implements MappingOptionsInterface
                 'desc' => 'true and false values.'
             ),
             array(
-                'key' => 'keywords',
-                'label' => 'Keywords',
+                'key' => 'keyword',
+                'label' => 'Keyword',
                 'desc' => 'The keyword family, including keyword, constant_keyword, and wildcard.'
             ),
             array(

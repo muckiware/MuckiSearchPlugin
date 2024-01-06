@@ -113,19 +113,14 @@ class CreateIndicesBody
     public function getCreateBody(): array
     {
         return array(
-            'id' => $this->getIndexId(),
             'index' => $this->getIndexName(),
             'body' => array(
                 'settings' => array(
-                    'index' => array(
-                        Defaults::INDICES_SETTINGS_NUMBER_SHARDS => $this->getNumberOfShards(),
-                        Defaults::INDICES_SETTINGS_NUMBER_REPLICAS => $this->getNumberOfReplicas()
-                    )
+                    Defaults::INDICES_SETTINGS_NUMBER_SHARDS => $this->getNumberOfShards(),
+                    Defaults::INDICES_SETTINGS_NUMBER_REPLICAS => $this->getNumberOfReplicas()
                 ),
                 'mappings' => array(
-                    '_doc' => array(
-                        'properties' => $this->getMappings()
-                    )
+                    'properties' => $this->getMappings()
                 )
             )
         );

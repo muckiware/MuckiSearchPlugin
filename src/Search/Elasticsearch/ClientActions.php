@@ -91,7 +91,8 @@ class ClientActions
     public function indexing(array $params): ?array
     {
         try {
-            return $this->getClient()->index($params)->asArray();
+            $response = $this->getClient()->index($params)->asArray();
+            return $response;
         } catch (ClientResponseException $clientEx) {
             $this->logger->error($clientEx->getMessage());
         } catch (ServerResponseException $resEx) {
@@ -151,8 +152,8 @@ class ClientActions
     protected function createNewIndices(CreateIndicesBody $createBody): array | null
     {
         try {
-            $indices = $this->getClient()->create($createBody->getCreateBody());
 
+            $indices = $this->getClient()->indices()->create($createBody->getCreateBody());
             return json_decode($indices, true);
 
         } catch (ClientResponseException $clientEx) {
@@ -169,7 +170,7 @@ class ClientActions
     protected function updateIndices(CreateIndicesBody $createBody): array| null
     {
         try {
-            $indices = $this->getClient()->update($createBody->getCreateBody());
+            $indices = $this->getClient()->indices()->update($createBody->getCreateBody());
 
             return json_decode($indices, true);
 

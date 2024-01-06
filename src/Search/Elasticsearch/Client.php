@@ -123,11 +123,13 @@ class Client extends ClientActions implements SearchClientInterface
         $indicesMappings = array();
         foreach ($mappings as $mapping) {
 
-            $indicesMappingProperty = new IndicesMappingProperty();
-            $indicesMappingProperty->setPropertyName(str_replace('.','_', $mapping['key']));
-            $indicesMappingProperty->setPropertyType($mapping['dataType']);
+//            $indicesMappingProperty = new IndicesMappingProperty();
+//            $indicesMappingProperty->setPropertyName(str_replace('.','_', $mapping['key']));
+//            $indicesMappingProperty->setPropertyType($mapping['dataType']);
 
-            $indicesMappings[] = $indicesMappingProperty->getProperty();
+            $indicesMappings[str_replace('.','_', $mapping['key'])] = array(
+                'type' => $mapping['dataType']
+            );
         }
 
         $createBody->setMappings($indicesMappings);
