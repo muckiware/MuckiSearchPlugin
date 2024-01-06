@@ -25,9 +25,24 @@ class MappingOptions implements MappingOptionsInterface
                 'desc' => 'The keyword family, including keyword, constant_keyword, and wildcard.'
             ),
             array(
-                'key' => 'numbers',
-                'label' => 'Numbers',
-                'desc' => 'Numeric types, such as long and double, used to express amounts'
+                'key' => 'integer',
+                'label' => 'Integer',
+                'desc' => 'A signed 32-bit integer with a minimum value of -231 and a maximum value of 231-1.'
+            ),
+            array(
+                'key' => 'float',
+                'label' => 'Float',
+                'desc' => 'A single-precision 32-bit IEEE 754 floating point number, restricted to finite values.'
+            ),
+            array(
+                'key' => 'long',
+                'label' => 'Long',
+                'desc' => 'A signed 64-bit integer with a minimum value of -263 and a maximum value of 263-1.'
+            ),
+            array(
+                'key' => 'double',
+                'label' => 'Double',
+                'desc' => 'A double-precision 64-bit IEEE 754 floating point number, restricted to finite values.'
             ),
             array(
                 'key' => 'dates',

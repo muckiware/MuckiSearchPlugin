@@ -21,6 +21,7 @@ use MuckiSearchPlugin\Search\Opensearch\Client as OpensearchClient;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Services\Content\IndexStructure;
 use MuckiSearchPlugin\Services\IndicesSettings;
+use MuckiSearchPlugin\Services\Helper as PluginHelper;
 
 class SearchClientFactory
 {
@@ -28,7 +29,8 @@ class SearchClientFactory
         protected PluginSettings $settings,
         protected LoggerInterface $logger,
         protected IndexStructure $indexStructure,
-        protected IndicesSettings $indicesSettings
+        protected IndicesSettings $indicesSettings,
+        protected PluginHelper $pluginHelper
     )
     {}
 
@@ -46,7 +48,8 @@ class SearchClientFactory
                 $this->settings,
                 $this->logger,
                 $this->indexStructure,
-                $this->indicesSettings
+                $this->indicesSettings,
+                $this->pluginHelper
             ),
             default => throw new ConfigurationNotFoundException('Missing server type'),
         };

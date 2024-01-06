@@ -64,6 +64,7 @@
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
             <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Helper"/>
         </service>
 
         <service id="MuckiSearchPlugin\Services\CliOutput">
@@ -87,5 +88,6 @@
     	<service id="MuckiSearchPlugin\Services\Settings" public="true">
         	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
+        <service id="MuckiSearchPlugin\Services\Helper"/>
     </services>
 </container>

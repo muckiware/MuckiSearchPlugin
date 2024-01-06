@@ -119,9 +119,7 @@ class CreateIndicesBody
                     Defaults::INDICES_SETTINGS_NUMBER_SHARDS => $this->getNumberOfShards(),
                     Defaults::INDICES_SETTINGS_NUMBER_REPLICAS => $this->getNumberOfReplicas()
                 ),
-                'mappings' => array(
-                    'properties' => $this->getMappings()
-                )
+                'mappings' => $this->getMappings()
             )
         );
     }

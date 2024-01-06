@@ -60,7 +60,7 @@ class Products
             new FieldSorting('createdAt', FieldSorting::DESCENDING)
         );
 
-//        $criteria->setLimit(1);
+        $criteria->setLimit(1);
 
         return $this->productRepository->search($criteria, Context::createDefaultContext());
     }

@@ -91,8 +91,7 @@ class ClientActions
     public function indexing(array $params): ?array
     {
         try {
-            $response = $this->getClient()->index($params)->asArray();
-            return $response;
+            return $this->getClient()->index($params)->asArray();
         } catch (ClientResponseException $clientEx) {
             $this->logger->error($clientEx->getMessage());
         } catch (ServerResponseException $resEx) {
