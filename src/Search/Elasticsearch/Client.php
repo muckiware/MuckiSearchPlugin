@@ -124,7 +124,7 @@ class Client extends ClientActions implements SearchClientInterface
         foreach ($mappings as $mapping) {
 
             $indicesMappingProperty = new IndicesMappingProperty();
-            $indicesMappingProperty->setPropertyName($mapping['key']);
+            $indicesMappingProperty->setPropertyName(str_replace('.','_', $mapping['key']));
             $indicesMappingProperty->setPropertyType($mapping['dataType']);
 
             $indicesMappings[] = $indicesMappingProperty->getProperty();

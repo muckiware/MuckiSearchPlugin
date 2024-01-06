@@ -13,6 +13,8 @@ final class Defaults
 
     public const DEFAULT_INDEX_NAME_PATTERN = '{{salesChannelId}}-{{entity}}-{{languageId}}';
 
+    public const DEFAULT_PRODUCT_MAPPINGS = 'id:keywords,productNumber:keywords,translations.DEFAULT.name:text,translations.DEFAULT.description:text,cover.media.url:text';
+
     public const DEFAULT_NUMBER_SHARDS = 2;
 
     public const DEFAULT_NUMBER_REPLICAS = 1;

@@ -72,12 +72,13 @@ class Settings
     public function getMappingProductFields(): array
     {
         $mappingProductFields = array();
-        $mappingFields = explode(
-            ',',
-            $this->config->getString($this::CONFIG_PATH_MAPPING_PRODUCT_FIELDS)
-        );
+        if($this->config->getString($this::CONFIG_PATH_MAPPING_PRODUCT_FIELDS) !== '') {
+            $configDefaultProductMappings = $this->config->getString($this::CONFIG_PATH_MAPPING_PRODUCT_FIELDS);
+        } else {
+            $configDefaultProductMappings = Defaults::DEFAULT_PRODUCT_MAPPINGS;
+        }
 
-        foreach ($mappingFields as $mappingField) {
+        foreach (explode(',', $configDefaultProductMappings) as $mappingField) {
 
             $mappingFieldKeyType = explode(':', $mappingField);
             $mappingProductFields[] = array(

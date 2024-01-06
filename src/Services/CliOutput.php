@@ -52,7 +52,7 @@ class CliOutput
         $progressBar = new ProgressBar($cliOutput, $totalCounter);
         $progressBar->setMaxSteps($progress->getTotal());
         $progressBar->setFormat('[%bar%] %current%/%max% Index Structure');
-        $cliOutput->write('done',true);
+        $cliOutput->write('',true);
         $progressBar->start();
 
         return $progressBar;
