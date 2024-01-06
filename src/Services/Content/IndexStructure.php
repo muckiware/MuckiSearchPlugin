@@ -65,6 +65,7 @@ class IndexStructure
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addAssociation('translations');
+        $criteria->addAssociation('translations.language');
 
         return $this->indexStructureRepository->search($criteria, Context::createDefaultContext());
     }

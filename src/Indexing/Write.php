@@ -67,11 +67,16 @@ class Write
                     'Found '.$totalProductCounter.' products'
                 );
 
-                $progress = $this->cliOutput->prepareProductProgress($totalProductCounter);
-                $progressBar = $this->cliOutput->prepareProductProgressBar($progress, $totalProductCounter, $cliOutput);
+//                $progressProduct = $this->cliOutput->prepareProductProgress($totalProductCounter);
+//                $progressProductBar = $this->cliOutput->prepareProductProgressBar($progressProduct, $totalProductCounter, $cliOutput);
 
                 /** @var IndexStructureTranslationEntity $translation */
                 foreach ($indexStructure->get('translations') as $translation) {
+
+                    $translationLanguageLabel = $translation->get('language')->getName();
+
+                    $progressProduct = $this->cliOutput->prepareProductProgress($totalProductCounter);
+                    $progressProductBar = $this->cliOutput->prepareProductProgressBar($progressProduct, $translationLanguageLabel, $totalProductCounter, $cliOutput);
 
                     $this->indicesSettings->setTemplateVariable('languageId', $translation->getLanguageId());
                     $indexName = $this->indicesSettings->getIndexNameByTemplate();
@@ -80,11 +85,11 @@ class Write
                         /** @var ProductEntity $product */
                         foreach ($allActiveProduct->getEntities() as $product) {
 
-                            if ($progress->getOffset() >= $progress->getTotal()) {
-                                $progressBar->setProgress($progress->getTotal());
+                            if ($progressProduct->getOffset() >= $progressProduct->getTotal()) {
+                                $progressProductBar->setProgress($progressProduct->getTotal());
                             } else {
-                                $progressBar->advance();
-                                $progressBar->display();
+                                $progressProductBar->advance();
+                                $progressProductBar->display();
                             }
 
                             $indexBody = new CreateIndexBody($this->pluginSettings);
@@ -125,6 +130,8 @@ class Write
                         }
                     }
                 }
+
+                $cliOutput->write('',true);
             }
         }
     }
