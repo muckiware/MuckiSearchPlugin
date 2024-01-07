@@ -64,7 +64,7 @@ class Client extends ClientActions implements SearchClientInterface
             if(!$this->checkIndicesExists($indexName)) {
                 $this->createNewIndices($createBody);
             } else {
-                $this->updateIndices($createBody);
+                //$this->updateIndices($createBody);
             }
         }
 
@@ -126,7 +126,7 @@ class Client extends ClientActions implements SearchClientInterface
         $propertyPaths = array_map(fn (string $key): array => explode('.', $key), $mappedKeys);
 
         $createBody->setMappings(
-            $this->pluginHelper->convertBodyArray($propertyPaths, $mappings)
+            $this->pluginHelper->createIndicesBody($propertyPaths, $mappings)
         );
     }
 }

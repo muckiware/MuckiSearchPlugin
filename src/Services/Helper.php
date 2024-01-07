@@ -4,7 +4,7 @@ namespace MuckiSearchPlugin\Services;
 
 class Helper
 {
-    public function convertBodyArray(array $inputArray, array $mappings): ?array
+    public function createIndicesBody(array $inputArray, array $mappings): ?array
     {
         $outputArray = [];
         $property = null;
@@ -36,6 +36,31 @@ class Helper
                     $propertyKey
                 );
             }
+        }
+
+        return $outputArray;
+    }
+
+    public function createIndexingBody(array $inputArray): ?array
+    {
+        $outputArray = [];
+
+        foreach ($inputArray as $item) {
+            $propertyPath = $item['propertyPath'];
+            $propertyValue = $item['propertyValue'];
+
+            $currentLayer = &$outputArray;
+
+            foreach ($propertyPath as $property) {
+                if (!isset($currentLayer[$property])) {
+                    $currentLayer[$property] = [];
+                }
+
+                $currentLayer = &$currentLayer[$property];
+            }
+
+            // Set the property value
+            $currentLayer = $propertyValue;
         }
 
         return $outputArray;

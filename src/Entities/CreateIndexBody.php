@@ -50,9 +50,9 @@ class CreateIndexBody
     /**
      * @param array $bodyItems
      */
-    public function setBodyItem(string $key, string $value): void
+    public function setBodyItems(array $bodyItems): void
     {
-        $this->bodyItems[$key] = $value;
+        $this->bodyItems = $bodyItems;
     }
 
     public function getIndexBody(): array

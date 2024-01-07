@@ -19,6 +19,7 @@ use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureTranslation\Inde
 use MuckiSearchPlugin\Search\SearchClientFactory;
 use MuckiSearchPlugin\Entities\CreateIndexBody;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
+use MuckiSearchPlugin\Services\Helper as PluginHelper;
 
 class Write
 {
@@ -29,19 +30,14 @@ class Write
         protected IndexStructure $indexStructure,
         protected IndicesSettings $indicesSettings,
         protected SearchClientFactory $searchClientFactory,
-        protected PluginSettings $pluginSettings
+        protected PluginSettings $pluginSettings,
+        protected PluginHelper $pluginHelper
     ){}
 
     public function doIndexing(OutputInterface $cliOutput = null): void
     {
         $allActiveIndexStructure = $this->indexStructure->getAllActiveIndexStructure();
         $indexStructureCounter = $allActiveIndexStructure->count();
-        $progressIndexStructure = $this->cliOutput->prepareIndexStructureProgress($indexStructureCounter);
-        $progressIndexStructureBar = $this->cliOutput->prepareIndexStructureProgressBar(
-            $progressIndexStructure,
-            $indexStructureCounter,
-            $cliOutput
-        );
 
         if ($indexStructureCounter >= 1) {
 
@@ -52,13 +48,6 @@ class Write
 
             /** @var IndexStructureEntity $indexStructure */
             foreach ($allActiveIndexStructure->getEntities() as $indexStructure) {
-
-                if ($progressIndexStructure->getOffset() >= $progressIndexStructure->getTotal()) {
-                    $progressIndexStructureBar->setProgress($progressIndexStructure->getTotal());
-                } else {
-                    $progressIndexStructureBar->advance();
-                    $progressIndexStructureBar->display();
-                }
 
                 $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
                 $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
@@ -101,13 +90,13 @@ class Write
                             $indexBody = new CreateIndexBody($this->pluginSettings);
                             $indexBody->setIndexName($indexName);
 
-                            $this->setBodyItems(
-                                $indexBody,
+                            $bodyItems = $this->getBodyItems(
                                 $translation->get('mappings'),
                                 $product,
                                 $translation->get('language')
                             );
 
+                            $indexBody->setBodyItems($this->pluginHelper->createIndexingBody($bodyItems));
                             $this->searchClientFactory->createSearchClient()->indexing(
                                 $indexBody->getIndexBody()
                             );
@@ -120,13 +109,13 @@ class Write
         }
     }
 
-    protected function setBodyItems(
-        CreateIndexBody $indexBody,
+    protected function getBodyItems(
         array $mappings,
         ProductEntity $product,
         LanguageEntity $language
-    ): void
+    ): array
     {
+        $bodyContentItem = array();
         $mappedKeys = array_column($mappings, 'key');
         $propertyPaths = array_map(fn (string $key): array => explode('.', $key), $mappedKeys);
 
@@ -175,8 +164,14 @@ class Write
             }
 
             if(!empty($bodyKey) && $propertyContent) {
-                $indexBody->setBodyItem(implode('_',$bodyKey), $propertyContent);
+
+                $bodyContentItem[] = array(
+                    'propertyPath' => $bodyKey,
+                    'propertyValue' => $propertyContent
+                );
             }
         }
+
+        return $bodyContentItem;
     }
 }
