@@ -16,4 +16,6 @@ namespace MuckiSearchPlugin\Core\Content\ServerOptions;
 interface MappingOptionsInterface
 {
     public function getDataTypes(): array;
+
+    public function additionalProductMappings(): array;
 }

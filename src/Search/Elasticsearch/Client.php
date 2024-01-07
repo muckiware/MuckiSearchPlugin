@@ -26,6 +26,8 @@ use MuckiSearchPlugin\Entities\CreateIndicesBody;
 use MuckiSearchPlugin\Entities\IndicesMappingProperty;
 use MuckiSearchPlugin\Services\IndicesSettings;
 use MuckiSearchPlugin\Services\Helper as PluginHelper;
+use MuckiSearchPlugin\Entities\Mapping as MappingEntity;
+use MuckiSearchPlugin\Core\Content\ServerOptions\ServerOptionsFactory;
 
 class Client extends ClientActions implements SearchClientInterface
 {
@@ -34,7 +36,8 @@ class Client extends ClientActions implements SearchClientInterface
         protected LoggerInterface $logger,
         protected IndexStructure $indexStructure,
         protected IndicesSettings $indicesSettings,
-        protected PluginHelper $pluginHelper
+        protected PluginHelper $pluginHelper,
+        protected ServerOptionsFactory $serverOptionsFactory
     )
     {
         parent::__construct(
@@ -122,11 +125,48 @@ class Client extends ClientActions implements SearchClientInterface
 
     protected function setIndicesMappings(array $mappings, CreateIndicesBody $createBody): void
     {
+        $mappings = $this->setAdditionalMappings($mappings);
         $mappedKeys = array_column($mappings, 'key');
         $propertyPaths = array_map(fn (string $key): array => explode('.', $key), $mappedKeys);
 
         $createBody->setMappings(
-            $this->pluginHelper->createIndicesBody($propertyPaths, $mappings)
+            $this->pluginHelper->createIndicesRequestBody(
+                $this->setAdditionalPropertyPaths($propertyPaths),
+                $mappings
+            )
         );
+    }
+
+    protected function setAdditionalPropertyPaths(array $propertyPaths): array
+    {
+        $additionalProductMappings = $this->serverOptionsFactory->createServerOptions()->additionalProductMappings();
+
+        foreach ($additionalProductMappings as $additionalProductMapping) {
+            $propertyPaths[][] = $additionalProductMapping['propertyPaths'];
+        }
+
+        return $propertyPaths;
+    }
+
+    /**
+     * Method for to add default required mapping fields by defined MappingOptions
+     *
+     * @param array $mappings
+     * @return array
+     */
+    protected function setAdditionalMappings(array $mappings): array
+    {
+        $additionalProductMappings = $this->serverOptionsFactory->createServerOptions()->additionalProductMappings();
+
+        foreach ($additionalProductMappings as $additionalProductMapping) {
+
+            $dataTypeMapping = new MappingEntity();
+            $dataTypeMapping->setPosition(count($mappings));
+            $dataTypeMapping->setKey($additionalProductMapping['propertyKey']);
+            $dataTypeMapping->setDataType($additionalProductMapping['propertyDataType']);
+            $mappings[] = $dataTypeMapping->getMapping();
+        }
+
+        return $mappings;
     }
 }

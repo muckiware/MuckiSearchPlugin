@@ -65,7 +65,7 @@
         {% block wmuwa_search_structure_entity_path_select_base_results_slot %}
         <sw-select-result-list
             ref="resultsList"
-            :options="visibleResults"
+            :options="getFieldsAsOptions"
             :is-loading="isLoading"
             :empty-message="$tc('global.sw-single-select.messageNoResults', 0, { term: searchInput })"
             :focus-el="$refs.swSelectInput"

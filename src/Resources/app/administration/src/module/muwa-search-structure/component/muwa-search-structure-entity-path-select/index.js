@@ -85,6 +85,14 @@ export default {
             },
         },
 
+        seoUrls: {
+            type: Array,
+            required: false,
+            default() {
+                return [];
+            },
+        },
+
         customFieldSets: {
             type: Array,
             required: false,
@@ -117,6 +125,7 @@ export default {
                 relation: undefined,
                 value: '',
             },
+            seoUrls: null
         };
     },
 
@@ -171,7 +180,9 @@ export default {
          * Returns the visibleResults with the actual selection as first entry
          * @returns {Array}
          */
-        visibleResults() {
+        getFieldsAsOptions() {
+
+            console.log('get visibleResults method');
             if (this.singleSelection) {
                 const results = [];
 
@@ -267,6 +278,11 @@ export default {
                     return;
                 }
 
+                // Return if property is SEO urls association
+                if (propertyName === 'seoUrls' && property.relation === 'one_to_many') {
+                    return;
+                }
+
                 // Return if property is a assignedProducts association
                 if (propertyName === 'assignedProducts' && property.relation === 'one_to_many') {
                     return;
@@ -312,6 +328,7 @@ export default {
                 this.processLineItems,
                 this.processDeliveries,
                 this.processProperties,
+                this.processSeoUrls
             ];
         },
 
@@ -337,7 +354,6 @@ export default {
 
             // flow is from lodash
             const { options } = flow(this.processFunctions)(unprocessedValues);
-
             return options.sort(this.sortOptions);
         },
 
@@ -428,14 +444,14 @@ export default {
 
         resetActiveItem(pos = 0) {
             // Return if the result list is closed before the search request returns
-            if (!this.$refs.resultsList) {
+            if (!this.$refs.ResultsList) {
                 return;
             }
             // If an item is selected the second entry is the first search result
             if (this.singleSelection) {
                 pos = 1;
             }
-            this.$refs.resultsList.setActiveItemIndex(pos);
+            this.$refs.ResultsList.setActiveItemIndex(pos);
         },
 
         onInputSearch() {
@@ -503,6 +519,7 @@ export default {
                 });
             });
 
+            console.log('options in getTranslationProperties()', options)
             return options;
         },
 
@@ -681,10 +698,43 @@ export default {
             };
         },
 
+        processSeoUrls({ definition, options, properties, path }) {
+
+            const seoUrlsProperty = definition.properties.seoUrls;
+
+            if (!seoUrlsProperty || seoUrlsProperty.relation !== 'one_to_many') {
+                return { properties, options, definition, path };
+            }
+
+            const newOptions = [...options, ...this.getSeoUrlsProperties(path)];
+
+            console.log('this.getSeoUrlsProperties(path)', this.getSeoUrlsProperties(path));
+            const filteredProperties = properties.filter(propertyName => {
+                return propertyName !== 'seoUrls';
+            });
+
+            return {
+                properties: filteredProperties,
+                options: newOptions,
+                definition: definition,
+                path: path,
+            };
+        },
+
         getMediaProperties(path) {
             const name = `${path}media`;
 
             return [{ label: name, value: name }];
+        },
+
+        getSeoUrlsProperties(path) {
+            const name = `${path}seoUrls`;
+
+            return [
+                { label: 'seoUrls.routeName', value: 'seoUrls.routeName' },
+                { label: 'seoUrls.pathInfo', value: 'seoUrls.pathInfo' },
+                { label: 'seoUrls.seoPathInfo', value: 'seoUrls.seoPathInfo' }
+            ];
         },
 
         processAssignedProducts({ definition, options, properties, path }) {
@@ -744,6 +794,8 @@ export default {
                     };
                 });
             });
+
+            console.log('customFields', customFields)
 
             return customFields;
         },

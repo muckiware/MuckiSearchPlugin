@@ -160,5 +160,21 @@ class MappingOptions implements MappingOptionsInterface
             )
         );
     }
+
+    public function additionalProductMappings(): array
+    {
+        return array(
+            array(
+                'propertyPaths' => 'dataHash',
+                'propertyKey' => 'dataHash',
+                'propertyDataType' => 'keyword'
+            ),
+            array(
+                'propertyPaths' => 'url',
+                'propertyKey' => 'url',
+                'propertyDataType' => 'keyword'
+            )
+        );
+    }
 }
 

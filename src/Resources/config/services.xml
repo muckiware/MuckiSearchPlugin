@@ -66,6 +66,7 @@
             <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
             <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Helper"/>
+            <argument type="service" id="serverOptions.factory"/>
         </service>
 
         <service id="MuckiSearchPlugin\Services\CliOutput">

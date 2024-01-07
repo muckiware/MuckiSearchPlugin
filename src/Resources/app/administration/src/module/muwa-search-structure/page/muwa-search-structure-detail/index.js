@@ -44,6 +44,7 @@ Component.register('muwa-search-structure-detail', {
             settings: [],
             currencies: [],
             languages: [],
+            seoUrls: [],
             customFieldSets: [],
             addMappingEnabled: false,
             addSettingEnabled: false,
@@ -54,6 +55,7 @@ Component.register('muwa-search-structure-detail', {
                     return {};
                 }
             },
+            options: [],
             httpClient: null,
             dataTypeOptions: null,
             requestUrlCreateIndices: '/_action/muwa/search/create-indices',
@@ -92,6 +94,10 @@ Component.register('muwa-search-structure-detail', {
             return this.repositoryFactory.create('custom_field_set');
         },
 
+        seoUrlRepository() {
+            return this.repositoryFactory.create('seo_url');
+        },
+
         indexStructureCriteria() {
             const criteria = new Criteria();
             criteria.addAssociation('translations');
@@ -113,6 +119,13 @@ Component.register('muwa-search-structure-detail', {
             const criteria = new Criteria(1, 500);
             criteria.addAssociation('relations');
             criteria.addAssociation('customFields');
+
+            return criteria;
+        },
+
+        seoUrlCriteria() {
+            const criteria = new Criteria(1, 25);
+            criteria.addGroupField('seoPathInfo');
 
             return criteria;
         },
@@ -206,6 +219,10 @@ Component.register('muwa-search-structure-detail', {
 
             this.customFieldSetRepository.search(this.customFieldSetCriteria).then((customFieldSets) => {
                 this.customFieldSets = customFieldSets;
+            });
+
+            this.seoUrlRepository.search(this.seoUrlCriteria).then((seoUrls) => {
+                this.seoUrls = seoUrls;
             });
 
             this.getIndexStructure();

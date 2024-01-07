@@ -4,7 +4,7 @@ namespace MuckiSearchPlugin\Services;
 
 class Helper
 {
-    public function createIndicesBody(array $inputArray, array $mappings): ?array
+    public function createIndicesRequestBody(array $inputArray, array $mappings): array
     {
         $outputArray = [];
         $property = null;
@@ -41,7 +41,7 @@ class Helper
         return $outputArray;
     }
 
-    public function createIndexingBody(array $inputArray): ?array
+    public function createIndexingBody(array $inputArray): array
     {
         $outputArray = [];
 
@@ -66,7 +66,12 @@ class Helper
         return $outputArray;
     }
 
-    public function searchKeyFieldInMappings(array $mappings, string $property, string $searchField, int $fieldCounter)
+    public function searchKeyFieldInMappings(
+        array $mappings,
+        string $property,
+        string $searchField,
+        int $fieldCounter
+    )
     {
         foreach ($mappings as $mapping) {
 
@@ -75,6 +80,8 @@ class Helper
                 return $mapping[$searchField];
             }
         }
+
+        return null;
     }
 }
 
