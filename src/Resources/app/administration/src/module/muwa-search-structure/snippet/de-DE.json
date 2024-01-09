@@ -32,9 +32,9 @@
       "docsDeletedLabel": "gelöschte Dokumente"
     },
     "detail": {
-      "mappingLabel": "Zuweisungen",
-      "settingsLabel": "Einstellungen",
-      "generalLabel": "Allgemeines",
+      "mappingLabel": "Zuweisungen (sprachabhängig)",
+      "settingsLabel": "Einstellungen (sprachabhängig)",
+      "generalLabel": "Allgemeines (global)",
       "activeLabel": "Aktiv",
       "nameLabel": "Technischer Name",
       "entityLabel": "Entität",

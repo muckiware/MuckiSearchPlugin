@@ -20,14 +20,14 @@ class CliOutput
 
     public function prepareProductProgressBar(
         Progress $progress,
-        string $translationLanguageLabel,
+        string $languageName,
         int $totalCounter,
         OutputInterface $cliOutput
     ): ProgressBar
     {
         $progressBar = new ProgressBar($cliOutput, $totalCounter);
         $progressBar->setMaxSteps($progress->getTotal());
-        $progressBar->setFormat('[%bar%] %current%/%max% indexing for '.$translationLanguageLabel);
+        $progressBar->setFormat('[%bar%] %current%/%max% indexing for '.$languageName);
         $cliOutput->write('',true);
         $progressBar->start();
 

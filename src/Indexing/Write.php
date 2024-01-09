@@ -1,5 +1,15 @@
 <?php
-
+/**
+ * MuckiSearchPlugin plugin
+ *
+ *
+ * @category   Muckiware
+ * @package    MuckiSearch
+ * @copyright  Copyright (c) 2023-2024 by Muckiware
+ *
+ * @author     Muckiware
+ *
+ */
 namespace MuckiSearchPlugin\Indexing;
 
 use Shopware\Core\Defaults as ShopwareDefaults;
@@ -20,6 +30,8 @@ use MuckiSearchPlugin\Search\SearchClientFactory;
 use MuckiSearchPlugin\Entities\CreateIndexBody;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Services\Helper as PluginHelper;
+use MuckiSearchPlugin\Entities\IndexStructureInstance;
+use MuckiSearchPlugin\Indexing\Product as IndexingProduct;
 
 class Write
 {
@@ -31,147 +43,68 @@ class Write
         protected IndicesSettings $indicesSettings,
         protected SearchClientFactory $searchClientFactory,
         protected PluginSettings $pluginSettings,
-        protected PluginHelper $pluginHelper
+        protected PluginHelper $pluginHelper,
+        protected IndexingProduct $indexingProduct
     ){}
 
     public function doIndexing(OutputInterface $cliOutput = null): void
     {
-        $allActiveIndexStructure = $this->indexStructure->getAllActiveIndexStructure();
-        $indexStructureCounter = $allActiveIndexStructure->count();
+        $searchClient = $this->searchClientFactory->createSearchClient();
 
-        if ($indexStructureCounter >= 1) {
+        /** @var IndexStructureInstance $indexStructureInstance */
+        foreach ($this->getIndexStructureInstances() as $indexStructureInstance) {
 
-            $this->cliOutput->printCliOutput(
-                $cliOutput,
-                'Found '.$indexStructureCounter.' index Structures'
-            );
+            if(!$searchClient->checkIndicesExists($indexStructureInstance->getIndexName())) {
+                continue;
+            }
 
-            /** @var IndexStructureEntity $indexStructure */
-            foreach ($allActiveIndexStructure->getEntities() as $indexStructure) {
+            switch ($indexStructureInstance->getEntity()) {
 
-                $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
-                $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
-                $this->cliOutput->printCliOutput($cliOutput, 'Search for products...');
-                $allActiveProduct = $this->products->getAllActiveProduct($indexStructure->getSalesChannelId());
-                $totalProductCounter = $allActiveProduct->count();
+                case 'product':
+                    $this->indexingProduct->indexingProducts($indexStructureInstance, $cliOutput, $searchClient);
+                    break;
 
-                $this->cliOutput->printCliOutput(
-                    $cliOutput,
-                    'Found '.$totalProductCounter.' products'
-                );
-
-                /** @var IndexStructureTranslationEntity $translation */
-                foreach ($indexStructure->get('translations') as $translation) {
-
-                    $translationLanguageLabel = $translation->get('language')->getName();
-
-                    $progressProduct = $this->cliOutput->prepareProductProgress($totalProductCounter);
-                    $progressProductBar = $this->cliOutput->prepareProductProgressBar(
-                        $progressProduct,
-                        $translationLanguageLabel,
-                        $totalProductCounter,
-                        $cliOutput
-                    );
-
-                    $this->indicesSettings->setTemplateVariable('languageId', $translation->getLanguageId());
-                    $indexName = $this->indicesSettings->getIndexNameByTemplate();
-                    if($this->searchClientFactory->createSearchClient()->checkIndicesExists($indexName)) {
-
-                        /** @var ProductEntity $product */
-                        foreach ($allActiveProduct->getEntities() as $product) {
-
-                            if ($progressProduct->getOffset() >= $progressProduct->getTotal()) {
-                                $progressProductBar->setProgress($progressProduct->getTotal());
-                            } else {
-                                $progressProductBar->advance();
-                                $progressProductBar->display();
-                            }
-
-                            $indexBody = new CreateIndexBody($this->pluginSettings);
-                            $indexBody->setIndexName($indexName);
-
-                            $bodyItems = $this->getBodyItems(
-                                $translation->get('mappings'),
-                                $product,
-                                $translation->get('language')
-                            );
-
-                            $indexBody->setBodyItems($this->pluginHelper->createIndexingBody($bodyItems));
-                            $this->searchClientFactory->createSearchClient()->indexing(
-                                $indexBody->getIndexBody()
-                            );
-                        }
-                    }
-                }
-
-                $cliOutput->write('',true);
+                default:
+                    $this->logger->warning('Missing valid entity index structure instance');
             }
         }
     }
 
-    protected function getBodyItems(
-        array $mappings,
-        ProductEntity $product,
-        LanguageEntity $language
-    ): array
+    public function getIndexStructureInstances(): array
     {
-        $bodyContentItem = array();
-        $mappedKeys = array_column($mappings, 'key');
-        $propertyPaths = array_map(fn (string $key): array => explode('.', $key), $mappedKeys);
+        $indexStructures = array();
+        /** @var IndexStructureEntity $indexStructure */
+        foreach ($this->indexStructure->getAllActiveIndexStructure()->getEntities() as $indexStructure) {
 
-        foreach ($propertyPaths as $properties) {
+            $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
+            $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
 
-            $propertyContent = null;
-            $bodyKey = array();
+            $allActiveProduct = $this->products->getAllActiveProduct(
+                $indexStructure->getSalesChannelId()
+            )->getElements();
 
-            foreach ($properties as $propertyKey) {
+            /** @var IndexStructureTranslationEntity $translation */
+            foreach ($indexStructure->get('translations') as $translation) {
 
-                $originPropertyKey = $propertyKey;
-                if($propertyKey === 'DEFAULT') {
-                    $propertyKey = $product->getId().'-'.ShopwareDefaults::LANGUAGE_SYSTEM;
-                }
-                if($propertyKey === $language->getTranslationCode()->getCode()) {
-                    $propertyKey = $product->getId().'-'.$language->getId();
-                }
-                if(
-                    !$propertyContent &&
-                    $product->has($propertyKey) &&
-                    $product->get($propertyKey)
-                ) {
-                    if($originPropertyKey !== $propertyKey) {
-                        $bodyKey[] = $originPropertyKey;
-                    } else {
-                        $bodyKey[] = $propertyKey;
-                    }
-                    $propertyContent = $product->get($propertyKey);
-                } else {
+                //Set structure instance globals
+                $indexStructureInstance = new IndexStructureInstance();
+                $indexStructureInstance->setEntity($indexStructure->getEntity());
+                $indexStructureInstance->setSalesChannelId($indexStructure->getSalesChannelId());
 
-                    if(
-                        $propertyContent &&
-                        $propertyContent->has($propertyKey) &&
-                        $propertyContent->get($propertyKey)
-                    ) {
-                        if($originPropertyKey !== $propertyKey) {
-                            $bodyKey[] = $originPropertyKey;
-                        } else {
-                            $bodyKey[] = $propertyKey;
-                        }
-                        $propertyContent = $propertyContent->get($propertyKey);
-                    } else {
-                        $propertyContent = null;
-                    }
-                }
-            }
+                //Set structure instance items
+                $indexStructureInstance->setItems($allActiveProduct);
+                $indexStructureInstance->setItemTotals(count($allActiveProduct));
 
-            if(!empty($bodyKey) && $propertyContent) {
+                $this->indicesSettings->setTemplateVariable('languageId', $translation->getLanguageId());
+                $indexStructureInstance->setIndexName($this->indicesSettings->getIndexNameByTemplate());
+                $indexStructureInstance->setLanguageId($translation->getLanguageId());
+                $indexStructureInstance->setLanguageName($translation->get('language')->getName());
+                $indexStructureInstance->setIndexStructureTranslation($translation);
 
-                $bodyContentItem[] = array(
-                    'propertyPath' => $bodyKey,
-                    'propertyValue' => $propertyContent
-                );
+                $indexStructures[] = $indexStructureInstance;
             }
         }
 
-        return $bodyContentItem;
+        return $indexStructures;
     }
 }
