@@ -51,12 +51,15 @@ class Helper
 
             $currentLayer = &$outputArray;
 
-            foreach ($propertyPath as $property) {
-                if (!isset($currentLayer[$property])) {
-                    $currentLayer[$property] = [];
-                }
+            if(is_array($propertyPath)) {
 
-                $currentLayer = &$currentLayer[$property];
+                foreach ($propertyPath as $property) {
+                    if (!isset($currentLayer[$property])) {
+                        $currentLayer[$property] = [];
+                    }
+
+                    $currentLayer = &$currentLayer[$property];
+                }
             }
 
             // Set the property value

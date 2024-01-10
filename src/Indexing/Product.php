@@ -12,38 +12,34 @@
  */
 namespace MuckiSearchPlugin\Indexing;
 
-use MuckiSearchPlugin\Search\SearchClientInterface;
-use Shopware\Core\Defaults as ShopwareDefaults;
-use MuckiSearchPlugin\Core\Defaults;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\System\Language\LanguageEntity;
 use Symfony\Component\Console\Output\OutputInterface;
+use Shopware\Core\Defaults as ShopwareDefaults;
+use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Content\Product\Aggregate\ProductTranslation\ProductTranslationEntity;
+use Shopware\Storefront\Framework\Routing\RequestTransformer;
+use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
+use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
 
-use MuckiSearchPlugin\Services\CliOutput;
-use MuckiSearchPlugin\Services\Content\Products as Products;
-use MuckiSearchPlugin\Services\Content\IndexStructure;
-use MuckiSearchPlugin\Services\IndicesSettings;
-use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureEntity;
-use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureTranslation\IndexStructureTranslationEntity;
+use MuckiSearchPlugin\Core\Defaults;
 use MuckiSearchPlugin\Search\SearchClientFactory;
+use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Entities\CreateIndexBody;
+use MuckiSearchPlugin\Services\CliOutput;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Services\Helper as PluginHelper;
 use MuckiSearchPlugin\Entities\IndexStructureInstance;
+use MuckiSearchPlugin\Services\Content\SalesChannel as SalesChannelService;
 
 class Product extends IndexData
 {
     public function __construct(
         protected LoggerInterface  $logger,
-        protected Products $products,
         protected CliOutput $cliOutput,
-        protected IndexStructure $indexStructure,
-        protected IndicesSettings $indicesSettings,
         protected SearchClientFactory $searchClientFactory,
         protected PluginSettings $pluginSettings,
-        protected PluginHelper $pluginHelper
+        protected PluginHelper $pluginHelper,
+        protected SeoUrlPlaceholderHandlerInterface $seoUrlReplacer
     ){}
 
     public function indexingProducts(
@@ -77,6 +73,15 @@ class Product extends IndexData
                 $indexStructureInstance->getIndexStructureTranslation()->get('mappings'),
                 $product,
                 $indexStructureInstance->getIndexStructureTranslation()->get('language')
+            );
+
+            $bodyItems[] = array(
+                'propertyPath' => array(0 => 'url'),
+                'propertyValue' => $product->getSeoUrls()->first()->getSeoPathInfo()
+            );
+            $bodyItems[] = array(
+                'propertyPath' => array(0 => 'hash'),
+                'propertyValue' => md5(serialize($bodyItems))
             );
 
             $indexBody->setBodyItems($this->pluginHelper->createIndexingBody($bodyItems));

@@ -49,6 +49,14 @@
             <argument type="service" id="Psr\Log\LoggerInterface"/>
         </service>
 
+        <service id="MuckiSearchPlugin\Indexing\Product" public="true">
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\CliOutput"/>
+            <argument type="service" id="searchclient.factory"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Helper"/>
+            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface"/>
+        </service>
         <service id="MuckiSearchPlugin\Indexing\Write" public="true">
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Content\Products"/>
@@ -58,6 +66,7 @@
             <argument type="service" id="searchclient.factory"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Helper"/>
+            <argument type="service" id="MuckiSearchPlugin\Indexing\Product"/>
         </service>
 
         <service id="searchclient.factory" class="MuckiSearchPlugin\Search\SearchClientFactory" public="true">
@@ -81,6 +90,10 @@
         <service id="MuckiSearchPlugin\Services\Content\Products" public="true">
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="product.repository"/>
+        </service>
+        <service id="MuckiSearchPlugin\Services\Content\SalesChannel" public="true">
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="sales_channel.repository"/>
         </service>
         <service id="MuckiSearchPlugin\Services\IndicesSettings">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
