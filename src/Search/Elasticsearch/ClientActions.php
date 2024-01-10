@@ -15,6 +15,8 @@ namespace MuckiSearchPlugin\Search\Elasticsearch;
 
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Exception\ServerResponseException;
+use Elastic\Elasticsearch\Response\Elasticsearch;
+use Http\Promise\Promise;
 use Psr\Log\LoggerInterface;
 use Elastic\Elasticsearch\ClientBuilder;
 use Elastic\Elasticsearch\ClientInterface;
@@ -48,11 +50,7 @@ class ClientActions
     public function searching(array $params): ?array
     {
         try {
-
-            return $this->getClient()
-                ->search($params)
-                ->asArray();
-
+            return $this->getClient()->search($params)->asArray();
         } catch (ClientResponseException $clientEx) {
             $this->logger->error($clientEx->getMessage());
         } catch (ServerResponseException $resEx) {

@@ -86,9 +86,11 @@ class Indexing extends Command
 
         if($executionTime > 60) {
             $output->writeln('Indexing DONE. [Execution: '.(number_format($executionTime/60,2)).' min]');
+            $output->write(' ',true);
             $this->logger->info('Indexing DONE. [Execution: '.($executionTime/60).' min]', array('mucki','search'));
         } else {
             $output->writeln('Indexing DONE. [Execution: '.number_format($executionTime, 3).' sec]');
+            $output->write(' ',true);
             $this->logger->info('Indexing DONE. [Execution: '.$executionTime.' sec]', array('mucki','search'));
         }
 

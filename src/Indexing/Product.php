@@ -79,13 +79,30 @@ class Product extends IndexData
                 'propertyPath' => array(0 => 'url'),
                 'propertyValue' => $product->getSeoUrls()->first()->getSeoPathInfo()
             );
-            $bodyItems[] = array(
-                'propertyPath' => array(0 => 'hash'),
-                'propertyValue' => md5(serialize($bodyItems))
-            );
 
-            $indexBody->setBodyItems($this->pluginHelper->createIndexingBody($bodyItems));
-            $searchClient->indexing($indexBody->getIndexBody());
+            $dataHash = md5(serialize($bodyItems));
+
+            $searchResult = $searchClient->searching(array(
+                'index' => $indexStructureInstance->getIndexName(),
+                'body' => array(
+                    'query' => array (
+                        'match' => array(
+                            'hash' => $dataHash
+                        )
+                    )
+                )
+            ));
+
+            if($searchResult['hits']['total']['value'] === 0) {
+
+                $bodyItems[] = array(
+                    'propertyPath' => array(0 => 'hash'),
+                    'propertyValue' => $dataHash
+                );
+
+                $indexBody->setBodyItems($this->pluginHelper->createIndexingBody($bodyItems));
+                $searchClient->indexing($indexBody->getIndexBody());
+            }
         }
     }
 }
