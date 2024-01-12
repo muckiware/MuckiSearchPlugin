@@ -50,7 +50,14 @@ class ClientActions
     public function searching(array $params): ?array
     {
         try {
-            return $this->getClient()->search($params)->asArray();
+
+            $searchingResults = $this->getClient()->search($params)->asArray();
+            return array(
+                'hits' => $searchingResults['hits']['total']['value'],
+                'maxScore' => $searchingResults['hits']['max_score'],
+                'items' => $this->createSearchResultItems($searchingResults['hits']['hits'])
+            );
+
         } catch (ClientResponseException $clientEx) {
             $this->logger->error($clientEx->getMessage());
         } catch (ServerResponseException $resEx) {
@@ -90,6 +97,22 @@ class ClientActions
     {
         try {
             return $this->getClient()->index($params)->asArray();
+        } catch (ClientResponseException $clientEx) {
+            $this->logger->error($clientEx->getMessage());
+        } catch (ServerResponseException $resEx) {
+            $this->logger->error($resEx->getMessage());
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+
+        return null;
+    }
+
+    public function updateIndex(array $params): ?array
+    {
+        try {
+            $update = $this->getClient()->update($params)->asArray();
+            return $update;
         } catch (ClientResponseException $clientEx) {
             $this->logger->error($clientEx->getMessage());
         } catch (ServerResponseException $resEx) {
@@ -198,5 +221,21 @@ class ClientActions
         }
 
         return false;
+    }
+
+    protected function createSearchResultItems($searchingResultsHits): array
+    {
+        $searchResultItems = array();
+        foreach ($searchingResultsHits as $resultsHit) {
+
+            $searchResultItems[] = array(
+                'indexId' => $resultsHit['_index'],
+                'id' => $resultsHit['_id'],
+                'score' => $resultsHit['_score'],
+                'source' => $resultsHit['_source']
+            );
+        }
+
+        return $searchResultItems;
     }
 }

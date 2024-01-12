@@ -14,6 +14,12 @@ class CreateIndexBody
      */
     protected string $indexName;
 
+    /**
+     * server own item id
+     * @var string|null like 6e7K9IwB1n1FRIamMMtm
+     */
+    protected ?string $indexId;
+
     protected array $bodyItems;
 
     /**
@@ -21,7 +27,9 @@ class CreateIndexBody
      */
     public function __construct(
         protected PluginSettings $pluginSettings)
-    {}
+    {
+        $this->indexId = null;
+    }
 
     /**
      * @return string
@@ -55,11 +63,33 @@ class CreateIndexBody
         $this->bodyItems = $bodyItems;
     }
 
+    public function getIndexId(): ?string
+    {
+        return $this->indexId;
+    }
+
+    public function setIndexId(?string $indexId): void
+    {
+        $this->indexId = $indexId;
+    }
+
     public function getIndexBody(): array
     {
-        return array(
-            'index' => $this->getIndexName(),
-            'body' => $this->getBodyItems()
-        );
+        if ($this->indexId) {
+            $indexBody = array(
+                'id' => $this->getIndexId(),
+                'index' => $this->getIndexName(),
+                'body' => array(
+                    'doc' => $this->getBodyItems()
+                )
+            );
+        } else {
+            $indexBody = array(
+                'index' => $this->getIndexName(),
+                'body' => $this->getBodyItems()
+            );
+        }
+
+        return $indexBody;
     }
 }

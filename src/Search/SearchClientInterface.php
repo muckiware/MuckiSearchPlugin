@@ -30,6 +30,8 @@ interface SearchClientInterface
 
     public function indexing(array $params): ?array;
 
+    public function updateIndex(array $params): ?array;
+
     public function getIndices(): ?array;
 
     public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context);

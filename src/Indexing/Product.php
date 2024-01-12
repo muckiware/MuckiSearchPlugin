@@ -48,6 +48,8 @@ class Product extends IndexData
         SearchClientInterface $searchClient
     ): void
     {
+        $updateCounter = 0;
+        $createCounter = 0;
         $progressProduct = $this->cliOutput->prepareProductProgress($indexStructureInstance->getItemTotals());
         $progressProductBar = $this->cliOutput->prepareProductProgressBar(
             $progressProduct,
@@ -80,29 +82,74 @@ class Product extends IndexData
                 'propertyValue' => $product->getSeoUrls()->first()->getSeoPathInfo()
             );
 
-            $dataHash = md5(serialize($bodyItems));
-
             $searchResult = $searchClient->searching(array(
                 'index' => $indexStructureInstance->getIndexName(),
                 'body' => array(
                     'query' => array (
                         'match' => array(
-                            'hash' => $dataHash
+                            'id' => $product->getId()
                         )
                     )
                 )
             ));
 
-            if($searchResult['hits']['total']['value'] === 0) {
+            $indexActionType = $this->getIndexActionType(md5(serialize($bodyItems)), $searchResult);
+            if($indexActionType) {
 
                 $bodyItems[] = array(
                     'propertyPath' => array(0 => 'hash'),
-                    'propertyValue' => $dataHash
+                    'propertyValue' => md5(serialize($bodyItems))
                 );
-
                 $indexBody->setBodyItems($this->pluginHelper->createIndexingBody($bodyItems));
-                $searchClient->indexing($indexBody->getIndexBody());
+            }
+
+            switch ($indexActionType) {
+
+                case 'create':
+
+                    $indexingResult = $searchClient->indexing($indexBody->getIndexBody());
+                    if($indexingResult) {
+                        $createCounter++;
+                    }
+                    break;
+                case 'update':
+
+                    $indexBody->setIndexId($searchResult['hits']['hits'][0]['_id']);
+                    $updateResult = $searchClient->updateIndex($indexBody->getIndexBody());
+                    if($updateResult) {
+                        $updateCounter++;
+                    }
+                    break;
+                default:
+                    $this->logger->debug('Nothing todo for product id '.$product->getId());
             }
         }
+
+        $cliOutput->write( $createCounter.' items has been created', true);
+        $cliOutput->write( $updateCounter.' items has been updated', true);
+        $cliOutput->writeln("\n");
+        $this->logger->debug($createCounter.' items has been created');
+        $this->logger->debug($updateCounter.' items has been updated');
+    }
+
+    protected function getIndexActionType(string $dataHash, array $searchResult): ?string
+    {
+        if($searchResult['hits'] === 0) {
+            return 'create';
+        } else {
+
+            if(!array_key_exists('hash', $searchResult['items'][0]['source'])) {
+
+                $this->logger->warning('Missing hash item in search result item');
+                $this->logger->warning(print_r($searchResult['items'][0]['source'], true));
+                return null;
+            }
+
+            if($searchResult['items'][0]['source']['hash'] !== $dataHash) {
+                return 'update';
+            }
+        }
+
+        return null;
     }
 }

@@ -53,6 +53,10 @@ class Client implements SearchClientInterface
         return null;
     }
 
+    public function updateIndex(array $params): ?array
+    {
+        return null;
+    }
     public function getIndices(): ?array
     {
         return null;

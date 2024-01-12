@@ -27,8 +27,7 @@ class CliOutput
     {
         $progressBar = new ProgressBar($cliOutput, $totalCounter);
         $progressBar->setMaxSteps($progress->getTotal());
-        $progressBar->setFormat('[%bar%] %current%/%max% indexing for '.$languageName);
-        $cliOutput->write('',true);
+        $progressBar->setFormat('[%bar%] %current%/%max% indexing for '.$languageName."\n");
         $progressBar->start();
 
         return $progressBar;
