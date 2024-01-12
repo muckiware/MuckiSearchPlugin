@@ -104,5 +104,9 @@
         	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
         <service id="MuckiSearchPlugin\Services\Helper"/>
+
+        <service class="MuckiSearchPlugin\Subscriber\ProductSubscriber" id="muckiSearchPlugin.subscriber.productSubscriber">
+            <tag name="kernel.event_subscriber" priority="1000"/>
+        </service>
     </services>
 </container>
