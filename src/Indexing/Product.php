@@ -33,6 +33,12 @@ use MuckiSearchPlugin\Services\Content\SalesChannel as SalesChannelService;
 
 class Product extends IndexData
 {
+    protected int $createCounter;
+
+    protected int $updateCounter;
+
+    protected string $currentIndicesName;
+
     public function __construct(
         protected LoggerInterface  $logger,
         protected CliOutput $cliOutput,
@@ -40,7 +46,10 @@ class Product extends IndexData
         protected PluginSettings $pluginSettings,
         protected PluginHelper $pluginHelper,
         protected SeoUrlPlaceholderHandlerInterface $seoUrlReplacer
-    ){}
+    ){
+        $this->updateCounter = 0;
+        $this->createCounter = 0;
+    }
 
     public function indexingProducts(
         IndexStructureInstance $indexStructureInstance,
@@ -48,8 +57,8 @@ class Product extends IndexData
         SearchClientInterface $searchClient
     ): void
     {
-        $updateCounter = 0;
-        $createCounter = 0;
+        $this->createCounter = 0;
+        $this->updateCounter = 0;
         $progressProduct = $this->cliOutput->prepareProductProgress($indexStructureInstance->getItemTotals());
         $progressProductBar = $this->cliOutput->prepareProductProgressBar(
             $progressProduct,
@@ -101,35 +110,52 @@ class Product extends IndexData
                     'propertyValue' => md5(serialize($bodyItems))
                 );
                 $indexBody->setBodyItems($this->pluginHelper->createIndexingBody($bodyItems));
-            }
 
-            switch ($indexActionType) {
-
-                case 'create':
-
-                    $indexingResult = $searchClient->indexing($indexBody->getIndexBody());
-                    if($indexingResult) {
-                        $createCounter++;
-                    }
-                    break;
-                case 'update':
-
-                    $indexBody->setIndexId($searchResult['hits']['hits'][0]['_id']);
-                    $updateResult = $searchClient->updateIndex($indexBody->getIndexBody());
-                    if($updateResult) {
-                        $updateCounter++;
-                    }
-                    break;
-                default:
-                    $this->logger->debug('Nothing todo for product id '.$product->getId());
+                $this->indexingAction(
+                    $indexActionType,
+                    $searchClient,
+                    $indexBody,
+                    (($searchResult['hits'] === 0) ? '' : ($searchResult['items'][0]['id'])),
+                    $product->getId()
+                );
             }
         }
 
-        $cliOutput->write( $createCounter.' items has been created', true);
-        $cliOutput->write( $updateCounter.' items has been updated', true);
+        $cliOutput->write( $this->createCounter.' items has been created', true);
+        $cliOutput->write( $this->updateCounter.' items has been updated', true);
         $cliOutput->writeln("\n");
-        $this->logger->debug($createCounter.' items has been created');
-        $this->logger->debug($updateCounter.' items has been updated');
+        $this->logger->debug($this->createCounter.' items has been created');
+        $this->logger->debug($this->updateCounter.' items has been updated');
+    }
+
+    protected function indexingAction(
+        string $indexActionType,
+        SearchClientInterface $searchClient,
+        CreateIndexBody $indexBody,
+        ?string $indexItemId,
+        string $productId
+    ): void
+    {
+        switch ($indexActionType) {
+
+            case 'create':
+
+                $indexingResult = $searchClient->indexing($indexBody->getIndexBody());
+                if($indexingResult) {
+                    $this->createCounter++;
+                }
+                break;
+            case 'update':
+
+                $indexBody->setIndexId($indexItemId);
+                $updateResult = $searchClient->updateIndex($indexBody->getIndexBody());
+                if($updateResult) {
+                    $this->updateCounter++;
+                }
+                break;
+            default:
+                $this->logger->debug('Nothing todo for product id '.$productId);
+        }
     }
 
     protected function getIndexActionType(string $dataHash, array $searchResult): ?string
