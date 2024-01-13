@@ -106,6 +106,9 @@
         <service id="MuckiSearchPlugin\Services\Helper"/>
 
         <service class="MuckiSearchPlugin\Subscriber\ProductSubscriber" id="muckiSearchPlugin.subscriber.productSubscriber">
+            <argument type="service" id="MuckiSearchPlugin\Indexing\Product"/>
+            <argument type="service" id="MuckiSearchPlugin\Indexing\Write"/>
+            <argument type="service" id="searchclient.factory"/>
             <tag name="kernel.event_subscriber" priority="1000"/>
         </service>
     </services>

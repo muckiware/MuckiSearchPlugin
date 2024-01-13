@@ -67,12 +67,21 @@ class Products
 
     public function getProductByProductNumber(string $productNumber, Context $context): ?ProductEntity
     {
-        if (!$context) {
-            $context = Context::createDefaultContext();
-        }
-
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('productNumber', [$productNumber]));
+
+        $product = $this->productRepository->search($criteria, $context);
+        if ($product->count() >= 1) {
+            return $product->first();
+        } else {
+            return null;
+        }
+    }
+
+    public function getProductByProductId(string $productId, Context $context): ?ProductEntity
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('id', [$productId]));
 
         $product = $this->productRepository->search($criteria, $context);
         if ($product->count() >= 1) {

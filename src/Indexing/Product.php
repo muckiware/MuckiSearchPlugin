@@ -128,6 +128,15 @@ class Product extends IndexData
         $this->logger->debug($this->updateCounter.' items has been updated');
     }
 
+    public function indexingProduct(
+        IndexStructureInstance $indexStructureInstance,
+        SearchClientInterface $searchClient,
+        string $productId
+    ): void
+    {
+        $checker = true;
+    }
+
     protected function indexingAction(
         string $indexActionType,
         SearchClientInterface $searchClient,
