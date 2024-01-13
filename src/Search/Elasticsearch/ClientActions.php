@@ -111,8 +111,22 @@ class ClientActions
     public function updateIndex(array $params): ?array
     {
         try {
-            $update = $this->getClient()->update($params)->asArray();
-            return $update;
+            return $this->getClient()->update($params)->asArray();
+        } catch (ClientResponseException $clientEx) {
+            $this->logger->error($clientEx->getMessage());
+        } catch (ServerResponseException $resEx) {
+            $this->logger->error($resEx->getMessage());
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+
+        return null;
+    }
+
+    public function deleteIndex(array $params): ?array
+    {
+        try {
+            return $this->getClient()->delete($params)->asArray();
         } catch (ClientResponseException $clientEx) {
             $this->logger->error($clientEx->getMessage());
         } catch (ServerResponseException $resEx) {

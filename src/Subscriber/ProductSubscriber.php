@@ -44,7 +44,35 @@ class ProductSubscriber implements EventSubscriberInterface
 
     public function onProductDeleted(EntityDeletedEvent $event): void
     {
-        $checker = true;
+        if($event->getEntityName() === 'product') {
+
+            $searchClient = $this->searchClientFactory->createSearchClient();
+
+            foreach ($event->getWriteResults() as $writeResult) {
+
+                if($writeResult->getOperation() === 'delete') {
+
+                    $payload = $writeResult->getPayload();
+                    $indexStructureInstances = $this->indexingWrite->getIndexStructureInstances($payload['id']);
+                    /** @var IndexStructureInstance $indexStructureInstance */
+                    foreach ($indexStructureInstances as $indexStructureInstance) {
+
+                        if(!$searchClient->checkIndicesExists($indexStructureInstance->getIndexName())) {
+                            continue;
+                        }
+
+                        if($indexStructureInstance->getEntity() === 'product') {
+
+                            $this->indexingProduct->removeProduct(
+                                $payload['id'],
+                                $indexStructureInstance,
+                                $searchClient
+                            );
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public function onProductWritten(EntityWrittenEvent $event): void
@@ -58,8 +86,6 @@ class ProductSubscriber implements EventSubscriberInterface
                 if($writeResult->getOperation() === 'update' || $writeResult->getOperation() === 'create') {
 
                     $payload = $writeResult->getPayload();
-                    $indexStructures = array();
-
                     $indexStructureInstances = $this->indexingWrite->getIndexStructureInstances($payload['id']);
                     /** @var IndexStructureInstance $indexStructureInstance */
                     foreach ($indexStructureInstances as $indexStructureInstance) {

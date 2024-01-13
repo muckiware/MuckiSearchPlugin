@@ -50,8 +50,7 @@ class IndicesController extends AbstractController
     )]
     public function saveIndices(RequestDataBag $requestDataBag, Context $context): JsonResponse
     {
-
-//        $this->searchClientFactory->createSearchClient()->getClient()->search()
+//        $this->searchClientFactory->createSearchClient()->getClient()->delete()
         return new JsonResponse(
             $this->searchClientFactory
                 ->createSearchClient()

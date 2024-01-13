@@ -32,6 +32,8 @@ interface SearchClientInterface
 
     public function updateIndex(array $params): ?array;
 
+    public function deleteIndex(array $params): ?array;
+
     public function getIndices(): ?array;
 
     public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context);

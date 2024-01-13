@@ -136,6 +136,38 @@ class Product extends IndexData
         }
     }
 
+    public function removeProduct(
+        string $productId,
+        IndexStructureInstance $indexStructureInstance,
+        SearchClientInterface $searchClient,
+    ): void
+    {
+
+        $searchResult = $searchClient->searching(array(
+            'index' => $indexStructureInstance->getIndexName(),
+            'body' => array(
+                'query' => array (
+                    'match' => array(
+                        'id' => $productId
+                    )
+                )
+            )
+        ));
+
+        if($searchResult && array_key_exists('id', $searchResult['items'][0])) {
+
+            $indexBody = new CreateIndexBody($this->pluginSettings);
+            $indexBody->setIndexName($indexStructureInstance->getIndexName());
+            $this->indexingAction(
+                'delete',
+                $searchClient,
+                $indexBody,
+                $searchResult['items'][0]['id'],
+                $productId
+            );
+        }
+    }
+
     protected function indexingAction(
         string $indexActionType,
         SearchClientInterface $searchClient,
@@ -167,6 +199,20 @@ class Product extends IndexData
                     $this->updateCounter++;
                 }
                 break;
+
+            case 'delete':
+
+                $deleteResult = $searchClient->deleteIndex(array(
+                    'index' => $indexBody->getIndexName(),
+                    'id' => $indexItemId
+                ));
+                if($deleteResult) {
+
+                    $this->logger->debug('Product successfully deleted in index');
+                    $this->logger->debug(print_r($indexBody->getIndexBody(), true));
+                }
+                break;
+
             default:
                 $this->logger->debug('Nothing todo for product id '.$productId);
         }

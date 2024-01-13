@@ -62,6 +62,11 @@ class Client implements SearchClientInterface
         return null;
     }
 
+    public function deleteIndex(array $params): ?array
+    {
+        return null;
+    }
+
     public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
     {
         return null;
