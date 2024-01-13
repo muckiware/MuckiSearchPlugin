@@ -26,6 +26,7 @@ use MuckiSearchPlugin\Services\Content\IndexStructure;
 use MuckiSearchPlugin\Services\IndicesSettings;
 use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureEntity;
 use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureTranslation\IndexStructureTranslationEntity;
+use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureTranslation\IndexStructureTranslationCollection;
 use MuckiSearchPlugin\Search\SearchClientFactory;
 use MuckiSearchPlugin\Entities\CreateIndexBody;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
@@ -61,7 +62,7 @@ class Write
             switch ($indexStructureInstance->getEntity()) {
 
                 case 'product':
-                    $this->indexingProduct->indexingProducts($indexStructureInstance, $cliOutput, $searchClient);
+                    $this->indexingProduct->indexingProducts($indexStructureInstance, $searchClient, $cliOutput);
                     break;
 
                 default:
@@ -70,39 +71,73 @@ class Write
         }
     }
 
-    public function getIndexStructureInstances(): array
+    public function getIndexStructureInstances(?string $itemId=null): array
     {
         $indexStructures = array();
+        $items = array();
+
         /** @var IndexStructureEntity $indexStructure */
         foreach ($this->indexStructure->getAllActiveIndexStructure()->getEntities() as $indexStructure) {
 
             $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
             $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
 
-            $allActiveProduct = $this->products->getAllActiveProduct(
-                $indexStructure->getSalesChannelId()
-            )->getElements();
+            switch ($indexStructure->getEntity()) {
 
-            /** @var IndexStructureTranslationEntity $translation */
-            foreach ($indexStructure->get('translations') as $translation) {
+                case 'product':
 
-                //Set structure instance globals
-                $indexStructureInstance = new IndexStructureInstance();
-                $indexStructureInstance->setEntity($indexStructure->getEntity());
-                $indexStructureInstance->setSalesChannelId($indexStructure->getSalesChannelId());
-
-                //Set structure instance items
-                $indexStructureInstance->setItems($allActiveProduct);
-                $indexStructureInstance->setItemTotals(count($allActiveProduct));
-
-                $this->indicesSettings->setTemplateVariable('languageId', $translation->getLanguageId());
-                $indexStructureInstance->setIndexName($this->indicesSettings->getIndexNameByTemplate());
-                $indexStructureInstance->setLanguageId($translation->getLanguageId());
-                $indexStructureInstance->setLanguageName($translation->get('language')->getName());
-                $indexStructureInstance->setIndexStructureTranslation($translation);
-
-                $indexStructures[] = $indexStructureInstance;
+                    if ($itemId) {
+                        $items = $this->products->getProductByProductId(
+                            $itemId,
+                            $indexStructure->getSalesChannelId()
+                        )->getElements();
+                    } else {
+                        $items = $this->products->getAllActiveProduct(
+                            $indexStructure->getSalesChannelId()
+                        )->getElements();
+                    }
+                    break;
+                default:
+                    $this->logger->warning('Missing valid entity');
             }
+
+            $indexStructures = $this->createIndexStructuresByTranslations(
+                $indexStructure,
+                $indexStructures,
+                $items,
+                $indexStructure->get('translations')
+            );
+        }
+
+        return $indexStructures;
+    }
+
+    public function createIndexStructuresByTranslations(
+        IndexStructureEntity $indexStructure,
+        array $indexStructures,
+        array $items,
+        IndexStructureTranslationCollection $translations
+    ): array
+    {
+        /** @var IndexStructureTranslationEntity $translation */
+        foreach ($translations as $translation) {
+
+            //Set structure instance globals
+            $indexStructureInstance = new IndexStructureInstance();
+            $indexStructureInstance->setEntity($indexStructure->getEntity());
+            $indexStructureInstance->setSalesChannelId($indexStructure->getSalesChannelId());
+
+            //Set structure instance items
+            $indexStructureInstance->setItems($items);
+            $indexStructureInstance->setItemTotals(count($items));
+
+            $this->indicesSettings->setTemplateVariable('languageId', $translation->getLanguageId());
+            $indexStructureInstance->setIndexName($this->indicesSettings->getIndexNameByTemplate());
+            $indexStructureInstance->setLanguageId($translation->getLanguageId());
+            $indexStructureInstance->setLanguageName($translation->get('language')->getName());
+            $indexStructureInstance->setIndexStructureTranslation($translation);
+
+            $indexStructures[] = $indexStructureInstance;
         }
 
         return $indexStructures;

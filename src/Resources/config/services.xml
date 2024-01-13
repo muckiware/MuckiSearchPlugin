@@ -109,6 +109,9 @@
             <argument type="service" id="MuckiSearchPlugin\Indexing\Product"/>
             <argument type="service" id="MuckiSearchPlugin\Indexing\Write"/>
             <argument type="service" id="searchclient.factory"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Content\Products"/>
             <tag name="kernel.event_subscriber" priority="1000"/>
         </service>
     </services>

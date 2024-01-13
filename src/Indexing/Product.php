@@ -53,28 +53,35 @@ class Product extends IndexData
 
     public function indexingProducts(
         IndexStructureInstance $indexStructureInstance,
-        OutputInterface $cliOutput,
-        SearchClientInterface $searchClient
+        SearchClientInterface $searchClient,
+        ?OutputInterface $cliOutput = null,
     ): void
     {
         $this->createCounter = 0;
         $this->updateCounter = 0;
-        $progressProduct = $this->cliOutput->prepareProductProgress($indexStructureInstance->getItemTotals());
-        $progressProductBar = $this->cliOutput->prepareProductProgressBar(
-            $progressProduct,
-            $indexStructureInstance->getLanguageName(),
-            $indexStructureInstance->getItemTotals(),
-            $cliOutput
-        );
+
+        if($cliOutput) {
+
+            $progressProduct = $this->cliOutput->prepareProductProgress($indexStructureInstance->getItemTotals());
+            $progressProductBar = $this->cliOutput->prepareProductProgressBar(
+                $progressProduct,
+                $indexStructureInstance->getLanguageName(),
+                $indexStructureInstance->getItemTotals(),
+                $cliOutput
+            );
+        }
 
         /** @var ProductEntity $product */
         foreach ($indexStructureInstance->getItems() as $product) {
 
-            if ($progressProduct->getOffset() >= $progressProduct->getTotal()) {
-                $progressProductBar->setProgress($progressProduct->getTotal());
-            } else {
-                $progressProductBar->advance();
-                $progressProductBar->display();
+            if($cliOutput) {
+
+                if ($progressProduct->getOffset() >= $progressProduct->getTotal()) {
+                    $progressProductBar->setProgress($progressProduct->getTotal());
+                } else {
+                    $progressProductBar->advance();
+                    $progressProductBar->display();
+                }
             }
 
             $indexBody = new CreateIndexBody($this->pluginSettings);
@@ -121,20 +128,12 @@ class Product extends IndexData
             }
         }
 
-        $cliOutput->write( $this->createCounter.' items has been created', true);
-        $cliOutput->write( $this->updateCounter.' items has been updated', true);
-        $cliOutput->writeln("\n");
-        $this->logger->debug($this->createCounter.' items has been created');
-        $this->logger->debug($this->updateCounter.' items has been updated');
-    }
+        if($cliOutput) {
 
-    public function indexingProduct(
-        IndexStructureInstance $indexStructureInstance,
-        SearchClientInterface $searchClient,
-        string $productId
-    ): void
-    {
-        $checker = true;
+            $cliOutput->write( $this->createCounter.' items has been created', true);
+            $cliOutput->write( $this->updateCounter.' items has been updated', true);
+            $cliOutput->writeln("\n");
+        }
     }
 
     protected function indexingAction(
@@ -151,6 +150,9 @@ class Product extends IndexData
 
                 $indexingResult = $searchClient->indexing($indexBody->getIndexBody());
                 if($indexingResult) {
+
+                    $this->logger->debug('Product successfully created in index');
+                    $this->logger->debug(print_r($indexBody->getIndexBody(), true));
                     $this->createCounter++;
                 }
                 break;
@@ -159,6 +161,9 @@ class Product extends IndexData
                 $indexBody->setIndexId($indexItemId);
                 $updateResult = $searchClient->updateIndex($indexBody->getIndexBody());
                 if($updateResult) {
+
+                    $this->logger->debug('Product successfully updated in index');
+                    $this->logger->debug(print_r($indexBody->getIndexBody(), true));
                     $this->updateCounter++;
                 }
                 break;

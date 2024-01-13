@@ -24,13 +24,47 @@ class Products
     public function __construct(
         protected LoggerInterface $logger,
         protected EntityRepository $productRepository
-    )
-    {
-    }
+    ){}
 
     public function getAllActiveProduct(string $salesChannelId): EntitySearchResult
     {
-        $criteria = (new Criteria())
+        $criteria = $this->getCriteriaAssociations($salesChannelId);
+
+        $criteria->addSorting(
+            new FieldSorting('updatedAt', FieldSorting::DESCENDING),
+            new FieldSorting('createdAt', FieldSorting::DESCENDING)
+        );
+        $criteria->setLimit(10);
+
+        return $this->productRepository->search($criteria, Context::createDefaultContext());
+    }
+
+    public function getProductByProductNumber(string $productNumber, string $salesChannelId): ?ProductEntity
+    {
+        $criteria = $this->getCriteriaAssociations($salesChannelId);
+        $criteria->addFilter(new EqualsAnyFilter('productNumber', [$productNumber]));
+        $criteria->setLimit(1);
+
+        $product = $this->productRepository->search($criteria, Context::createDefaultContext());
+        if ($product->count() >= 1) {
+            return $product->first();
+        } else {
+            return null;
+        }
+    }
+
+    public function getProductByProductId(string $productId, string $salesChannelId): EntitySearchResult
+    {
+        $criteria = $this->getCriteriaAssociations($salesChannelId);
+        $criteria->addFilter(new EqualsAnyFilter('id', [$productId]));
+        $criteria->setLimit(1);
+
+        return $this->productRepository->search($criteria, Context::createDefaultContext());
+    }
+
+    protected function getCriteriaAssociations(string $salesChannelId): Criteria
+    {
+        return (new Criteria())
             ->addAssociation('translations')
             ->addAssociation('manufacturer.media')
             ->addAssociation('options.group')
@@ -42,53 +76,14 @@ class Products
             ->addAssociation('tags')
             ->addAssociation('categories')
             ->addAssociation('cover')
-        ;
-
-        $criteria
             ->addFilter(new EqualsFilter('active', true))
             ->addFilter(new EqualsFilter('seoUrls.isCanonical', true))
             ->addFilter(new EqualsFilter('visibilities.salesChannelId', $salesChannelId))
-            ->addFilter(new MultiFilter(
-            MultiFilter::CONNECTION_OR, [
+            ->addFilter(new MultiFilter(MultiFilter::CONNECTION_OR, [
                 new EqualsFilter('visibilities.visibility', 20),
                 new EqualsFilter('visibilities.visibility', 30)
-            ]
-        ));
-
-        $criteria->addSorting(
-            new FieldSorting('updatedAt', FieldSorting::DESCENDING),
-            new FieldSorting('createdAt', FieldSorting::DESCENDING)
-        );
-
-        $criteria->setLimit(1);
-
-        return $this->productRepository->search($criteria, Context::createDefaultContext());
-    }
-
-    public function getProductByProductNumber(string $productNumber, Context $context): ?ProductEntity
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsAnyFilter('productNumber', [$productNumber]));
-
-        $product = $this->productRepository->search($criteria, $context);
-        if ($product->count() >= 1) {
-            return $product->first();
-        } else {
-            return null;
-        }
-    }
-
-    public function getProductByProductId(string $productId, Context $context): ?ProductEntity
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsAnyFilter('id', [$productId]));
-
-        $product = $this->productRepository->search($criteria, $context);
-        if ($product->count() >= 1) {
-            return $product->first();
-        } else {
-            return null;
-        }
+            ]))
+        ;
     }
 }
 
