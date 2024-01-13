@@ -34,7 +34,7 @@ class Products
             new FieldSorting('updatedAt', FieldSorting::DESCENDING),
             new FieldSorting('createdAt', FieldSorting::DESCENDING)
         );
-        $criteria->setLimit(10);
+        //just for debugging --> $criteria->setLimit(10);
 
         return $this->productRepository->search($criteria, Context::createDefaultContext());
     }

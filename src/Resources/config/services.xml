@@ -114,5 +114,10 @@
             <argument type="service" id="MuckiSearchPlugin\Services\Content\Products"/>
             <tag name="kernel.event_subscriber" priority="1000"/>
         </service>
+        <service class="MuckiSearchPlugin\Subscriber\SearchSubscriber" id="muckiSearchPlugin.subscriber.searchSubscriber">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="searchclient.factory"/>
+            <tag name="kernel.event_subscriber" priority="1000"/>
+        </service>
     </services>
 </container>
