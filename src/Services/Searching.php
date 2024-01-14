@@ -15,6 +15,7 @@ namespace MuckiSearchPlugin\Services;
 
 use MuckiSearchPlugin\Search\SearchClientFactory;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
+use Symfony\Component\HttpFoundation\Request;
 
 class Searching
 {
@@ -23,12 +24,13 @@ class Searching
         protected SearchClientFactory $searchClientFactory
     ){}
 
-    public function checkSearchEngineAvailable(string $scope): bool
+    public function checkSearchEngineAvailable(Request $request, string $scope): bool
     {
         if(
             $scope === 'user' &&
             $this->pluginSettings->isEnabled() &&
-            $this->searchClientFactory->createSearchClient()->getServerInfoAsObject()
+            $this->searchClientFactory->createSearchClient()->getServerInfoAsObject() &&
+            $request->get('search')
         ) {
             return true;
         }
