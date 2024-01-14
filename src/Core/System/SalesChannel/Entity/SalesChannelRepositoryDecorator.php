@@ -14,25 +14,18 @@ use Shopware\Core\Framework\DataAbstractionLayer\Event\EntitySearchResultLoadedE
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\AssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Read\EntityReaderInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositorySearchDetector;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntityAggregatorInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearcherInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\Event\SalesChannelProcessCriteriaEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntityIdSearchResultLoadedEvent;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelDefinitionInterface;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntitySearchResultLoadedEvent;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -59,7 +52,7 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         private readonly EntityDefinition $definition,
         private readonly EntityReaderInterface $reader,
         private readonly EntitySearcherInterface $searcher,
-        private readonly EntityAggregatorInterface $aggregator,
+        protected EntityAggregatorInterface $aggregator,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly EntityLoadedEventFactory $eventFactory,
         protected ServicesSearching $servicesSearching,
@@ -115,7 +108,7 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
             $salesChannelContext
         );
 
-        $result = new EntitySearchResult(
+        return new EntitySearchResult(
             $this->definition->getEntityName(),
             0,
             $salesChannelProductCollection,
@@ -123,8 +116,6 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
             $criteria,
             $salesChannelContext->getContext()
         );
-
-        return $result;
     }
 
     protected function getResultsByServer(
