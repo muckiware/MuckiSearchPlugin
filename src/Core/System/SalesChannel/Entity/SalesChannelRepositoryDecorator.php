@@ -2,6 +2,10 @@
 
 namespace MuckiSearchPlugin\Core\System\SalesChannel\Entity;
 
+use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\Listing\Processor\CompositeListingProcessor;
+use Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityAggregationResultLoadedEvent;
@@ -27,7 +31,16 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntityIdSearchResultLoa
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelDefinitionInterface;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntitySearchResultLoadedEvent;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+
+use MuckiSearchPlugin\Search\SearchClientFactory;
+use MuckiSearchPlugin\Services\IndicesSettings;
+use MuckiSearchPlugin\Services\Content\IndexStructure;
+use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Services\Searching as ServicesSearching;
 
 /**
@@ -49,7 +62,13 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         private readonly EntityAggregatorInterface $aggregator,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly EntityLoadedEventFactory $eventFactory,
-        protected ServicesSearching $servicesSearching
+        protected ServicesSearching $servicesSearching,
+        protected SearchClientFactory $searchClientFactory,
+        protected IndexStructure $indexStructure,
+        protected RequestStack $requestStack,
+        protected CompositeListingProcessor $processor,
+        protected ProductSearchBuilderInterface $searchBuilder,
+        protected IndicesSettings $indicesSettings
     ) {
         $this->originalSalesChannelRepository = $salesChannelRepository;
 
@@ -78,19 +97,55 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
 
     public function pluginSearch(Criteria $criteria, SalesChannelContext $salesChannelContext): EntitySearchResult
     {
-        $alesChannelProductCollection = new SalesChannelProductCollection();
-//        $alesChannelProductCollection->add();
+        $request = $this->requestStack->getCurrentRequest();
+        $searchClient = $this->searchClientFactory->createSearchClient();
+
+        $this->processor->prepare($request, $criteria, $salesChannelContext);
+        $this->searchBuilder->build($request, $criteria, $salesChannelContext);
+
+        $resultByServer = $this->getResultsByServer($searchClient, $criteria, $salesChannelContext);
 
         $result = new EntitySearchResult(
             $this->definition->getEntityName(),
             0,
-            $alesChannelProductCollection,
+            $searchClient->createSalesChannelProductCollection($resultByServer),
             null,
             $criteria,
             $salesChannelContext->getContext()
         );
 
         return $result;
+    }
+
+    protected function getResultsByServer(
+        SearchClientInterface $searchClient,
+        Criteria $criteria,
+        SalesChannelContext $salesChannelContext
+    ): ?array
+    {
+        $currentIndexStructure = $this->indexStructure->getCurrentIndexStructure(
+            'product',
+            $salesChannelContext->getLanguageId(),
+            $salesChannelContext->getSalesChannelId(),
+            $salesChannelContext->getContext()
+        );
+
+        $this->indicesSettings->setTemplateVariable('entity', 'product');
+        $this->indicesSettings->setTemplateVariable('salesChannelId', $salesChannelContext->getSalesChannelId());
+        $this->indicesSettings->setTemplateVariable('languageId', $salesChannelContext->getLanguageId());
+
+        $queryObject = $searchClient->createQueryObject($criteria, $currentIndexStructure->get('mappings'));
+
+        return $searchClient->searching(array(
+            'index' => $this->indicesSettings->getIndexNameByTemplate(),
+            'body' => array(
+                'query' => array (
+                    'bool' => array(
+                        'should' => $queryObject
+                    )
+                )
+            )
+        ));
     }
 
     /**

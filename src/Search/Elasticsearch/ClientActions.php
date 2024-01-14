@@ -24,8 +24,10 @@ use Elastic\Elasticsearch\Exception\AuthenticationException;
 
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Entities\CreateIndicesBody;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 
-class ClientActions
+class ClientActions extends ClientQuery
 {
     public function __construct(
         protected PluginSettings $settings,

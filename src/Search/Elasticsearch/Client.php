@@ -13,6 +13,8 @@
 
 namespace MuckiSearchPlugin\Search\Elasticsearch;
 
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Psr\Log\LoggerInterface;
@@ -168,5 +170,29 @@ class Client extends ClientActions implements SearchClientInterface
         }
 
         return $mappings;
+    }
+
+    public function createSalesChannelProductCollection(array $resultByServer): SalesChannelProductCollection
+    {
+        $alesChannelProductCollection = new SalesChannelProductCollection();
+
+        if(array_key_exists('items', $resultByServer)) {
+
+            foreach ($resultByServer['items'] as $item) {
+
+                $salesChannelProduct = new SalesChannelProductEntity();
+                foreach ($item['source'] as $sourceKey => $sourceValue) {
+
+                    if($sourceKey === 'id') {
+                        $salesChannelProduct->{'_uniqueIdentifier'} = $sourceValue;
+                    }
+                    $salesChannelProduct->{$sourceKey} = $sourceValue;
+                }
+
+                $alesChannelProductCollection->add($salesChannelProduct);
+            }
+        }
+
+        return $alesChannelProductCollection;
     }
 }

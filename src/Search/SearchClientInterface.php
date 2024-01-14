@@ -16,7 +16,9 @@ namespace MuckiSearchPlugin\Search;
 use Elastic\Elasticsearch\ClientInterface as ElasticsearchClient;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use OpenSearch\Client as OpenSearchClient;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 
 interface SearchClientInterface
 {
@@ -43,4 +45,8 @@ interface SearchClientInterface
     public function removeIndicesByIndexName(string $indexName);
 
     public function checkIndicesExists(string $indexName): bool;
+
+    public function createQueryObject(Criteria $criteria, array $mappings): array;
+
+    public function createSalesChannelProductCollection(array $resultByServer): SalesChannelProductCollection;
 }

@@ -91,6 +91,28 @@ class IndexStructure
         }
     }
 
+    public function getCurrentIndexStructure(
+        string $entity,
+        string $languageId,
+        string $salesChannelId,
+        Context $context
+    ): ?IndexStructureEntity
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('entity', $entity));
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelId));
+        $criteria->addFilter(new EqualsFilter('translations.languageId', $languageId));
+        $criteria->addAssociation('translations');
+        $criteria->addAssociation('translations.mappings');
+
+        $indexStructureResult = $this->indexStructureRepository->search($criteria, $context);
+        if ($indexStructureResult->count() >= 1) {
+            return $indexStructureResult->first();
+        } else {
+            return null;
+        }
+    }
+
     public function removeIndexStructureById(string $indexStructureId, Context $context): ?EntityWrittenContainerEvent
     {
         try {

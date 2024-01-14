@@ -14,11 +14,13 @@
 namespace MuckiSearchPlugin\Search\Opensearch;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Framework\Context;
 use OpenSearch\Client as OpenSearchClient;
 
 use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 
 class Client implements SearchClientInterface
 {
@@ -85,5 +87,15 @@ class Client implements SearchClientInterface
     public function checkIndicesExists(string $indexName): bool
     {
         return false;
+    }
+
+    public function createQueryObject(Criteria $criteria, array $mappings): array
+    {
+        return array();
+    }
+
+    public function createSalesChannelProductCollection(array $resultByServer): SalesChannelProductCollection
+    {
+        return new SalesChannelProductCollection();
     }
 }
