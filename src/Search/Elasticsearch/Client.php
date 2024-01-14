@@ -13,9 +13,14 @@
 
 namespace MuckiSearchPlugin\Search\Elasticsearch;
 
+use MuckiSearchPlugin\Services\Content\SalesChannel;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Psr\Log\LoggerInterface;
 
@@ -30,6 +35,8 @@ use MuckiSearchPlugin\Services\IndicesSettings;
 use MuckiSearchPlugin\Services\Helper as PluginHelper;
 use MuckiSearchPlugin\Entities\Mapping as MappingEntity;
 use MuckiSearchPlugin\Core\Content\ServerOptions\ServerOptionsFactory;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class Client extends ClientActions implements SearchClientInterface
 {
@@ -172,7 +179,12 @@ class Client extends ClientActions implements SearchClientInterface
         return $mappings;
     }
 
-    public function createSalesChannelProductCollection(array $resultByServer): SalesChannelProductCollection
+    public function createSalesChannelProductCollection(
+        array $resultByServer,
+        string $salesChannelId,
+        SalesChannelRepository $salesChannelRepository,
+        SalesChannelContext $salesChannelContext
+    ): SalesChannelProductCollection
     {
         $alesChannelProductCollection = new SalesChannelProductCollection();
 
@@ -184,15 +196,58 @@ class Client extends ClientActions implements SearchClientInterface
                 foreach ($item['source'] as $sourceKey => $sourceValue) {
 
                     if($sourceKey === 'id') {
-                        $salesChannelProduct->{'_uniqueIdentifier'} = $sourceValue;
-                    }
-                    $salesChannelProduct->{$sourceKey} = $sourceValue;
-                }
 
-                $alesChannelProductCollection->add($salesChannelProduct);
+                        $alesChannelProductCollection->add(
+                            $this->getSalesChannelProductById(
+                                $salesChannelRepository,
+                                $sourceValue,
+                                $salesChannelId,
+                                $salesChannelContext
+                            )->first()
+                        );
+                    }
+                }
             }
         }
 
         return $alesChannelProductCollection;
+    }
+
+    protected function getSalesChannelProductById(
+        SalesChannelRepository $salesChannelRepository,
+        string $productId,
+        string $salesChannelId,
+        SalesChannelContext $salesChannelContext
+    )
+    {
+        $criteria = $this->getCriteriaAssociations($salesChannelId);
+        $criteria->addFilter(new EqualsFilter('id', $productId));
+        $criteria->setLimit(1);
+
+        return $salesChannelRepository->search($criteria, $salesChannelContext);
+    }
+
+    protected function getCriteriaAssociations(string $salesChannelId): Criteria
+    {
+        return (new Criteria())
+            ->addAssociation('translations')
+            ->addAssociation('manufacturer.media')
+            ->addAssociation('options.group')
+            ->addAssociation('properties.group')
+            ->addAssociation('mainCategories.category')
+            ->addAssociation('media')
+            ->addAssociation('visibilities')
+            ->addAssociation('seoUrls')
+            ->addAssociation('tags')
+            ->addAssociation('categories')
+            ->addAssociation('cover')
+            ->addFilter(new EqualsFilter('active', true))
+            ->addFilter(new EqualsFilter('seoUrls.isCanonical', true))
+            ->addFilter(new EqualsFilter('visibilities.salesChannelId', $salesChannelId))
+            ->addFilter(new MultiFilter(MultiFilter::CONNECTION_OR, [
+                new EqualsFilter('visibilities.visibility', 20),
+                new EqualsFilter('visibilities.visibility', 30)
+            ]))
+            ;
     }
 }

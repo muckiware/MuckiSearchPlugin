@@ -19,6 +19,8 @@ use OpenSearch\Client as OpenSearchClient;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 interface SearchClientInterface
 {
@@ -48,5 +50,5 @@ interface SearchClientInterface
 
     public function createQueryObject(Criteria $criteria, array $mappings): array;
 
-    public function createSalesChannelProductCollection(array $resultByServer): SalesChannelProductCollection;
+    public function createSalesChannelProductCollection(array $resultByServer, string $salesChannelId, SalesChannelRepository $salesChannelRepository, SalesChannelContext $salesChannelContext): SalesChannelProductCollection;
 }

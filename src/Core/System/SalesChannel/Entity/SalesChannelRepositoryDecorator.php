@@ -103,12 +103,17 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         $this->processor->prepare($request, $criteria, $salesChannelContext);
         $this->searchBuilder->build($request, $criteria, $salesChannelContext);
 
-        $resultByServer = $this->getResultsByServer($searchClient, $criteria, $salesChannelContext);
+        $salesChannelProductCollection = $searchClient->createSalesChannelProductCollection(
+            $this->getResultsByServer($searchClient, $criteria, $salesChannelContext),
+            $salesChannelContext->getSalesChannelId(),
+            $this->salesChannelRepository,
+            $salesChannelContext
+        );
 
         $result = new EntitySearchResult(
             $this->definition->getEntityName(),
             0,
-            $searchClient->createSalesChannelProductCollection($resultByServer),
+            $salesChannelProductCollection,
             null,
             $criteria,
             $salesChannelContext->getContext()

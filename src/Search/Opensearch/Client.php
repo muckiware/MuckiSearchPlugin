@@ -21,6 +21,8 @@ use OpenSearch\Client as OpenSearchClient;
 use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class Client implements SearchClientInterface
 {
@@ -94,7 +96,7 @@ class Client implements SearchClientInterface
         return array();
     }
 
-    public function createSalesChannelProductCollection(array $resultByServer): SalesChannelProductCollection
+    public function createSalesChannelProductCollection(array $resultByServer, string $salesChannelId, SalesChannelRepository $salesChannelRepository, SalesChannelContext $salesChannelContext): SalesChannelProductCollection
     {
         return new SalesChannelProductCollection();
     }
