@@ -44,6 +44,17 @@
         <service id="MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureTranslation\IndexStructureTranslationDefinition">
             <tag name="shopware.entity.definition" entity="muwa_index_structure_translation"/>
         </service>
+        <service id="muckiSearchPlugin.core.salesChannelRepositoryDecorator" class="MuckiSearchPlugin\Core\System\SalesChannel\Entity\SalesChannelRepositoryDecorator" decorates="sales_channel.product.repository" decoration-priority="100">
+            <argument type="service" id="muckiSearchPlugin.core.salesChannelRepositoryDecorator.inner" />
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition"/>
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Read\EntityReaderInterface"/>
+            <argument type="service" id="Shopware\Elasticsearch\Framework\DataAbstractionLayer\ElasticsearchEntitySearcher"/>
+            <argument type="service" id="Shopware\Elasticsearch\Framework\DataAbstractionLayer\ElasticsearchEntityAggregator"/>
+            <argument type="service" id="debug.event_dispatcher"/>
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedEventFactory"/>
+            <argument type="service" id="muckiSearchPlugin.Services.Searching"/>
+        </service>
+
         <service id="serverOptions.factory" class="MuckiSearchPlugin\Core\Content\ServerOptions\ServerOptionsFactory">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
@@ -100,6 +111,10 @@
             <argument type="service" id="twig"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
         </service>
+        <service id="muckiSearchPlugin.Services.Searching" class="MuckiSearchPlugin\Services\Searching">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="searchclient.factory"/>
+        </service>
     	<service id="MuckiSearchPlugin\Services\Settings" public="true">
         	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
@@ -114,10 +129,10 @@
             <argument type="service" id="MuckiSearchPlugin\Services\Content\Products"/>
             <tag name="kernel.event_subscriber" priority="1000"/>
         </service>
-        <service class="MuckiSearchPlugin\Subscriber\SearchSubscriber" id="muckiSearchPlugin.subscriber.searchSubscriber">
-            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
-            <argument type="service" id="searchclient.factory"/>
-            <tag name="kernel.event_subscriber" priority="1000"/>
-        </service>
+<!--        <service class="MuckiSearchPlugin\Subscriber\SearchSubscriber" id="muckiSearchPlugin.subscriber.searchSubscriber">-->
+<!--            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>-->
+<!--            <argument type="service" id="searchclient.factory"/>-->
+<!--            <tag name="kernel.event_subscriber" priority="1000"/>-->
+<!--        </service>-->
     </services>
 </container>

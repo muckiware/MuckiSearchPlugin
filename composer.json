@@ -1,7 +1,7 @@
 {
 	"name" : "mucki/search-plugin",
 	"description" : "Mucki Search Plugin",
-	"version": "v1.0.0",
+	"version": "v0.1.0",
 	"type" : "shopware-platform-plugin",
 	"license" : "MIT",
 	"authors": [

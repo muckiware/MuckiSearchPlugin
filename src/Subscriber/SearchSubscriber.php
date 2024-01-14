@@ -33,7 +33,13 @@ class SearchSubscriber implements EventSubscriberInterface
     {
         return [
             ProductEvents::PRODUCT_SEARCH_RESULT_LOADED_EVENT => 'onProductSearchResult',
+            ProductEvents::PRODUCT_AGGREGATION_LOADED_EVENT=> 'onProductAggregation'
         ];
+    }
+
+    public function onProductAggregation($event)
+    {
+        $checker = true;
     }
 
     public function onProductSearchResult(EntitySearchResultLoadedEvent $event): void

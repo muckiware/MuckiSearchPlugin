@@ -13,23 +13,25 @@
 
 namespace MuckiSearchPlugin\Services;
 
-use MuckiSearchPlugin\Services\Settings;
-use MuckiSearchPlugin\Search\SearchClientInterface;
+use MuckiSearchPlugin\Search\SearchClientFactory;
+use MuckiSearchPlugin\Services\Settings as PluginSettings;
 
 class Searching
 {
     public function __construct(
-        protected Settings $settings,
-        protected SearchClientInterface $searchClient
+        protected PluginSettings $pluginSettings,
+        protected SearchClientFactory $searchClientFactory
     ){}
-    
-    public function getServerInfo()
-    {
-        $this->searchClient->getInfoAsString();
-    }
 
-    protected function getTypeOfServer()
+    public function checkSearchEngineAvailable(string $scope): bool
     {
-
+        if(
+            $scope === 'user' &&
+            $this->pluginSettings->isEnabled() &&
+            $this->searchClientFactory->createSearchClient()->getServerInfoAsObject()
+        ) {
+            return true;
+        }
+        return false;
     }
 }
