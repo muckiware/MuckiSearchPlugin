@@ -1,3 +1,70 @@
 {
-  "muwa-search-structure": {}
+  "muwa-search-structure": {
+    "general" : {
+      "mainMenuLabel": "Search index structure",
+      "description": "Search index structure Administration",
+      "saveSuccessAlertTitle": "Successfully saved",
+      "saveSuccessAlertMessage": "Search index structure was saved successfully."
+    },
+    "tabs": {
+      "structureList": "Index configurations",
+      "structureIndices": "Indices Structures"
+    },
+    "list": {
+      "header": {
+        "createButtonLabel": "Add",
+        "cancelButtonLabel": "Cancel",
+        "saveButtonLabel": "Save structure / indices",
+        "createStructureLabel" : "Add structure"
+      },
+      "emptyListText": "No search index structure entries available.",
+      "nameLabel": "Name",
+      "entityLabel": "Entity",
+      "activeLabel": "Active",
+      "createDateLabel": "Created",
+      "updateDateLabel": "Updated",
+      "healthLabel": "Condition",
+      "statusLabel": "Status",
+      "primariesLabel": "Primary",
+      "replicasLabel": "Copies",
+      "docsCountLabel": "Number of documents",
+      "storageSizeLabel": "storage size",
+      "docsDeletedLabel": "Deleted documents"
+    },
+    "detail": {
+      "mappingLabel": "Mappings (language-dependent)",
+      "settingsLabel": "Settings (language-dependent)",
+      "generalLabel": "General (global)",
+      "activeLabel": "Active",
+      "nameLabel": "Technical name",
+      "entityLabel": "Entity",
+      "entity": {
+        "product": "Product",
+        "cms": "CMS",
+        "category": "Category",
+        "manufacturer": "Manufacturer"
+      },
+      "mappingEmptyState": "No mappings available.",
+      "settingsEmptyState": "No settings available.",
+      "addMappingLabel": "Add mapping",
+      "addSettingLabel": "Add settings",
+      "mappingsDescription": "Further information on possible mappings: <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/8.11/mapping.html\" target=\"_blank\">Index Mappings</a>.",
+      "settingsDescription": "Further information on possible index settings: <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/8.11/index-modules.html#index-modules-settings\" target=\"_blank\">Index Settings</a>.",
+      "salesChannelLabel": "Sales channel"
+    },
+    "create": {
+      "errorTitle": "Storage problem occurred"
+    },
+    "mappingList": {
+      "inputDataTypeLabel": "Data type",
+      "defaultValue": "Default Value",
+      "entityLabel": "Database item",
+      "deleteMappingLabel": "Remove mapping"
+    },
+    "settingList": {
+      "settingKey": "Key",
+      "settingValue": "Value",
+      "deleteSettingLabel": "Remove setting"
+    }
+  }
 }
