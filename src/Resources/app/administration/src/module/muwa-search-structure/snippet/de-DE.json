@@ -1,7 +1,7 @@
 {
   "muwa-search-structure": {
     "general" : {
-      "mainMenuLabel": "Such-Index Struktur",
+      "mainMenuLabel": "Such-Erweiterung",
       "description": "Such-Index Struktur Verwaltung",
       "saveSuccessAlertTitle": "Erfolgreich gespeichert",
       "saveSuccessAlertMessage": "Such-Index Struktur wurde erfolgreich gespeichert."

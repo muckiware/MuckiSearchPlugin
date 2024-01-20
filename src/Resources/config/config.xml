@@ -32,6 +32,19 @@
             <label>Port</label>
             <defaultValue>9200</defaultValue>
         </input-field>
+        <input-field type="bool">
+            <name>activeAuthentication</name>
+            <label>Server Authentication</label>
+            <label lang="de-DE">Server Authentifizierung</label>
+        </input-field>
+        <input-field type="text">
+            <name>serverUsername</name>
+            <label>Username</label>
+        </input-field>
+        <input-field type="password">
+            <name>serverPassword</name>
+            <label>Password</label>
+        </input-field>
     </card>
     <card>
         <title>Indices Settings</title>

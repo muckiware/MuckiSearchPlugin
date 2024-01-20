@@ -1,7 +1,7 @@
 {
   "muwa-search-structure": {
     "general" : {
-      "mainMenuLabel": "Search index structure",
+      "mainMenuLabel": "Search extension",
       "description": "Search index structure Administration",
       "saveSuccessAlertTitle": "Successfully saved",
       "saveSuccessAlertMessage": "Search index structure was saved successfully."
