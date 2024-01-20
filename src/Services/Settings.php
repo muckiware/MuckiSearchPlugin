@@ -28,8 +28,13 @@ class Settings
     const CONFIG_PATH_SERVER_HOST = 'MuckiSearchPlugin.config.serverHost';
     const CONFIG_PATH_SERVER_PORT = 'MuckiSearchPlugin.config.serverPort';
     const CONFIG_PATH_SERVER_AUTHENTICATION = 'MuckiSearchPlugin.config.activeAuthentication';
+    const CONFIG_PATH_SERVER_AUTHENTICATION_METHOD = 'MuckiSearchPlugin.config.serverAuthenticationMethod';
+
     const CONFIG_PATH_SERVER_USER_NAME = 'MuckiSearchPlugin.config.serverUsername';
     const CONFIG_PATH_SERVER_USER_PASSWORD = 'MuckiSearchPlugin.config.serverPassword';
+
+    const CONFIG_PATH_SERVER_API_KEY = 'MuckiSearchPlugin.config.serverApiKey';
+    const CONFIG_PATH_SERVER_ELASTIC_CLOUD_ID = 'MuckiSearchPlugin.config.elasticCloudId';
 
     const CONFIG_PATH_MAPPING_PRODUCT_FIELDS = 'MuckiSearchPlugin.config.mappingProductFields';
     const CONFIG_PATH_DEFAULT_NUMBER_SHARDS = 'MuckiSearchPlugin.config.defaultNumberShards';
@@ -167,9 +172,17 @@ class Settings
         return $this->config->getBool($this::CONFIG_PATH_SERVER_AUTHENTICATION);
     }
 
+    public function getServerAuthenticationMethod(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SERVER_AUTHENTICATION_METHOD) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SERVER_AUTHENTICATION_METHOD);
+        }
+        return null;
+    }
+
     public function getServerUserName(): ?string
     {
-        if($this->config->getString($this::CONFIG_PATH_SERVER_USER_NAME) >= 1) {
+        if($this->config->getString($this::CONFIG_PATH_SERVER_USER_NAME) !== '') {
             return $this->config->getString($this::CONFIG_PATH_SERVER_USER_NAME);
         }
         return null;
@@ -177,8 +190,24 @@ class Settings
 
     public function getServerUserPassword(): ?string
     {
-        if($this->config->getString($this::CONFIG_PATH_SERVER_USER_PASSWORD) >= 1) {
+        if($this->config->getString($this::CONFIG_PATH_SERVER_USER_PASSWORD) !== '') {
             return $this->config->getString($this::CONFIG_PATH_SERVER_USER_PASSWORD);
+        }
+        return null;
+    }
+
+    public function getServerApiKey(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SERVER_API_KEY) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SERVER_API_KEY);
+        }
+        return null;
+    }
+
+    public function getServerElasticCloudId(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SERVER_ELASTIC_CLOUD_ID) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SERVER_ELASTIC_CLOUD_ID);
         }
         return null;
     }

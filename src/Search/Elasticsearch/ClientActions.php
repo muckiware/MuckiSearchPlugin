@@ -41,11 +41,27 @@ class ClientActions extends ClientQuery
             $clientBuilder = ClientBuilder::create();
             $clientBuilder->setHosts([$this->settings->getServerConnectionString()]);
 
-            if($this->settings->isServerAuthenticationEnabled()) {
-                $clientBuilder->setBasicAuthentication(
-                    $this->settings->getServerUserName(),
-                    $this->settings->getServerUserPassword()
-                );
+            if(!$this->settings->isServerAuthenticationEnabled()) {
+                return $clientBuilder->build();
+            }
+
+            switch ($this->settings->getServerAuthenticationMethod()) {
+
+                case 'basicAuthentication':
+                    $clientBuilder->setBasicAuthentication(
+                        $this->settings->getServerUserName(),
+                        $this->settings->getServerUserPassword()
+                    );
+                    break;
+                case 'apiKeyAuthentication':
+                    $clientBuilder->setApiKey(
+                        $this->settings->getServerApiKey()
+                    );
+                    break;
+                default:
+                    $this->logger->warning(
+                        'Missing valid authentication method. Check you plugin configuration'
+                    );
             }
 
             return $clientBuilder->build();
