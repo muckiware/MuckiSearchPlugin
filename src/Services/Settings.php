@@ -27,6 +27,9 @@ class Settings
 
     const CONFIG_PATH_SERVER_HOST = 'MuckiSearchPlugin.config.serverHost';
     const CONFIG_PATH_SERVER_PORT = 'MuckiSearchPlugin.config.serverPort';
+    const CONFIG_PATH_SERVER_AUTHENTICATION = 'MuckiSearchPlugin.config.activeAuthentication';
+    const CONFIG_PATH_SERVER_USER_NAME = 'MuckiSearchPlugin.config.serverUsername';
+    const CONFIG_PATH_SERVER_USER_PASSWORD = 'MuckiSearchPlugin.config.serverPassword';
 
     const CONFIG_PATH_MAPPING_PRODUCT_FIELDS = 'MuckiSearchPlugin.config.mappingProductFields';
     const CONFIG_PATH_DEFAULT_NUMBER_SHARDS = 'MuckiSearchPlugin.config.defaultNumberShards';
@@ -54,7 +57,7 @@ class Settings
     public function getServerPort(): int
     {
         if($this->config->getInt($this::CONFIG_PATH_SERVER_PORT) >= 1) {
-            $this->config->getInt($this::CONFIG_PATH_SERVER_PORT);
+            return $this->config->getInt($this::CONFIG_PATH_SERVER_PORT);
         }
         return Defaults::DEFAULT_SERVER_PORT;
     }
@@ -157,5 +160,26 @@ class Settings
         }
 
         return $indexNamePattern;
+    }
+
+    public function isServerAuthenticationEnabled(): bool
+    {
+        return $this->config->getBool($this::CONFIG_PATH_SERVER_AUTHENTICATION);
+    }
+
+    public function getServerUserName(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SERVER_USER_NAME) >= 1) {
+            return $this->config->getString($this::CONFIG_PATH_SERVER_USER_NAME);
+        }
+        return null;
+    }
+
+    public function getServerUserPassword(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SERVER_USER_PASSWORD) >= 1) {
+            return $this->config->getString($this::CONFIG_PATH_SERVER_USER_PASSWORD);
+        }
+        return null;
     }
 }

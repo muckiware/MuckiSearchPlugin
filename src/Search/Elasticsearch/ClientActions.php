@@ -38,9 +38,18 @@ class ClientActions extends ClientQuery
     public function getClient(): ?ClientInterface
     {
         try {
-            return ClientBuilder::create()
-                ->setHosts([$this->settings->getServerConnectionString()])
-                ->build();
+            $clientBuilder = ClientBuilder::create();
+            $clientBuilder->setHosts([$this->settings->getServerConnectionString()]);
+
+            if($this->settings->isServerAuthenticationEnabled()) {
+                $clientBuilder->setBasicAuthentication(
+                    $this->settings->getServerUserName(),
+                    $this->settings->getServerUserPassword()
+                );
+            }
+
+            return $clientBuilder->build();
+
         } catch (AuthenticationException $exception) {
             $this->logger->error('Problem for to get server connection');
             $this->logger->error($exception->getMessage());
