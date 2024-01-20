@@ -151,6 +151,12 @@ Component.register('muwa-search-structure-detail', {
                     label: 'muwa-search-structure.mappingList.inputDataTypeLabel',
                     allowResize: true,
                     width: '170px',
+                },
+                {
+                    property: 'highlighting',
+                    label: 'muwa-search-structure.mappingList.inputHighlightingLabel',
+                    allowResize: true,
+                    width: '70px',
                 }
             ];
 
