@@ -35,6 +35,7 @@ use MuckiSearchPlugin\Services\IndicesSettings;
 use MuckiSearchPlugin\Services\Content\IndexStructure;
 use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Services\Searching as ServicesSearching;
+use MuckiSearchPlugin\Services\Settings as PluginSettings;
 
 /**
  *
@@ -61,7 +62,8 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         protected RequestStack $requestStack,
         protected CompositeListingProcessor $processor,
         protected ProductSearchBuilderInterface $searchBuilder,
-        protected IndicesSettings $indicesSettings
+        protected IndicesSettings $indicesSettings,
+        protected PluginSettings $pluginSettings
     ) {
         $this->originalSalesChannelRepository = $salesChannelRepository;
 
@@ -135,17 +137,28 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         $this->indicesSettings->setTemplateVariable('salesChannelId', $salesChannelContext->getSalesChannelId());
         $this->indicesSettings->setTemplateVariable('languageId', $salesChannelContext->getLanguageId());
 
-        $queryObject = $searchClient->createQueryObject($criteria, $currentIndexStructure->get('mappings'));
-
-        return $searchClient->searching(array(
-            'index' => $this->indicesSettings->getIndexNameByTemplate(),
-            'body' => array(
-                'query' => array (
-                    'bool' => array(
-                        'should' => $queryObject
+        $searchQueryRequestBody = array(
+            'query' => array (
+                'bool' => array(
+                    'should' => $searchClient->createQueryObject(
+                        $criteria,
+                        $currentIndexStructure->get('mappings')
                     )
                 )
             )
+        );
+
+        $highlightObject = $searchClient->createHighlightObject(
+            $this->pluginSettings,
+            $currentIndexStructure->get('mappings')
+        );
+        if(!empty($highlightObject)) {
+            $searchQueryRequestBody['highlight'] = $highlightObject;
+        }
+
+        return $searchClient->searching(array(
+            'index' => $this->indicesSettings->getIndexNameByTemplate(),
+            'body' => $searchQueryRequestBody
         ));
     }
 

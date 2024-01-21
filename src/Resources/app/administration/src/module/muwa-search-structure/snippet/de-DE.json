@@ -57,9 +57,11 @@
     },
     "mappingList": {
       "inputDataTypeLabel": "Datentyp",
+      "inputHighlightingLabel": "Hervorheben",
       "defaultValue": "Standard-Wert",
       "entityLabel": "Datenbank-Eintrag",
-      "deleteMappingLabel": "Zuweisung entfernen"
+      "deleteMappingLabel": "Zuweisung entfernen",
+      "highlightingLabel": "Aktiv"
     },
     "settingList": {
       "settingKey": "Schlüssel",

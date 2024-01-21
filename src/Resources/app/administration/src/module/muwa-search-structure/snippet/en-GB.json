@@ -57,9 +57,11 @@
     },
     "mappingList": {
       "inputDataTypeLabel": "Data type",
+      "inputHighlightingLabel": "Highlighting",
       "defaultValue": "Default Value",
       "entityLabel": "Database item",
-      "deleteMappingLabel": "Remove mapping"
+      "deleteMappingLabel": "Remove mapping",
+      "highlightingLabel": "Active"
     },
     "settingList": {
       "settingKey": "Key",

@@ -38,9 +38,34 @@ class ClientActions extends ClientQuery
     public function getClient(): ?ClientInterface
     {
         try {
-            return ClientBuilder::create()
-                ->setHosts([$this->settings->getServerConnectionString()])
-                ->build();
+            $clientBuilder = ClientBuilder::create();
+            $clientBuilder->setHosts([$this->settings->getServerConnectionString()]);
+
+            if(!$this->settings->isServerAuthenticationEnabled()) {
+                return $clientBuilder->build();
+            }
+
+            switch ($this->settings->getServerAuthenticationMethod()) {
+
+                case 'basicAuthentication':
+                    $clientBuilder->setBasicAuthentication(
+                        $this->settings->getServerUserName(),
+                        $this->settings->getServerUserPassword()
+                    );
+                    break;
+                case 'apiKeyAuthentication':
+                    $clientBuilder->setApiKey(
+                        $this->settings->getServerApiKey()
+                    );
+                    break;
+                default:
+                    $this->logger->warning(
+                        'Missing valid authentication method. Check you plugin configuration'
+                    );
+            }
+
+            return $clientBuilder->build();
+
         } catch (AuthenticationException $exception) {
             $this->logger->error('Problem for to get server connection');
             $this->logger->error($exception->getMessage());
@@ -248,7 +273,8 @@ class ClientActions extends ClientQuery
                 'indexId' => $resultsHit['_index'],
                 'id' => $resultsHit['_id'],
                 'score' => $resultsHit['_score'],
-                'source' => $resultsHit['_source']
+                'source' => $resultsHit['_source'],
+                'highlight' => $resultsHit['highlight']
             );
         }
 

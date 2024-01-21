@@ -21,4 +21,7 @@ final class Defaults
 
     public const INDICES_SETTINGS_NUMBER_SHARDS = 'number_of_shards';
     public const INDICES_SETTINGS_NUMBER_REPLICAS = 'number_of_replicas';
+
+    public const SEARCH_REQUEST_SETTINGS_PRE_TAGS = '<b>';
+    public const SEARCH_REQUEST_SETTINGS_POST_TAGS = '</b>';
 }

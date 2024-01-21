@@ -27,12 +27,23 @@ class Settings
 
     const CONFIG_PATH_SERVER_HOST = 'MuckiSearchPlugin.config.serverHost';
     const CONFIG_PATH_SERVER_PORT = 'MuckiSearchPlugin.config.serverPort';
+    const CONFIG_PATH_SERVER_AUTHENTICATION = 'MuckiSearchPlugin.config.activeAuthentication';
+    const CONFIG_PATH_SERVER_AUTHENTICATION_METHOD = 'MuckiSearchPlugin.config.serverAuthenticationMethod';
+
+    const CONFIG_PATH_SERVER_USER_NAME = 'MuckiSearchPlugin.config.serverUsername';
+    const CONFIG_PATH_SERVER_USER_PASSWORD = 'MuckiSearchPlugin.config.serverPassword';
+
+    const CONFIG_PATH_SERVER_API_KEY = 'MuckiSearchPlugin.config.serverApiKey';
+    const CONFIG_PATH_SERVER_ELASTIC_CLOUD_ID = 'MuckiSearchPlugin.config.elasticCloudId';
 
     const CONFIG_PATH_MAPPING_PRODUCT_FIELDS = 'MuckiSearchPlugin.config.mappingProductFields';
     const CONFIG_PATH_DEFAULT_NUMBER_SHARDS = 'MuckiSearchPlugin.config.defaultNumberShards';
     const CONFIG_PATH_DEFAULT_NUMBER_REPLICAS = 'MuckiSearchPlugin.config.defaultNumberReplicas';
 
     const CONFIG_PATH_INDICES_SETTINGS_INDEX_NAME_PATTERN = 'MuckiSearchPlugin.config.indexNamePattern';
+
+    const CONFIG_PATH_SEARCH_REQUEST_SETTINGS_PRE_TAGS = 'MuckiSearchPlugin.config.searchRequestSettingsPreTags';
+    const CONFIG_PATH_SEARCH_REQUEST_SETTINGS_POST_TAGS = 'MuckiSearchPlugin.config.searchRequestSettingsPostTags';
 
     public function __construct(
         protected SystemConfigService $config
@@ -54,7 +65,7 @@ class Settings
     public function getServerPort(): int
     {
         if($this->config->getInt($this::CONFIG_PATH_SERVER_PORT) >= 1) {
-            $this->config->getInt($this::CONFIG_PATH_SERVER_PORT);
+            return $this->config->getInt($this::CONFIG_PATH_SERVER_PORT);
         }
         return Defaults::DEFAULT_SERVER_PORT;
     }
@@ -157,5 +168,66 @@ class Settings
         }
 
         return $indexNamePattern;
+    }
+
+    public function isServerAuthenticationEnabled(): bool
+    {
+        return $this->config->getBool($this::CONFIG_PATH_SERVER_AUTHENTICATION);
+    }
+
+    public function getServerAuthenticationMethod(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SERVER_AUTHENTICATION_METHOD) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SERVER_AUTHENTICATION_METHOD);
+        }
+        return null;
+    }
+
+    public function getServerUserName(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SERVER_USER_NAME) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SERVER_USER_NAME);
+        }
+        return null;
+    }
+
+    public function getServerUserPassword(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SERVER_USER_PASSWORD) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SERVER_USER_PASSWORD);
+        }
+        return null;
+    }
+
+    public function getServerApiKey(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SERVER_API_KEY) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SERVER_API_KEY);
+        }
+        return null;
+    }
+
+    public function getServerElasticCloudId(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SERVER_ELASTIC_CLOUD_ID) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SERVER_ELASTIC_CLOUD_ID);
+        }
+        return null;
+    }
+
+    public function getSearchRequestSettingsPreTags(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SEARCH_REQUEST_SETTINGS_PRE_TAGS) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SEARCH_REQUEST_SETTINGS_PRE_TAGS);
+        }
+        return Defaults::SEARCH_REQUEST_SETTINGS_PRE_TAGS;
+    }
+
+    public function getSearchRequestSettingsPostTags(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SEARCH_REQUEST_SETTINGS_POST_TAGS) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SEARCH_REQUEST_SETTINGS_POST_TAGS);
+        }
+        return Defaults::SEARCH_REQUEST_SETTINGS_POST_TAGS;
     }
 }

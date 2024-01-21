@@ -10,13 +10,14 @@
         </input-field>
         <input-field type="single-select">
             <name>serverType</name>
+            <label>Server Type</label>
+            <label lang="de-DE">Servertyp</label>
             <options>
                 <option>
                     <id>elasticsearch</id>
                     <name>Elasticsearch</name>
                 </option>
             </options>
-            <label>Server Type</label>
         </input-field>
     </card>
     <card>
@@ -31,6 +32,42 @@
             <name>serverPort</name>
             <label>Port</label>
             <defaultValue>9200</defaultValue>
+        </input-field>
+        <input-field type="bool">
+            <name>activeAuthentication</name>
+            <label>Server Authentication</label>
+            <label lang="de-DE">Server Authentifizierung</label>
+        </input-field>
+        <input-field type="single-select">
+            <name>serverAuthenticationMethod</name>
+            <label>Server Authentication Method</label>
+            <label lang="de-DE">Server Authentifizierung Methode</label>
+            <options>
+                <option>
+                    <id>basicAuthentication</id>
+                    <name>Basic Authentication</name>
+                </option>
+                <option>
+                    <id>apiKeyAuthentication</id>
+                    <name>API Key Authentication</name>
+                </option>
+            </options>
+        </input-field>
+        <input-field type="text">
+            <name>serverUsername</name>
+            <label>Username</label>
+        </input-field>
+        <input-field type="password">
+            <name>serverPassword</name>
+            <label>Password</label>
+        </input-field>
+        <input-field type="text">
+            <name>elasticCloudId</name>
+            <label>Elastic Cloud Id</label>
+        </input-field>
+        <input-field type="password">
+            <name>serverApiKey</name>
+            <label>Server API Key</label>
         </input-field>
     </card>
     <card>
@@ -66,6 +103,20 @@
             <label>Product fields for mapping</label>
             <label lang="de-DE">Produktfelder für Zuordnung</label>
             <defaultValue>id,productNumber</defaultValue>
+        </input-field>
+    </card>
+    <card>
+        <title>Search Request Settings</title>
+        <title lang="de-DE">Suchanfrage Einstellungen</title>
+        <input-field type="text">
+            <name>searchRequestSettingsPreTags</name>
+            <label>Pre Tags as html-Highlight. Default: <![CDATA[<b>]]></label>
+            <label lang="de-DE">Pre Tags als html-Highlight. Standard: <![CDATA[<b>]]></label>
+        </input-field>
+        <input-field type="text">
+            <name>searchRequestSettingsPostTags</name>
+            <label>Post Tags as html-Highlight. Default: <![CDATA[</b>]]></label>
+            <label lang="de-DE">Post Tags als html-Highlight. Standard: <![CDATA[</b>]]></label>
         </input-field>
     </card>
 </config>
