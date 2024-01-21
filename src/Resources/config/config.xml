@@ -105,4 +105,18 @@
             <defaultValue>id,productNumber</defaultValue>
         </input-field>
     </card>
+    <card>
+        <title>Search Request Settings</title>
+        <title lang="de-DE">Suchanfrage Einstellungen</title>
+        <input-field type="text">
+            <name>searchRequestSettingsPreTags</name>
+            <label>Pre Tags as html-Highlight. Default: <![CDATA[<b>]]></label>
+            <label lang="de-DE">Pre Tags als html-Highlight. Standard: <![CDATA[<b>]]></label>
+        </input-field>
+        <input-field type="text">
+            <name>searchRequestSettingsPostTags</name>
+            <label>Post Tags as html-Highlight. Default: <![CDATA[</b>]]></label>
+            <label lang="de-DE">Post Tags als html-Highlight. Standard: <![CDATA[</b>]]></label>
+        </input-field>
+    </card>
 </config>

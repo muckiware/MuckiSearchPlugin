@@ -35,6 +35,7 @@ use MuckiSearchPlugin\Services\IndicesSettings;
 use MuckiSearchPlugin\Services\Content\IndexStructure;
 use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Services\Searching as ServicesSearching;
+use MuckiSearchPlugin\Services\Settings as PluginSettings;
 
 /**
  *
@@ -61,7 +62,8 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         protected RequestStack $requestStack,
         protected CompositeListingProcessor $processor,
         protected ProductSearchBuilderInterface $searchBuilder,
-        protected IndicesSettings $indicesSettings
+        protected IndicesSettings $indicesSettings,
+        protected PluginSettings $pluginSettings
     ) {
         $this->originalSalesChannelRepository = $salesChannelRepository;
 
@@ -146,7 +148,10 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
             )
         );
 
-        $highlightObject = $searchClient->createHighlightObject($currentIndexStructure->get('mappings'));
+        $highlightObject = $searchClient->createHighlightObject(
+            $this->pluginSettings,
+            $currentIndexStructure->get('mappings')
+        );
         if(!empty($highlightObject)) {
             $searchQueryRequestBody['highlight'] = $highlightObject;
         }

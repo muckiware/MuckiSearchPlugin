@@ -42,6 +42,9 @@ class Settings
 
     const CONFIG_PATH_INDICES_SETTINGS_INDEX_NAME_PATTERN = 'MuckiSearchPlugin.config.indexNamePattern';
 
+    const CONFIG_PATH_SEARCH_REQUEST_SETTINGS_PRE_TAGS = 'MuckiSearchPlugin.config.searchRequestSettingsPreTags';
+    const CONFIG_PATH_SEARCH_REQUEST_SETTINGS_POST_TAGS = 'MuckiSearchPlugin.config.searchRequestSettingsPostTags';
+
     public function __construct(
         protected SystemConfigService $config
     ){}
@@ -210,5 +213,21 @@ class Settings
             return $this->config->getString($this::CONFIG_PATH_SERVER_ELASTIC_CLOUD_ID);
         }
         return null;
+    }
+
+    public function getSearchRequestSettingsPreTags(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SEARCH_REQUEST_SETTINGS_PRE_TAGS) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SEARCH_REQUEST_SETTINGS_PRE_TAGS);
+        }
+        return Defaults::SEARCH_REQUEST_SETTINGS_PRE_TAGS;
+    }
+
+    public function getSearchRequestSettingsPostTags(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SEARCH_REQUEST_SETTINGS_POST_TAGS) !== '') {
+            return $this->config->getString($this::CONFIG_PATH_SEARCH_REQUEST_SETTINGS_POST_TAGS);
+        }
+        return Defaults::SEARCH_REQUEST_SETTINGS_POST_TAGS;
     }
 }

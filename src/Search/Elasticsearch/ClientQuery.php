@@ -29,7 +29,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 
 class ClientQuery
 {
-    public function createHighlightObject(array $mappings): array
+    public function createHighlightObject(PluginSettings $settings, array $mappings): array
     {
         $highlightObject = array();
 
@@ -39,6 +39,9 @@ class ClientQuery
                 $highlightObject['fields'][$mapping['key']] = new \stdClass();
             }
         }
+
+        $highlightObject['pre_tags'] = $settings->getSearchRequestSettingsPreTags();
+        $highlightObject['post_tags'] = $settings->getSearchRequestSettingsPostTags();
 
         return $highlightObject;
     }

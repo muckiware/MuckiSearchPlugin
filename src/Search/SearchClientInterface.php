@@ -22,6 +22,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
+use MuckiSearchPlugin\Services\Settings as PluginSettings;
+
 interface SearchClientInterface
 {
     public function getClient(): ElasticsearchClient | OpenSearchClient | null;
@@ -50,7 +52,7 @@ interface SearchClientInterface
 
     public function createQueryObject(Criteria $criteria, array $mappings): array;
 
-    public function createHighlightObject(array $mappings): array;
+    public function createHighlightObject(PluginSettings $pluginSettings, array $mappings): array;
 
     public function createSalesChannelProductCollection(array $resultByServer, string $salesChannelId, SalesChannelRepository $salesChannelRepository, SalesChannelContext $salesChannelContext): SalesChannelProductCollection;
 }

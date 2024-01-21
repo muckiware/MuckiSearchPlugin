@@ -96,7 +96,7 @@ class Client implements SearchClientInterface
         return array();
     }
 
-    public function createHighlightObject(array $mappings): array
+    public function createHighlightObject(PluginSettings $pluginSettings, array $mappings): array
     {
         return array();
     }
