@@ -273,7 +273,8 @@ class ClientActions extends ClientQuery
                 'indexId' => $resultsHit['_index'],
                 'id' => $resultsHit['_id'],
                 'score' => $resultsHit['_score'],
-                'source' => $resultsHit['_source']
+                'source' => $resultsHit['_source'],
+                'highlight' => $resultsHit['highlight']
             );
         }
 

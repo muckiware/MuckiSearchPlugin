@@ -59,6 +59,7 @@
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\Processor\CompositeListingProcessor"/>
             <argument type="service" id="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface"/>
             <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
         </service>
 
         <service id="serverOptions.factory" class="MuckiSearchPlugin\Core\Content\ServerOptions\ServerOptionsFactory">

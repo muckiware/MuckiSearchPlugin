@@ -192,19 +192,39 @@ class Client extends ClientActions implements SearchClientInterface
 
             foreach ($resultByServer['items'] as $item) {
 
-                $salesChannelProduct = new SalesChannelProductEntity();
                 foreach ($item['source'] as $sourceKey => $sourceValue) {
 
                     if($sourceKey === 'id') {
 
-                        $alesChannelProductCollection->add(
-                            $this->getSalesChannelProductById(
-                                $salesChannelRepository,
-                                $sourceValue,
-                                $salesChannelId,
-                                $salesChannelContext
-                            )->first()
-                        );
+                        $salesChannelProduct = $this->getSalesChannelProductById(
+                            $salesChannelRepository,
+                            $sourceValue,
+                            $salesChannelId,
+                            $salesChannelContext
+                        )->first();
+
+                        if(array_key_exists('highlight', $item)) {
+
+                            foreach ($item['highlight'] as $highlightKey =>  $highlightValue) {
+
+                                $fieldPath = explode('.',$highlightKey);
+                                if(count($fieldPath) === 1) {
+                                    $salesChannelProduct->{$fieldPath[0]} = $highlightValue[0];
+                                } else {
+
+                                    if (in_array('translations', $fieldPath)) {
+
+                                        $productTranslated = $salesChannelProduct->getTranslated();
+                                        $productTranslated[$fieldPath[2]] = $highlightValue[0];
+                                        $salesChannelProduct->setTranslated($productTranslated);
+
+                                    } else {
+                                        $salesChannelProduct->{$highlightKey} = $highlightValue[0];
+                                    }
+                                }
+                            }
+                        }
+                        $alesChannelProductCollection->add($salesChannelProduct);
                     }
                 }
             }

@@ -139,6 +139,17 @@
                                         </div>
                                     </template>
                                 {% endblock %}
+                                {% block wuwa_search_structure_mapping_grid_highlighting_column %}
+                                    <template #column-highlighting="{ item }">
+                                        <div class="sw-cms-list__actions-highlighting">
+                                            <sw-switch-field
+                                                :label="$tc('muwa-search-structure.mappingList.highlightingLabel')"
+                                                v-model="item.highlighting"
+                                            >
+                                            </sw-switch-field>
+                                        </div>
+                                    </template>
+                                {% endblock %}
 
                                 <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
                                 {% block wuwa_search_structure_mapping_grid_context_menu_delete %}
