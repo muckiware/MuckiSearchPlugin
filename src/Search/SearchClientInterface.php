@@ -50,5 +50,7 @@ interface SearchClientInterface
 
     public function createQueryObject(Criteria $criteria, array $mappings): array;
 
+    public function createHighlightObject(array $mappings): array;
+
     public function createSalesChannelProductCollection(array $resultByServer, string $salesChannelId, SalesChannelRepository $salesChannelRepository, SalesChannelContext $salesChannelContext): SalesChannelProductCollection;
 }

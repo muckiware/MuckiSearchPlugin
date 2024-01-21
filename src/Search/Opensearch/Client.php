@@ -96,6 +96,11 @@ class Client implements SearchClientInterface
         return array();
     }
 
+    public function createHighlightObject(array $mappings): array
+    {
+        return array();
+    }
+
     public function createSalesChannelProductCollection(array $resultByServer, string $salesChannelId, SalesChannelRepository $salesChannelRepository, SalesChannelContext $salesChannelContext): SalesChannelProductCollection
     {
         return new SalesChannelProductCollection();

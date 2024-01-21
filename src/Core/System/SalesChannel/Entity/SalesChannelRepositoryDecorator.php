@@ -135,17 +135,25 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         $this->indicesSettings->setTemplateVariable('salesChannelId', $salesChannelContext->getSalesChannelId());
         $this->indicesSettings->setTemplateVariable('languageId', $salesChannelContext->getLanguageId());
 
-        $queryObject = $searchClient->createQueryObject($criteria, $currentIndexStructure->get('mappings'));
-
-        return $searchClient->searching(array(
-            'index' => $this->indicesSettings->getIndexNameByTemplate(),
-            'body' => array(
-                'query' => array (
-                    'bool' => array(
-                        'should' => $queryObject
+        $searchQueryRequestBody = array(
+            'query' => array (
+                'bool' => array(
+                    'should' => $searchClient->createQueryObject(
+                        $criteria,
+                        $currentIndexStructure->get('mappings')
                     )
                 )
             )
+        );
+
+        $highlightObject = $searchClient->createHighlightObject($currentIndexStructure->get('mappings'));
+        if(!empty($highlightObject)) {
+            $searchQueryRequestBody['highlight'] = $highlightObject;
+        }
+
+        return $searchClient->searching(array(
+            'index' => $this->indicesSettings->getIndexNameByTemplate(),
+            'body' => $searchQueryRequestBody
         ));
     }
 

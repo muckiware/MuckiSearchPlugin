@@ -29,6 +29,20 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 
 class ClientQuery
 {
+    public function createHighlightObject(array $mappings): array
+    {
+        $highlightObject = array();
+
+        foreach ($mappings as $mapping) {
+
+            if(array_key_exists('highlighting', $mapping) && $mapping['highlighting']) {
+                $highlightObject['fields'][$mapping['key']] = new \stdClass();
+            }
+        }
+
+        return $highlightObject;
+    }
+
     public function createQueryObject(Criteria $criteria, array $mappings): array
     {
         $queryObject = array();
