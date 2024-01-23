@@ -1,12 +1,20 @@
 # MuckiSearchPlugin
 Shopware 6 plugin for Elasticsearch server integration.
 
+## Features
+- Full easy integration of the Elasticsearch server
+- Basic Authentication or API Key Authentication for the search server 
+- Automatic indexing of all active products into search index
+- Creates search indices in relation to sales channel and language
+- Free configuration of product fields for the search index
+
 ## System Requirements
-- Shopware Version 6.5.x
+- Shopware Version 6.5.2
 - Elasticsearch Version 7.x
 - php 8.1 or higher
 ## Installation
 ```shell
+composer require muckiware/search-plugin
 bin/console plugin:install -a MuckiSearchPlugin
 ```
 ## Configuration
