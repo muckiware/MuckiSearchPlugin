@@ -45,10 +45,10 @@ class Migration1703322259 extends MigrationStep
                 `settings` longtext DEFAULT NULL,
                 `created_at` datetime(3) NOT NULL,
                 `updated_at` datetime(3) DEFAULT NULL,
-                PRIMARY KEY (`index_structure_id`,`language_id`),
+                PRIMARY KEY (`muwa_index_structure_id`,`language_id`),
                 KEY `fk.muwa_index_structure_translation.language_id` (`language_id`),
                 CONSTRAINT `fk.muwa_index_structure_translation.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-                CONSTRAINT `fk.muwa_index_structure_translation.muwa_index_structure_id` FOREIGN KEY (`index_structure_id`) REFERENCES `muwa_index_structure` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+                CONSTRAINT `fk.muwa_index_structure_translation.muwa_index_structure_id` FOREIGN KEY (`muwa_index_structure_id`) REFERENCES `muwa_index_structure` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
     }

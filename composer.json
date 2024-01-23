@@ -1,7 +1,7 @@
 {
 	"name" : "muckiware/search-plugin",
 	"description" : "Muckiware Search Plugin",
-	"version": "v0.2.0",
+	"version": "v0.2.1",
 	"type" : "shopware-platform-plugin",
 	"license" : "MIT",
 	"authors": [
@@ -19,11 +19,8 @@
 	},
 	"require" : {
 		"php" : ">= 8.1",
+		"shopware/core": "~6.5.2",
 		"elasticsearch/elasticsearch": "^8.11"
-	},
-	"replace": {
-		"psr/log": "*",
-		"symfony/runtime": "*"
 	},
 	"autoload" : {
 		"psr-4" : {
@@ -32,7 +29,6 @@
 	},
 	"config": {
 		"allow-plugins": {
-			"php-http/discovery": true,
 			"symfony/runtime": true
 		}
 	}
