@@ -76,7 +76,7 @@
         <input-field type="text">
             <name>indexNamePattern</name>
             <label>Index Name Pattern</label>
-            <defaultValue>{$salesChannelId}-{$entityName}-{$languageId}</defaultValue>
+            <defaultValue>{{salesChannelId}}-{{entityName}}-{{languageId}}</defaultValue>
         </input-field>
     </card>
     <card>
