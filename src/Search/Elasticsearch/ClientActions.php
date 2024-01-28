@@ -274,7 +274,7 @@ class ClientActions extends ClientQuery
                 'id' => $resultsHit['_id'],
                 'score' => $resultsHit['_score'],
                 'source' => $resultsHit['_source'],
-                'highlight' => $resultsHit['highlight']
+                'highlight' => array_key_exists('highlight', $resultsHit)? $resultsHit['highlight']: null
             );
         }
 
