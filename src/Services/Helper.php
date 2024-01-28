@@ -86,5 +86,19 @@ class Helper
 
         return null;
     }
+    
+    public function checkIndexSearchResults(?array $searchResult): bool
+    {
+        if(
+            is_array($searchResult) &&
+            array_key_exists('items', $searchResult) &&
+            !empty($searchResult['items']) &&
+            array_key_exists('id', $searchResult['items'][0])
+        ) {
+            return true;
+        }
+
+        return false;
+    }
 }
 

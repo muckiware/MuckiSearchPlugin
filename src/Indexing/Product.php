@@ -154,7 +154,7 @@ class Product extends IndexData
             )
         ));
 
-        if($searchResult && array_key_exists('id', $searchResult['items'][0])) {
+        if($this->pluginHelper->checkIndexSearchResults($searchResult)) {
 
             $indexBody = new CreateIndexBody($this->pluginSettings);
             $indexBody->setIndexName($indexStructureInstance->getIndexName());
