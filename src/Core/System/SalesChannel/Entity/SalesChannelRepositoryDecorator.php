@@ -82,11 +82,15 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         $request = $this->requestStack->getCurrentRequest();
         $searchEngineAvailable = $this->servicesSearching->checkSearchEngineAvailable(
             $request,
-            $salesChannelContext->getContext()->getScope()
+            $salesChannelContext,
+            'product'
         );
 
         if($searchEngineAvailable) {
-            return $this->pluginSearch($request, $criteria, $salesChannelContext);
+            $searchResults = $this->pluginSearch($request, $criteria, $salesChannelContext);
+            if($searchResults) {
+                return $searchResults;
+            }
         }
 
         return $this->regularSearch($criteria, $salesChannelContext);
@@ -96,28 +100,34 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         Request $request,
         Criteria $criteria,
         SalesChannelContext $salesChannelContext
-    ): EntitySearchResult
+    ): ?EntitySearchResult
     {
         $searchClient = $this->searchClientFactory->createSearchClient();
 
         $this->processor->prepare($request, $criteria, $salesChannelContext);
         $this->searchBuilder->build($request, $criteria, $salesChannelContext);
+        $resultsByServer = $this->getResultsByServer($searchClient, $criteria, $salesChannelContext);
 
-        $salesChannelProductCollection = $searchClient->createSalesChannelProductCollection(
-            $this->getResultsByServer($searchClient, $criteria, $salesChannelContext),
-            $salesChannelContext->getSalesChannelId(),
-            $this->salesChannelRepository,
-            $salesChannelContext
-        );
+        if($resultsByServer && $resultsByServer['hits'] >= 1) {
 
-        return new EntitySearchResult(
-            $this->definition->getEntityName(),
-            0,
-            $salesChannelProductCollection,
-            null,
-            $criteria,
-            $salesChannelContext->getContext()
-        );
+            $salesChannelProductCollection = $searchClient->createSalesChannelProductCollection(
+                $resultsByServer,
+                $salesChannelContext->getSalesChannelId(),
+                $this->salesChannelRepository,
+                $salesChannelContext
+            );
+
+            return new EntitySearchResult(
+                $this->definition->getEntityName(),
+                0,
+                $salesChannelProductCollection,
+                null,
+                $criteria,
+                $salesChannelContext->getContext()
+            );
+        }
+
+        return null;
     }
 
     protected function getResultsByServer(

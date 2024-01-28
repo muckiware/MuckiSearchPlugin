@@ -280,4 +280,18 @@ class ClientActions extends ClientQuery
 
         return $searchResultItems;
     }
+
+    public function getClusterHealth(string $indexName)
+    {
+        try {
+            return $this->getClient()->cluster()->health(array(
+                'index' => $indexName
+            ))->asObject();
+        } catch (ClientResponseException $clientEx) {
+            $this->logger->error($clientEx->getMessage());
+        } catch (ServerResponseException $resEx) {
+            $this->logger->error($resEx->getMessage());
+        }
+        return null;
+    }
 }
