@@ -105,4 +105,9 @@ class Client implements SearchClientInterface
     {
         return new SalesChannelProductCollection();
     }
+
+    public function getClusterHealth(string $indexName)
+    {
+        return null;
+    }
 }

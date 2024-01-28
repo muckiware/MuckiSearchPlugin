@@ -121,6 +121,7 @@
         <service id="muckiSearchPlugin.Services.Searching" class="MuckiSearchPlugin\Services\Searching">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="searchclient.factory"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
         </service>
     	<service id="MuckiSearchPlugin\Services\Settings" public="true">
         	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>

@@ -14,24 +14,37 @@
 namespace MuckiSearchPlugin\Services;
 
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 use MuckiSearchPlugin\Search\SearchClientFactory;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
+use MuckiSearchPlugin\Services\IndicesSettings;
 
 class Searching
 {
     public function __construct(
         protected PluginSettings $pluginSettings,
-        protected SearchClientFactory $searchClientFactory
+        protected SearchClientFactory $searchClientFactory,
+        protected IndicesSettings $indicesSettings
     ){}
 
-    public function checkSearchEngineAvailable(Request $request, string $scope): bool
+    public function checkSearchEngineAvailable(
+        Request $request,
+        SalesChannelContext $salesChannelContext,
+        string $entity
+    ): bool
     {
+        $this->indicesSettings->setTemplateVariable('entity', $entity);
+        $this->indicesSettings->setTemplateVariable('salesChannelId', $salesChannelContext->getSalesChannelId());
+        $this->indicesSettings->setTemplateVariable('languageId', $salesChannelContext->getLanguageId());
+        $healthCheck = $this->searchClientFactory->createSearchClient()->getClusterHealth(
+            $this->indicesSettings->getIndexNameByTemplate()
+        );
         if(
-            $scope === 'user' &&
+            $salesChannelContext->getContext()->getScope() === 'user' &&
             $this->pluginSettings->isEnabled() &&
-            $this->searchClientFactory->createSearchClient()->getServerInfoAsObject() &&
+            $healthCheck->status !== 'red' &&
             $request->get('search')
         ) {
             return true;
