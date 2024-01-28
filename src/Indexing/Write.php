@@ -22,6 +22,7 @@ use Shopware\Core\Content\Product\Aggregate\ProductTranslation\ProductTranslatio
 
 use MuckiSearchPlugin\Services\CliOutput;
 use MuckiSearchPlugin\Services\Content\Products as Products;
+use MuckiSearchPlugin\Services\Content\Categories as Categories;
 use MuckiSearchPlugin\Services\Content\IndexStructure;
 use MuckiSearchPlugin\Services\IndicesSettings;
 use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureEntity;
@@ -33,19 +34,22 @@ use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Services\Helper as PluginHelper;
 use MuckiSearchPlugin\Entities\IndexStructureInstance;
 use MuckiSearchPlugin\Indexing\Product as IndexingProduct;
+use MuckiSearchPlugin\Indexing\Category as IndexingCategory;
 
 class Write
 {
     public function __construct(
         protected LoggerInterface  $logger,
         protected Products $products,
+        protected Categories $categories,
         protected CliOutput $cliOutput,
         protected IndexStructure $indexStructure,
         protected IndicesSettings $indicesSettings,
         protected SearchClientFactory $searchClientFactory,
         protected PluginSettings $pluginSettings,
         protected PluginHelper $pluginHelper,
-        protected IndexingProduct $indexingProduct
+        protected IndexingProduct $indexingProduct,
+        protected IndexingCategory $indexingCategory
     ){}
 
     public function doIndexing(OutputInterface $cliOutput = null): void
@@ -63,6 +67,9 @@ class Write
 
                 case 'product':
                     $this->indexingProduct->indexingProducts($indexStructureInstance, $searchClient, $cliOutput);
+                    break;
+                case 'category':
+                    $this->indexingCategory->indexingCategories($indexStructureInstance, $searchClient, $cliOutput);
                     break;
 
                 default:
@@ -97,6 +104,21 @@ class Write
                         )->getElements();
                     }
                     break;
+
+                case 'category':
+
+                    if ($itemId) {
+                        $items = $this->categories->getCategoryByCategoryId(
+                            $itemId,
+                            $indexStructure->getSalesChannelId()
+                        )->getElements();
+                    } else {
+                        $items = $this->categories->getAllActiveCategories(
+                            $indexStructure->getSalesChannelId()
+                        )->getElements();
+                    }
+                    break;
+
                 default:
                     $this->logger->warning('Missing valid entity');
             }

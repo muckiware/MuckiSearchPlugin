@@ -27,13 +27,37 @@ class CliOutput
     {
         $progressBar = new ProgressBar($cliOutput, $totalCounter);
         $progressBar->setMaxSteps($progress->getTotal());
-        $progressBar->setFormat('[%bar%] %current%/%max% indexing for '.$languageName."\n");
+        $progressBar->setFormat('[%bar%] %current%/%max% indexing products for '.$languageName."\n");
         $progressBar->start();
 
         return $progressBar;
     }
 
     public function prepareProductProgress(int $totalCounter): Progress
+    {
+        $progress = new Progress(Uuid::randomHex(), Progress::STATE_PROGRESS, self::PROGRESS_BAR_OFFSET);
+        $progress->setTotal($totalCounter);
+        $progress->setOffset(self::PROGRESS_BAR_OFFSET);
+
+        return $progress;
+    }
+
+    public function prepareCategoryProgressBar(
+        Progress $progress,
+        string $languageName,
+        int $totalCounter,
+        OutputInterface $cliOutput
+    ): ProgressBar
+    {
+        $progressBar = new ProgressBar($cliOutput, $totalCounter);
+        $progressBar->setMaxSteps($progress->getTotal());
+        $progressBar->setFormat('[%bar%] %current%/%max% indexing categories for '.$languageName."\n");
+        $progressBar->start();
+
+        return $progressBar;
+    }
+
+    public function prepareCategoryProgress(int $totalCounter): Progress
     {
         $progress = new Progress(Uuid::randomHex(), Progress::STATE_PROGRESS, self::PROGRESS_BAR_OFFSET);
         $progress->setTotal($totalCounter);
