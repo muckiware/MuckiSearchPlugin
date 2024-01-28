@@ -207,9 +207,7 @@ class Product extends IndexData
                     'id' => $indexItemId
                 ));
                 if($deleteResult) {
-
                     $this->logger->debug('Product successfully deleted in index');
-                    $this->logger->debug(print_r($indexBody->getIndexBody(), true));
                 }
                 break;
 
