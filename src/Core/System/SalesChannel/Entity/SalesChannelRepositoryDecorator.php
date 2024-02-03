@@ -31,10 +31,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 use MuckiSearchPlugin\Search\SearchClientFactory;
-use MuckiSearchPlugin\Services\IndicesSettings;
-use MuckiSearchPlugin\Services\Content\IndexStructure;
-use MuckiSearchPlugin\Search\SearchClientInterface;
-use MuckiSearchPlugin\Services\Searching as ServicesSearching;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Search\Content\Product as ContentProduct;
 
@@ -57,13 +53,10 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         protected EntityAggregatorInterface $aggregator,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly EntityLoadedEventFactory $eventFactory,
-        protected ServicesSearching $servicesSearching,
         protected SearchClientFactory $searchClientFactory,
-        protected IndexStructure $indexStructure,
         protected RequestStack $requestStack,
         protected CompositeListingProcessor $processor,
         protected ProductSearchBuilderInterface $searchBuilder,
-        protected IndicesSettings $indicesSettings,
         protected PluginSettings $pluginSettings,
         protected ContentProduct $contentProduct
     ) {
