@@ -60,6 +60,7 @@
             <argument type="service" id="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface"/>
             <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="muckiSearchPlugin.search.content.product"/>
         </service>
 
         <service id="serverOptions.factory" class="MuckiSearchPlugin\Core\Content\ServerOptions\ServerOptionsFactory">
@@ -152,10 +153,14 @@
             <argument type="service" id="Symfony\Component\HttpFoundation\RequestStack"/>
             <tag name="kernel.event_subscriber" priority="1000"/>
         </service>
-<!--        <service class="MuckiSearchPlugin\Subscriber\SearchSubscriber" id="muckiSearchPlugin.subscriber.searchSubscriber">-->
-<!--            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>-->
-<!--            <argument type="service" id="searchclient.factory"/>-->
-<!--            <tag name="kernel.event_subscriber" priority="1000"/>-->
-<!--        </service>-->
+
+        <service id="muckiSearchPlugin.search.content.product" class="MuckiSearchPlugin\Search\Content\Product">
+            <argument type="service" id="muckiSearchPlugin.search.content.SearchRequest"/>
+        </service>
+        <service id="muckiSearchPlugin.search.content.SearchRequest" class="MuckiSearchPlugin\Search\Content\SearchRequest">
+            <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+        </service>
     </services>
 </container>

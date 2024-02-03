@@ -54,7 +54,7 @@ interface SearchClientInterface
 
     public function createHighlightObject(PluginSettings $pluginSettings, array $mappings): array;
 
-    public function createSalesChannelProductCollection(array $resultByServer, string $salesChannelId, SalesChannelRepository $salesChannelRepository, SalesChannelContext $salesChannelContext): SalesChannelProductCollection;
+    public function createSalesChannelProductCollection(array $resultByServer, SalesChannelRepository $salesChannelRepository, SalesChannelContext $salesChannelContext): SalesChannelProductCollection;
 
     public function getClusterHealth(string $indexName);
 }

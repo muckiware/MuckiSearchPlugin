@@ -22,6 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Psr\Log\LoggerInterface;
 
 use MuckiSearchPlugin\Core\Defaults;
@@ -181,7 +182,6 @@ class Client extends ClientActions implements SearchClientInterface
 
     public function createSalesChannelProductCollection(
         array $resultByServer,
-        string $salesChannelId,
         SalesChannelRepository $salesChannelRepository,
         SalesChannelContext $salesChannelContext
     ): SalesChannelProductCollection
@@ -199,7 +199,6 @@ class Client extends ClientActions implements SearchClientInterface
                         $salesChannelProduct = $this->getSalesChannelProductById(
                             $salesChannelRepository,
                             $sourceValue,
-                            $salesChannelId,
                             $salesChannelContext
                         )->first();
 
@@ -236,11 +235,10 @@ class Client extends ClientActions implements SearchClientInterface
     protected function getSalesChannelProductById(
         SalesChannelRepository $salesChannelRepository,
         string $productId,
-        string $salesChannelId,
         SalesChannelContext $salesChannelContext
-    )
+    ): EntitySearchResult
     {
-        $criteria = $this->getCriteriaAssociations($salesChannelId);
+        $criteria = $this->getCriteriaAssociations($salesChannelContext->getSalesChannelId());
         $criteria->addFilter(new EqualsFilter('id', $productId));
         $criteria->setLimit(1);
 
