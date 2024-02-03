@@ -81,9 +81,12 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
 
     public function search(Criteria $criteria, SalesChannelContext $salesChannelContext): EntitySearchResult
     {
-        $searchResults = $this->pluginSearch($criteria, $salesChannelContext);
-        if($searchResults) {
-            return $searchResults;
+        if($this->pluginSettings->isEnabled()) {
+
+            $searchResults = $this->pluginSearch($criteria, $salesChannelContext);
+            if($searchResults) {
+                return $searchResults;
+            }
         }
 
         return $this->regularSearch($criteria, $salesChannelContext);
