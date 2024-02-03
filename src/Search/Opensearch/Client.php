@@ -5,8 +5,8 @@
  *
  * @category   Muckiware
  * @package    MuckiSearch
- * @copyright  Copyright (c) 2023 by Muckiware
- *
+ * @copyright  Copyright (c) 2023-2024 by Muckiware
+ * @license    MIT
  * @author     Muckiware
  *
  */
@@ -14,15 +14,12 @@
 namespace MuckiSearchPlugin\Search\Opensearch;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Framework\Context;
 use OpenSearch\Client as OpenSearchClient;
 
 use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class Client implements SearchClientInterface
 {
@@ -99,11 +96,6 @@ class Client implements SearchClientInterface
     public function createHighlightObject(PluginSettings $pluginSettings, array $mappings): array
     {
         return array();
-    }
-
-    public function createSalesChannelProductCollection(array $resultByServer, SalesChannelRepository $salesChannelRepository, SalesChannelContext $salesChannelContext): SalesChannelProductCollection
-    {
-        return new SalesChannelProductCollection();
     }
 
     public function getClusterHealth(string $indexName)

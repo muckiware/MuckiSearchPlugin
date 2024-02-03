@@ -36,7 +36,7 @@ class SearchRequest
     ): ?array
     {
         $currentIndexStructure = $this->indexStructure->getCurrentIndexStructure(
-            'product',
+            $entity,
             $salesChannelContext->getLanguageId(),
             $salesChannelContext->getSalesChannelId(),
             $salesChannelContext->getContext()
@@ -69,5 +69,21 @@ class SearchRequest
             'index' => $this->indicesSettings->getIndexNameByTemplate(),
             'body' => $searchQueryRequestBody
         ));
+    }
+
+    public function getAllIdsOfSearchResult(array $resultByServer): array
+    {
+        $ids = array();
+        foreach ($resultByServer as $item) {
+
+            foreach ($item['source'] as $sourceKey => $sourceValue) {
+
+                if($sourceKey === 'id') {
+                    $ids[] = $sourceValue;
+                }
+            }
+        }
+
+        return $ids;
     }
 }

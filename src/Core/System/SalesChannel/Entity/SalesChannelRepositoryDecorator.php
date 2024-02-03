@@ -2,6 +2,7 @@
 
 namespace MuckiSearchPlugin\Core\System\SalesChannel\Entity;
 
+use MuckiSearchPlugin\Search\Content\Category;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\Processor\CompositeListingProcessor;
@@ -33,6 +34,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use MuckiSearchPlugin\Search\SearchClientFactory;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Search\Content\Product as ContentProduct;
+use MuckiSearchPlugin\Search\Content\Category as ContentCategory;
 
 /**
  *
@@ -58,7 +60,8 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         protected CompositeListingProcessor $processor,
         protected ProductSearchBuilderInterface $searchBuilder,
         protected PluginSettings $pluginSettings,
-        protected ContentProduct $contentProduct
+        protected ContentProduct $contentProduct,
+        protected ContentCategory $contentCategory
     ) {
         $this->originalSalesChannelRepository = $salesChannelRepository;
 
@@ -100,7 +103,13 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
             $salesChannelContext
         );
 
-        return new EntitySearchResult(
+        $categorySearchCollection = $this->contentCategory->categorySearch(
+            $searchClient,
+            $criteria,
+            $salesChannelContext
+        );
+
+        $entitySearchResult = new EntitySearchResult(
             $this->definition->getEntityName(),
             0,
             $productSearchCollection,
@@ -109,7 +118,11 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
             $salesChannelContext->getContext()
         );
 
-        return null;
+        $entitySearchResult->setExtensions(array(
+            'searchResultCategories' => $categorySearchCollection
+        ));
+
+        return $entitySearchResult;
     }
 
     /**

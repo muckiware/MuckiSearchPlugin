@@ -60,6 +60,14 @@ class Categories
         return $this->categoryRepository->search($criteria, Context::createDefaultContext());
     }
 
+    public function getCategoriesByIds(array $categoryIds, string $salesChannelId): EntitySearchResult
+    {
+        $criteria = $this->getCriteriaAssociations($salesChannelId);
+        $criteria->addFilter(new EqualsAnyFilter('id', $categoryIds));
+
+        return $this->categoryRepository->search($criteria, Context::createDefaultContext());
+    }
+
     protected function getCriteriaAssociations(string $salesChannelId): Criteria
     {
         return (new Criteria())

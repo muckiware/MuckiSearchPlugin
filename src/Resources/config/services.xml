@@ -58,6 +58,7 @@
             <argument type="service" id="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="muckiSearchPlugin.search.content.product"/>
+            <argument type="service" id="muckiSearchPlugin.search.content.category"/>
         </service>
 
         <service id="serverOptions.factory" class="MuckiSearchPlugin\Core\Content\ServerOptions\ServerOptionsFactory">
@@ -151,6 +152,10 @@
             <tag name="kernel.event_subscriber" priority="1000"/>
         </service>
 
+        <service id="muckiSearchPlugin.search.content.category" class="MuckiSearchPlugin\Search\Content\Category">
+            <argument type="service" id="muckiSearchPlugin.search.content.SearchRequest"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Content\Categories"/>
+        </service>
         <service id="muckiSearchPlugin.search.content.product" class="MuckiSearchPlugin\Search\Content\Product">
             <argument type="service" id="muckiSearchPlugin.search.content.SearchRequest"/>
         </service>
