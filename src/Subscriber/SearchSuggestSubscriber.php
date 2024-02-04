@@ -60,8 +60,11 @@ class SearchSuggestSubscriber implements EventSubscriberInterface
             $event->getSalesChannelContext()
         );
 
-        $event->getResult()->addExtensions(
-            array('searchResultCategories' => $categorySearchCollection)
-        );
+        if($categorySearchCollection) {
+
+            $event->getResult()->addExtensions(
+                array('searchResultCategories' => $categorySearchCollection)
+            );
+        }
     }
 }

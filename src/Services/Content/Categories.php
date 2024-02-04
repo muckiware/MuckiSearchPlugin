@@ -12,9 +12,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
+use Shopware\Core\Content\Category\CategoryDefinition;
 
 class Categories
 {
@@ -35,20 +34,6 @@ class Categories
         );
 
         return $this->categoryRepository->search($criteria, Context::createDefaultContext());
-    }
-
-    public function getCategoryByProductNumber(string $productNumber, string $salesChannelId): ?ProductEntity
-    {
-        $criteria = $this->getCriteriaAssociations($salesChannelId);
-        $criteria->addFilter(new EqualsAnyFilter('productNumber', [$productNumber]));
-        $criteria->setLimit(1);
-
-        $product = $this->productRepository->search($criteria, Context::createDefaultContext());
-        if ($product->count() >= 1) {
-            return $product->first();
-        } else {
-            return null;
-        }
     }
 
     public function getCategoryByCategoryId(string $categoryId, string $salesChannelId): EntitySearchResult
@@ -76,6 +61,7 @@ class Categories
             ->addAssociation('customFields')
             ->addAssociation('cmsPage')
             ->addFilter(new EqualsFilter('active', true))
+            ->addFilter(new EqualsFilter('type', CategoryDefinition::TYPE_PAGE))
         ;
     }
 }
