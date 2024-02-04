@@ -1,0 +1,10 @@
+{
+    "muwaSearch": {
+        "suggest": {
+            "entityLabel": {
+                "products": "Produkte",
+                "categories": "Kategorien"
+            }
+        }
+    }
+}

@@ -5,15 +5,16 @@
 {#    {{ dump(page.searchResult.extensions.searchResultCategories) }}#}
 
     {% block layout_search_suggest_results_categories %}
-        <li class="search-suggest-product js-result-section-title categories">
-            <h3>Categories</h3>
+        <li class="search-suggest-product-entity js-result-section-title categories">
+            <h3>{{ "muwaSearch.suggest.entityLabel.categories"|trans|sw_sanitize }}</h3>
         </li>
         {% for category in page.searchResult.extensions.searchResultCategories %}
             {% block layout_search_suggest_result_category %}
                 <li class="search-suggest-product js-result">
                     {% block layout_search_suggest_result_link_category %}
                         <a href="{{ seoUrl('frontend.navigation.page', { navigationId: category.id }) }}"
-                           class="search-suggest-category-link">
+                           title="{{ category.translated.name }}"
+                           class="search-suggest-product-link">
                             <div class="row align-items-center g-0">
                                 {% block layout_search_suggest_result_image_category %}
                                     <div class="col-auto search-suggest-category-image-container"></div>
@@ -26,14 +27,24 @@
                                 {% endblock %}
                             </div>
                         </a>
+                        {% block layout_search_suggest_result_breadcrumb %}
+                            <div class="breadcrumb cms-breadcrumb container">
+                                {% sw_include '@Storefront/storefront/layout/header/breadcrumb.html.twig' with {
+                                    context: context,
+                                    themeIconConfig: themeIconConfig,
+                                    category: category
+                                } only %}
+                            </div>
+                        {% endblock %}
                     {% endblock %}
                 </li>
             {% endblock %}
         {% endfor %}
+        <br>
     {% endblock %}
 
-    <li class="search-suggest-product js-result-section-title products">
-        <h3>Products</h3>
+    <li class="search-suggest-product-entity js-result-section-title products">
+        <h3>{{ "muwaSearch.suggest.entityLabel.products"|trans|sw_sanitize }}</h3>
     </li>
     {{ parent() }}
 {% endblock %}
