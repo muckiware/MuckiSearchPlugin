@@ -21,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearcherInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\Event\SalesChannelProcessCriteriaEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -93,8 +94,11 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         $searchClient = $this->searchClientFactory->createSearchClient();
         $request = $this->requestStack->getCurrentRequest();
 
-        $this->processor->prepare($request, $criteria, $salesChannelContext);
-        $this->searchBuilder->build($request, $criteria, $salesChannelContext);
+        if($request->get('search')) {
+
+            $this->processor->prepare($request, $criteria, $salesChannelContext);
+            $this->searchBuilder->build($request, $criteria, $salesChannelContext);
+        }
 
         $productSearchCollection = $this->contentProduct->productSearch(
             $searchClient,
@@ -103,13 +107,7 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
             $salesChannelContext
         );
 
-        $categorySearchCollection = $this->contentCategory->categorySearch(
-            $searchClient,
-            $criteria,
-            $salesChannelContext
-        );
-
-        $entitySearchResult = new EntitySearchResult(
+        return new EntitySearchResult(
             $this->definition->getEntityName(),
             0,
             $productSearchCollection,
@@ -117,12 +115,6 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
             $criteria,
             $salesChannelContext->getContext()
         );
-
-        $entitySearchResult->setExtensions(array(
-            'searchResultCategories' => $categorySearchCollection
-        ));
-
-        return $entitySearchResult;
     }
 
     /**

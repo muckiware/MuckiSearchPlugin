@@ -152,6 +152,16 @@
             <tag name="kernel.event_subscriber" priority="1000"/>
         </service>
 
+        <service class="MuckiSearchPlugin\Subscriber\SearchSuggestSubscriber" id="muckiSearchPlugin.subscriber.searchSuggestSubscriber">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="Symfony\Component\HttpFoundation\RequestStack"/>
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\Processor\CompositeListingProcessor"/>
+            <argument type="service" id="searchclient.factory"/>
+            <argument type="service" id="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface"/>
+            <argument type="service" id="muckiSearchPlugin.search.content.category"/>
+            <tag name="kernel.event_subscriber" priority="1000"/>
+        </service>
+
         <service id="muckiSearchPlugin.search.content.category" class="MuckiSearchPlugin\Search\Content\Category">
             <argument type="service" id="muckiSearchPlugin.search.content.SearchRequest"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Content\Categories"/>

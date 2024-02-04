@@ -82,7 +82,7 @@ class Product
 
                             $salesChannelProduct = $salesChannelProducts->get($sourceValue);
 
-                            if(array_key_exists('highlight', $item)) {
+                            if(array_key_exists('highlight', $item) && $item['highlight']) {
 
                                 foreach ($item['highlight'] as $highlightKey =>  $highlightValue) {
 
