@@ -2,8 +2,6 @@
 
 {% block layout_search_suggest_results %}
 
-{#    {{ dump(page.searchResult.extensions.searchResultCategories) }}#}
-
     {% block layout_search_suggest_results_categories %}
         <li class="search-suggest-product-entity js-result-section-title categories">
             <h3>{{ "muwaSearch.suggest.entityLabel.categories"|trans|sw_sanitize }}</h3>
@@ -29,7 +27,7 @@
                         </a>
                         {% block layout_search_suggest_result_breadcrumb %}
                             <div class="breadcrumb cms-breadcrumb container">
-                                {% sw_include '@Storefront/storefront/layout/header/breadcrumb.html.twig' with {
+                                {% sw_include '@Storefront/storefront/layout/breadcrumb.html.twig' with {
                                     context: context,
                                     themeIconConfig: themeIconConfig,
                                     category: category

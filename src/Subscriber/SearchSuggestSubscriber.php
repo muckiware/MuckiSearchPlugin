@@ -18,6 +18,7 @@ use Shopware\Core\Content\Product\SalesChannel\Listing\Processor\CompositeListin
 use Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Content\Product\Events\ProductSuggestResultEvent;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -54,10 +55,15 @@ class SearchSuggestSubscriber implements EventSubscriberInterface
         $this->processor->prepare($request, $event->getResult()->getCriteria(), $event->getSalesChannelContext());
         $this->searchBuilder->build($request, $event->getResult()->getCriteria(), $event->getSalesChannelContext());
 
+        $categoryIdsOfResultsProducts = $this->getCategoryIdsOfResultsProducts(
+            $event->getResult()->getElements()
+        );
+
         $categorySearchCollection = $this->contentCategory->categorySearch(
             $searchClient,
             $event->getResult()->getCriteria(),
-            $event->getSalesChannelContext()
+            $event->getSalesChannelContext(),
+            $categoryIdsOfResultsProducts
         );
 
         if($categorySearchCollection) {
@@ -66,5 +72,21 @@ class SearchSuggestSubscriber implements EventSubscriberInterface
                 array('searchResultCategories' => $categorySearchCollection)
             );
         }
+    }
+
+    protected function getCategoryIdsOfResultsProducts(array $products): array
+    {
+        $categoryIdsOfResultsProducts = array();
+        /** @var SalesChannelProductEntity $product */
+        foreach ($products as $product) {
+
+            foreach ($product->getCategories() as $categoryKey => $category) {
+
+                if(!in_array($categoryKey, $categoryIdsOfResultsProducts)) {
+                    $categoryIdsOfResultsProducts[] = $categoryKey;
+                }
+            }
+        }
+        return $categoryIdsOfResultsProducts;
     }
 }

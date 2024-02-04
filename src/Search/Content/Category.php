@@ -16,6 +16,7 @@ namespace MuckiSearchPlugin\Search\Content;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Content\Category\CategoryCollection;
+use Shopware\Core\Content\Category\CategoryEntity;
 
 use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Services\Content\Categories as ContentCategories;
@@ -29,7 +30,8 @@ class Category
     public function categorySearch(
         SearchClientInterface $searchClient,
         Criteria $criteria,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
+        array $categoryIdsOfResultsProducts
     ): ?CategoryCollection
     {
         $resultsByServerCategories = $this->searchRequest->getResultsByEntity(
@@ -40,14 +42,19 @@ class Category
         );
 
         if($resultsByServerCategories && $resultsByServerCategories['hits'] >= 1) {
-            return $this->createCategoryCollection($resultsByServerCategories, $salesChannelContext);
+            return $this->createCategoryCollection(
+                $resultsByServerCategories,
+                $salesChannelContext,
+                $categoryIdsOfResultsProducts
+            );
         }
         return null;
     }
 
     public function createCategoryCollection(
         array $resultByServer,
-        SalesChannelContext $salesChannelContext
+        SalesChannelContext $salesChannelContext,
+        array $categoryIdsOfResultsProducts
     ): CategoryCollection
     {
         $categoryCollection = new CategoryCollection();
@@ -55,7 +62,10 @@ class Category
         if(array_key_exists('items', $resultByServer)) {
 
             $categories = $this->contentCategories->getCategoriesByIds(
-                $this->searchRequest->getAllIdsOfSearchResult($resultByServer['items']),
+                array_merge(
+                    $this->searchRequest->getAllIdsOfSearchResult($resultByServer['items']),
+                    $categoryIdsOfResultsProducts
+                ),
                 $salesChannelContext->getSalesChannelId()
             );
 
@@ -92,6 +102,14 @@ class Category
                             }
                             $categoryCollection->add($category);
                         }
+                    }
+                }
+
+                /** @var CategoryEntity $category */
+                foreach ($categories as $category) {
+
+                    if(!$categoryCollection->has($category->getId())) {
+                        $categoryCollection->add($category);
                     }
                 }
             }
