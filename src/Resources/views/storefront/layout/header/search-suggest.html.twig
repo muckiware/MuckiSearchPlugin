@@ -8,7 +8,7 @@
         </li>
         {% for category in page.searchResult.extensions.searchResultCategories %}
             {% block layout_search_suggest_result_category %}
-                <li class="search-suggest-product js-result">
+                <li class="search-suggest-category js-result">
                     {% block layout_search_suggest_result_link_category %}
                         <a href="{{ seoUrl('frontend.navigation.page', { navigationId: category.id }) }}"
                            title="{{ category.translated.name }}"
@@ -26,8 +26,8 @@
                             </div>
                         </a>
                         {% block layout_search_suggest_result_breadcrumb %}
-                            <div class="breadcrumb cms-breadcrumb container">
-                                {% sw_include '@Storefront/storefront/layout/breadcrumb.html.twig' with {
+                            <div class="search-breadcrumb cms-breadcrumb container">
+                                {% sw_include '@MuckiSearchPlugin/storefront/layout/search-breadcrumb.html.twig' with {
                                     context: context,
                                     themeIconConfig: themeIconConfig,
                                     category: category
