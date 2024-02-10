@@ -22,3 +22,14 @@ bin/console plugin:install -a MuckiSearchPlugin
 - Select the _Configure_-menu item of the Mucki Search Plugin
 - Activate the plugin
 - Enter the Elasticsearch Server connection host and port. Usually localhost:9200
+
+
+## Uninstallation
+Removes plugin and removes all plugin data
+```shell
+bin/console plugin:uninstall MuckiSearchPlugin
+```
+Removes plugin but keeps the plugin data
+```shell
+bin/console plugin:uninstall MuckiSearchPlugin --keep-user-data
+```
