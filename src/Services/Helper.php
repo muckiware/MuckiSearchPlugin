@@ -100,5 +100,13 @@ class Helper
 
         return false;
     }
+
+    public function getHashData(array|string $data): string
+    {
+        if(is_array($data)) {
+            return md5(serialize($data));
+        }
+        return md5($data);
+    }
 }
 

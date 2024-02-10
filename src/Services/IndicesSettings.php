@@ -26,7 +26,7 @@ class IndicesSettings
         $this->templateVariables[$key] = $value;
     }
 
-    public function getTemplateVariables(): array
+    public function getTemplateVariable(): array
     {
         return $this->templateVariables;
     }
