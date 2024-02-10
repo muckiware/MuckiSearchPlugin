@@ -33,3 +33,9 @@ Removes plugin but keeps the plugin data
 ```shell
 bin/console plugin:uninstall MuckiSearchPlugin --keep-user-data
 ```
+
+## Testing
+Start unit test
+```shell
+./vendor/bin/phpunit --configuration="custom/plugins/MuckiSearchPlugin" --testsuite "migration"
+```
