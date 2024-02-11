@@ -23,8 +23,6 @@ use MuckiSearchPlugin\Services\Searching as ServicesSearching;
 
 class ProductSubscriber implements EventSubscriberInterface
 {
-    protected array $request;
-
     public function __construct(
         protected IndexingProduct $indexingProduct,
         protected IndexingWrite $indexingWrite,
@@ -35,9 +33,7 @@ class ProductSubscriber implements EventSubscriberInterface
         protected ServicesSearching $servicesSearching,
         protected RequestStack $requestStack
     )
-    {
-        $this->request = $_REQUEST;
-    }
+    {}
 
     public static function getSubscribedEvents(): array
     {
@@ -127,20 +123,24 @@ class ProductSubscriber implements EventSubscriberInterface
 
     protected function searchPayloadInRequestParams(string $productId): array
     {
-        foreach ($this->requestStack->getCurrentRequest()->request->all() as $requestParameters) {
+        $getCurrentRequest = $this->requestStack->getCurrentRequest();
+        if($getCurrentRequest) {
 
-            foreach ($requestParameters as $requestParameter) {
+            foreach ($getCurrentRequest->request->all() as $requestParameters) {
 
-                if(is_array($requestParameter)) {
+                foreach ($requestParameters as $requestParameter) {
 
-                    foreach ($requestParameter as $payload) {
+                    if(is_array($requestParameter)) {
 
-                        if(
-                            array_key_exists('id', $payload) &&
-                            Uuid::isValid($payload['id']) &&
-                            in_array($productId, $payload)
-                        ) {
-                            return $payload;
+                        foreach ($requestParameter as $payload) {
+
+                            if(
+                                array_key_exists('id', $payload) &&
+                                Uuid::isValid($payload['id']) &&
+                                in_array($productId, $payload)
+                            ) {
+                                return $payload;
+                            }
                         }
                     }
                 }

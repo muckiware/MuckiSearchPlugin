@@ -28,8 +28,6 @@ use MuckiSearchPlugin\Search\Content\Category as ContentCategory;
 
 class SearchSuggestSubscriber implements EventSubscriberInterface
 {
-    protected array $request;
-
     public function __construct(
         protected PluginSettings $pluginSettings,
         protected RequestStack $requestStack,
@@ -52,25 +50,28 @@ class SearchSuggestSubscriber implements EventSubscriberInterface
         $searchClient = $this->searchClientFactory->createSearchClient();
         $request = $this->requestStack->getCurrentRequest();
 
-        $this->processor->prepare($request, $event->getResult()->getCriteria(), $event->getSalesChannelContext());
-        $this->searchBuilder->build($request, $event->getResult()->getCriteria(), $event->getSalesChannelContext());
+        if($request) {
 
-        $categoryIdsOfResultsProducts = $this->getCategoryIdsOfResultsProducts(
-            $event->getResult()->getElements()
-        );
+            $this->processor->prepare($request, $event->getResult()->getCriteria(), $event->getSalesChannelContext());
+            $this->searchBuilder->build($request, $event->getResult()->getCriteria(), $event->getSalesChannelContext());
 
-        $categorySearchCollection = $this->contentCategory->categorySearch(
-            $searchClient,
-            $event->getResult()->getCriteria(),
-            $event->getSalesChannelContext(),
-            $categoryIdsOfResultsProducts
-        );
-
-        if($categorySearchCollection) {
-
-            $event->getResult()->addExtensions(
-                array('searchResultCategories' => $categorySearchCollection)
+            $categoryIdsOfResultsProducts = $this->getCategoryIdsOfResultsProducts(
+                $event->getResult()->getElements()
             );
+
+            $categorySearchCollection = $this->contentCategory->categorySearch(
+                $searchClient,
+                $event->getResult()->getCriteria(),
+                $event->getSalesChannelContext(),
+                $categoryIdsOfResultsProducts
+            );
+
+            if($categorySearchCollection) {
+
+                $event->getResult()->addExtensions(
+                    array('searchResultCategories' => $categorySearchCollection)
+                );
+            }
         }
     }
 
@@ -80,10 +81,14 @@ class SearchSuggestSubscriber implements EventSubscriberInterface
         /** @var SalesChannelProductEntity $product */
         foreach ($products as $product) {
 
-            foreach ($product->getCategories() as $categoryKey => $category) {
+            $productCategories = $product->getCategories();
+            if($productCategories) {
 
-                if(!in_array($categoryKey, $categoryIdsOfResultsProducts)) {
-                    $categoryIdsOfResultsProducts[] = $categoryKey;
+                foreach ($productCategories as $categoryKey => $category) {
+
+                    if(!in_array($categoryKey, $categoryIdsOfResultsProducts)) {
+                        $categoryIdsOfResultsProducts[] = $categoryKey;
+                    }
                 }
             }
         }
