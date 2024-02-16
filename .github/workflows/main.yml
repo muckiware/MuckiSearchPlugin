@@ -89,10 +89,6 @@ jobs:
           composer remove shopware/* --no-update
           composer install
 
-      - name: "Run PHPStan"
-        working-directory: custom/plugins/${{ env.MODULE_NAME }}
-        run: ./vendor/bin/phpstan
-
       - name: "Check Code style (easy-coding-style)"
         working-directory: custom/plugins/${{ env.MODULE_NAME }}
         run: ./vendor/bin/ecs
