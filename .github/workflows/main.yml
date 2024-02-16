@@ -77,7 +77,7 @@ jobs:
       - name: "Install Shopware dependencies"
         # Install Shopware with --no-dev to prevent that dev-tools of the module got in conflict with the tools of shopware
         run: |
-          composer req shopware/administration:${{ matrix.shopware-versions }} shopware/core:${{ matrix.shopware-versions }} shopware/elasticsearch:${{ matrix.shopware-versions }} shopware/storefront:${{ matrix.shopware-versions }} --no-update
+          composer req phpunit/phpunit:^9.5 shopware/administration:${{ matrix.shopware-versions }} shopware/core:${{ matrix.shopware-versions }} shopware/elasticsearch:${{ matrix.shopware-versions }} shopware/storefront:${{ matrix.shopware-versions }} --no-update
           composer install --no-dev
 
       - name: "Install ${{ env.COMPOSER_NAME }}"
