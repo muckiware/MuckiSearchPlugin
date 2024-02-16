@@ -27,6 +27,11 @@
 			"MuckiSearchPlugin\\" : "src/"
 		}
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"MuckiSearchPlugin\\": "tests/"
+		}
+	},
 	"config": {
 		"allow-plugins": {
 			"symfony/runtime": true
