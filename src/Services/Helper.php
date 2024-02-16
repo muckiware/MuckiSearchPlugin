@@ -54,6 +54,7 @@ class Helper
             if(is_array($propertyPath)) {
 
                 foreach ($propertyPath as $property) {
+
                     if (!isset($currentLayer[$property])) {
                         $currentLayer[$property] = [];
                     }
@@ -74,7 +75,7 @@ class Helper
         string $property,
         string $searchField,
         int $fieldCounter
-    )
+    ): ?array
     {
         foreach ($mappings as $mapping) {
 

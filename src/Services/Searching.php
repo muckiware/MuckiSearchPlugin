@@ -38,16 +38,20 @@ class Searching
         $this->indicesSettings->setTemplateVariable('entity', $entity);
         $this->indicesSettings->setTemplateVariable('salesChannelId', $salesChannelContext->getSalesChannelId());
         $this->indicesSettings->setTemplateVariable('languageId', $salesChannelContext->getLanguageId());
-        $healthCheck = $this->searchClientFactory->createSearchClient()->getClusterHealth(
-            $this->indicesSettings->getIndexNameByTemplate()
-        );
-        if(
-            $salesChannelContext->getContext()->getScope() === 'user' &&
-            $this->pluginSettings->isEnabled() &&
-            $healthCheck->status !== 'red' &&
-            $request->get('search')
-        ) {
-            return true;
+
+        $indexNameByTemplate = $this->indicesSettings->getIndexNameByTemplate();
+        if($indexNameByTemplate) {
+
+            $healthCheck = $this->searchClientFactory->createSearchClient()->getClusterHealth($indexNameByTemplate);
+            if(
+                $healthCheck &&
+                $salesChannelContext->getContext()->getScope() === 'user' &&
+                $this->pluginSettings->isEnabled() &&
+                (isset($healthCheck->status) && $healthCheck->status !== 'red') &&
+                $request->get('search')
+            ) {
+                return true;
+            }
         }
         return false;
     }

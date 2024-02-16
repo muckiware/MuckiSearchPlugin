@@ -45,58 +45,69 @@ class Client extends ClientActions implements SearchClientInterface
         );
     }
 
-    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
+    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context): void
     {
         $indexStructure = $this->indexStructure->getIndexStructureById($indexStructureId, $languageId, $context);
-        $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
-        $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
-        /** @var IndexStructureTranslationEntity $indexStructureTranslation */
-        foreach ($indexStructure->get('translations') as $indexStructureTranslation) {
+        if($indexStructure) {
 
-            $this->indicesSettings->setTemplateVariable('languageId', $indexStructureTranslation->getLanguageId());
-            $indexName = $this->indicesSettings->getIndexNameByTemplate();
-            $indexId = $this->indicesSettings->getIndexId();
-
-            $createBody = new CreateIndicesBody($this->settings);
-            $createBody->setIndexName($indexName);
-            $createBody->setIndexId($indexId);
-            $this->setIndicesSettings($indexStructureTranslation->get('settings'), $createBody);
-            $this->setIndicesMappings($indexStructureTranslation->get('mappings'), $createBody);
-
-            if(!$this->checkIndicesExists($indexName)) {
-                $this->createNewIndices($createBody);
-            } else {
-                //$this->updateIndices($createBody);
-            }
-        }
-
-        return null;
-    }
-
-    public function removeIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
-    {
-        if(Uuid::isValid($indexStructureId)) {
-
-            $indexStructure = $this->indexStructure->getIndexStructureById($indexStructureId, $languageId, $context);
-            $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
             $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
-
+            $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
             /** @var IndexStructureTranslationEntity $indexStructureTranslation */
             foreach ($indexStructure->get('translations') as $indexStructureTranslation) {
 
                 $this->indicesSettings->setTemplateVariable('languageId', $indexStructureTranslation->getLanguageId());
                 $indexName = $this->indicesSettings->getIndexNameByTemplate();
+                $indexId = $this->indicesSettings->getIndexId();
 
-                if($this->checkIndicesExists($indexName)) {
-                    $this->removeIndices($indexName);
+                $createBody = new CreateIndicesBody($this->settings);
+                $createBody->setIndexName($indexName);
+                $createBody->setIndexId($indexId);
+                $this->setIndicesSettings($indexStructureTranslation->get('settings'), $createBody);
+                $this->setIndicesMappings($indexStructureTranslation->get('mappings'), $createBody);
+
+                if(!$this->checkIndicesExists($indexName)) {
+                    $this->createNewIndices($createBody);
+                } else {
+                    $this->logger->warning('Index already exits');
                 }
             }
-
-            $this->indexStructure->removeIndexStructureById($indexStructureId, $context);
         }
     }
 
-    public function removeIndicesByIndexName(string $indexName)
+    public function removeIndicesByIndexStructureId(
+        string $indexStructureId,
+        string $languageId,
+        Context $context
+    ): void
+    {
+        if(Uuid::isValid($indexStructureId)) {
+
+            $indexStructure = $this->indexStructure->getIndexStructureById($indexStructureId, $languageId, $context);
+            if($indexStructure) {
+
+                $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
+                $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
+
+                /** @var IndexStructureTranslationEntity $indexStructureTranslation */
+                foreach ($indexStructure->get('translations') as $indexStructureTranslation) {
+
+                    $this->indicesSettings->setTemplateVariable(
+                        'languageId',
+                        $indexStructureTranslation->getLanguageId()
+                    );
+                    $indexName = $this->indicesSettings->getIndexNameByTemplate();
+
+                    if($this->checkIndicesExists($indexName)) {
+                        $this->removeIndices($indexName);
+                    }
+                }
+
+                $this->indexStructure->removeIndexStructureById($indexStructureId, $context);
+            }
+        }
+    }
+
+    public function removeIndicesByIndexName(string $indexName): void
     {
         if($indexName !== '' && $this->checkIndicesExists($indexName)) {
             $this->removeIndices($indexName);

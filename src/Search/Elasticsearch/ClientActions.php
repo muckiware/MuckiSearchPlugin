@@ -35,10 +35,14 @@ class ClientActions extends ClientQuery
     )
     {}
 
-    public function getClient(): ?ClientInterface
+    /**
+     * @throws AuthenticationException
+     */
+    public function getClient(): ClientInterface
     {
+        $clientBuilder = ClientBuilder::create();
+
         try {
-            $clientBuilder = ClientBuilder::create();
             $clientBuilder->setHosts([$this->settings->getServerConnectionString()]);
 
             if(!$this->settings->isServerAuthenticationEnabled()) {
@@ -48,30 +52,34 @@ class ClientActions extends ClientQuery
             switch ($this->settings->getServerAuthenticationMethod()) {
 
                 case 'basicAuthentication':
-                    $clientBuilder->setBasicAuthentication(
-                        $this->settings->getServerUserName(),
-                        $this->settings->getServerUserPassword()
-                    );
+
+                    $serverUserName = $this->settings->getServerUserName();
+                    $serverUserPassword = $this->settings->getServerUserPassword();
+                    if($serverUserName && $serverUserPassword) {
+                        $clientBuilder->setBasicAuthentication($serverUserName, $serverUserPassword);
+                    }
                     break;
+
                 case 'apiKeyAuthentication':
-                    $clientBuilder->setApiKey(
-                        $this->settings->getServerApiKey()
-                    );
+
+                    $serverApiKey = $this->settings->getServerApiKey();
+                    if($serverApiKey) {
+                        $clientBuilder->setApiKey($serverApiKey);
+                    }
                     break;
+
                 default:
                     $this->logger->warning(
                         'Missing valid authentication method. Check you plugin configuration'
                     );
             }
 
-            return $clientBuilder->build();
-
         } catch (AuthenticationException $exception) {
             $this->logger->error('Problem for to get server connection');
             $this->logger->error($exception->getMessage());
         }
 
-        return null;
+        return $clientBuilder->build();
     }
 
     public function searching(array $params): ?array
@@ -281,7 +289,7 @@ class ClientActions extends ClientQuery
         return $searchResultItems;
     }
 
-    public function getClusterHealth(string $indexName)
+    public function getClusterHealth(string $indexName): ?object
     {
         try {
             return $this->getClient()->cluster()->health(array(

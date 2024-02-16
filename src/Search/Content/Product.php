@@ -36,7 +36,7 @@ class Product
         Criteria $criteria,
         SalesChannelRepository $salesChannelRepository,
         SalesChannelContext $salesChannelContext
-    ): ?SalesChannelProductCollection
+    ): SalesChannelProductCollection
     {
         $resultsByServerProducts = $this->searchRequest->getResultsByEntity(
             'product',
@@ -53,7 +53,7 @@ class Product
                 $salesChannelContext
             );
         }
-        return null;
+        return new SalesChannelProductCollection();
     }
 
     public function createSalesChannelProductCollection(

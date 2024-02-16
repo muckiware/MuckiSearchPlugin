@@ -81,7 +81,7 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         if($this->pluginSettings->isEnabled()) {
 
             $searchResults = $this->pluginSearch($criteria, $salesChannelContext);
-            if($searchResults) {
+            if($searchResults->count() >= 1) {
                 return $searchResults;
             }
         }

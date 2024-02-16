@@ -29,9 +29,9 @@ class Client implements SearchClientInterface
     )
     {}
 
-    public function getClient(): ?OpenSearchClient
+    public function getClient(): OpenSearchClient
     {
-        return null;
+        return OpenSearchClient::class;
     }
 
     public function searching(array $params): ?array
@@ -68,19 +68,19 @@ class Client implements SearchClientInterface
         return null;
     }
 
-    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
+    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context): void
     {
-        return null;
+        //TODO saveIndicesByIndexStructureId
     }
 
-    public function removeIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
+    public function removeIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context): void
     {
-        return null;
+        //TODO removeIndicesByIndexStructureId
     }
 
-    public function removeIndicesByIndexName(string $indexName)
+    public function removeIndicesByIndexName(string $indexName): void
     {
-        return null;
+        //TODO removeIndicesByIndexName
     }
 
     public function checkIndicesExists(string $indexName): bool
@@ -98,7 +98,7 @@ class Client implements SearchClientInterface
         return array();
     }
 
-    public function getClusterHealth(string $indexName)
+    public function getClusterHealth(string $indexName): ?object
     {
         return null;
     }
