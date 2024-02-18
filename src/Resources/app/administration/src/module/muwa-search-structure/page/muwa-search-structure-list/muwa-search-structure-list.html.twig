@@ -41,9 +41,22 @@
                             >
                                 {{ $tc('muwa-search-structure.tabs.structureIndices') }}
                             </sw-tabs-item>
+                            <sw-tabs-item
+                                    key="serverInfo"
+                                    :active-tab="active"
+                                    :route="{ name: 'muwa.search.structure.index', params: { tab: 'serverInfo' } }"
+                            >
+                                {{ $tc('muwa-search-structure.tabs.serverInfo') }}
+                            </sw-tabs-item>
                         </template>
                     </sw-tabs>
                 {% endblock %}
+
+                <sw-card-view>
+                    <sw-card v-if="tab === 'serverInfo'">
+                        <p>{{ $tc('muwa-search-structure.list.serviceInfo') }}</p>
+                    </sw-card>
+                </sw-card-view>
 
                 <sw-entity-listing
                         v-if="indexStructure && tab === 'structureList'"

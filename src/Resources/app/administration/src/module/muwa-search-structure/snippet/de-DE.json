@@ -8,7 +8,8 @@
     },
     "tabs": {
       "structureList": "Index Konfigurationen",
-      "structureIndices": "Indices Strukturen"
+      "structureIndices": "Indices Strukturen",
+      "serverInfo": "Server Info"
     },
     "list": {
       "header": {

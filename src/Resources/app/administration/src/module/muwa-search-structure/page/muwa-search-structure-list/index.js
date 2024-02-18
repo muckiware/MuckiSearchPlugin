@@ -104,6 +104,10 @@ Component.register('muwa-search-structure-list', {
 
     created() {
 
+        if(this.$route.params.tab === undefined) {
+            this.$router.push({ name: 'muwa.search.structure.index', params: { tab: 'structureList' } });
+        }
+
         this.httpClient = Shopware.Application.getContainer('init').httpClient;
         this.createdComponent();
     },
@@ -144,9 +148,6 @@ Component.register('muwa-search-structure-list', {
         },
         createdComponent() {
 
-            // if (!this.$route.params.tab) {
-            //     this.$router.push({ name: 'muwa-search-structure-list', params: { tab: 'structureList' } });
-            // }
             this.getList();
             this.getIndices();
         },
