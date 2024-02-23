@@ -1,6 +1,6 @@
 {
 	"name" : "muckiware/search-plugin",
-	"description" : "Shopware 6 Search extension Plugin with Elasticsearch server integration",
+	"description" : "Shopware 6 search extension plugin for Elasticsearch server integration",
 	"version": "v0.3.0",
 	"type" : "shopware-platform-plugin",
 	"license" : "MIT",
@@ -13,8 +13,8 @@
 		"shopware-plugin-class" : "MuckiSearchPlugin\\MuckiSearchPlugin",
 		"copyright" : "(c) by muckiware",
 		"label" : {
-			"de-DE" : "Mucki Search Erweiterung",
-			"en-GB" : "Mucki Search Plugin"
+			"de-DE" : "Shopware 6 search extension plugin for Elasticsearch server integration",
+			"en-GB" : "Shopware 6 search extension plugin for Elasticsearch server integration"
 		}
 	},
 	"require" : {
