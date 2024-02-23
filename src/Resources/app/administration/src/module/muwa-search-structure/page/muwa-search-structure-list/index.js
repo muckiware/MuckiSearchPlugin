@@ -16,9 +16,11 @@ Component.register('muwa-search-structure-list', {
             isLoading: true,
             indexStructure: null,
             indicesStructure: null,
+            serverInfo: null,
             httpClient: null,
             requestUrlRemove: '/_action/muwa/search/remove-indices',
-            requestUrlIndices: '/_action/muwa/search/indices'
+            requestUrlIndices: '/_action/muwa/search/indices',
+            requestUrlServerInfo: '/_action/muwa/search/server'
         };
     },
 
@@ -60,6 +62,7 @@ Component.register('muwa-search-structure-list', {
         },
 
         indicesColumns() {
+
             return [{
                 property: 'index',
                 label: this.$tc('muwa-search-structure.list.nameLabel'),
@@ -95,6 +98,21 @@ Component.register('muwa-search-structure-list', {
                 label: this.$tc('muwa-search-structure.list.docsDeletedLabel'),
                 allowResize: true,
             }];
+        },
+
+        serverInfoColumns() {
+            return [
+                {
+                    property: 'key',
+                    label: this.$tc('muwa-search-structure.serverInfo.keyLabel'),
+                    rawData: true
+                },
+                {
+                    property: 'value',
+                    label: this.$tc('muwa-search-structure.serverInfo.valueLabel'),
+                    rawData: true
+                }
+            ];
         },
 
         tab() {
@@ -146,10 +164,27 @@ Component.register('muwa-search-structure-list', {
                 this.isLoading = false;
             });
         },
+
+        getServerInfo() {
+
+            if(this.$route.params.tab === 'serverInfo') {
+
+                this.isLoading = true;
+
+                const apiHeader = this.getApiHeader();
+                this.httpClient.get(this.requestUrlServerInfo, apiHeader).then((response) => {
+                    this.serverInfo = response.data;
+                }).finally(() => {
+                    this.isLoading = false;
+                });
+            }
+        },
+
         createdComponent() {
 
             this.getList();
             this.getIndices();
+            this.getServerInfo();
         },
 
         getList() {

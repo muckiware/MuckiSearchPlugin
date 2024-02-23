@@ -68,6 +68,12 @@
       "settingKey": "Key",
       "settingValue": "Value",
       "deleteSettingLabel": "Remove setting"
+    },
+    "serverInfo": {
+      "keyLabel": "Name",
+      "valueLabel": "Value",
+      "generalLabel": "General",
+      "versionLabel": "Version"
     }
   }
 }
