@@ -77,6 +77,8 @@
             <name>indexNamePattern</name>
             <label>Index Name Pattern</label>
             <defaultValue>{{salesChannelId}}-{{entity}}-{{languageId}}</defaultValue>
+            <helpText>Dynamic fields with Twig notation.</helpText>
+            <helpText lang="de-DE">Dynamische Felder mit Twig-Notation.</helpText>
         </input-field>
     </card>
     <card>
@@ -100,9 +102,11 @@
         <title lang="de-DE">Suchfelder Zuordnung</title>
         <input-field type="text">
             <name>mappingProductFields</name>
-            <label>Product fields for mapping</label>
-            <label lang="de-DE">Produktfelder für Zuordnung</label>
-            <defaultValue>id,productNumber</defaultValue>
+            <label>Default product fields for index mapping</label>
+            <label lang="de-DE">Standard Produktfelder für Index Zuordnung</label>
+            <defaultValue>id:string,productNumber:string</defaultValue>
+            <helpText>Field definition separate by comma. Example: id:string,productNumber:string</helpText>
+            <helpText lang="de-DE">Felddefinition durch Komma getrennt. Beispiel: id:string,productNumber:string</helpText>
         </input-field>
     </card>
     <card>
