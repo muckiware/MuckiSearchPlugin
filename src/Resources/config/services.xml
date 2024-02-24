@@ -29,6 +29,14 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
+        <service id="MuckiSearchPlugin\Controller\ServerController" public="true">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
+            <argument type="service" id="searchclient.factory"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
         <service id="MuckiSearchPlugin\Controller\SettingsMappingsController" public="true">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
