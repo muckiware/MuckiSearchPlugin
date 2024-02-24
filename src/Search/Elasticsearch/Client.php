@@ -5,22 +5,15 @@
  *
  * @category   Muckiware
  * @package    MuckiSearch
- * @copyright  Copyright (c) 2023 by Muckiware
- *
+ * @copyright  Copyright (c) 2023-2024 by Muckiware
+ * @license    MIT
  * @author     Muckiware
  *
  */
 
 namespace MuckiSearchPlugin\Search\Elasticsearch;
 
-use MuckiSearchPlugin\Services\Content\SalesChannel;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Psr\Log\LoggerInterface;
 
@@ -30,13 +23,10 @@ use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Services\Content\IndexStructure;
 use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureTranslation\IndexStructureTranslationEntity;
 use MuckiSearchPlugin\Entities\CreateIndicesBody;
-use MuckiSearchPlugin\Entities\IndicesMappingProperty;
 use MuckiSearchPlugin\Services\IndicesSettings;
 use MuckiSearchPlugin\Services\Helper as PluginHelper;
 use MuckiSearchPlugin\Entities\Mapping as MappingEntity;
 use MuckiSearchPlugin\Core\Content\ServerOptions\ServerOptionsFactory;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class Client extends ClientActions implements SearchClientInterface
 {
@@ -55,58 +45,69 @@ class Client extends ClientActions implements SearchClientInterface
         );
     }
 
-    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
+    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context): void
     {
         $indexStructure = $this->indexStructure->getIndexStructureById($indexStructureId, $languageId, $context);
-        $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
-        $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
-        /** @var IndexStructureTranslationEntity $indexStructureTranslation */
-        foreach ($indexStructure->get('translations') as $indexStructureTranslation) {
+        if($indexStructure) {
 
-            $this->indicesSettings->setTemplateVariable('languageId', $indexStructureTranslation->getLanguageId());
-            $indexName = $this->indicesSettings->getIndexNameByTemplate();
-            $indexId = $this->indicesSettings->getIndexId();
-
-            $createBody = new CreateIndicesBody($this->settings);
-            $createBody->setIndexName($indexName);
-            $createBody->setIndexId($indexId);
-            $this->setIndicesSettings($indexStructureTranslation->get('settings'), $createBody);
-            $this->setIndicesMappings($indexStructureTranslation->get('mappings'), $createBody);
-
-            if(!$this->checkIndicesExists($indexName)) {
-                $this->createNewIndices($createBody);
-            } else {
-                //$this->updateIndices($createBody);
-            }
-        }
-
-        return null;
-    }
-
-    public function removeIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
-    {
-        if(Uuid::isValid($indexStructureId)) {
-
-            $indexStructure = $this->indexStructure->getIndexStructureById($indexStructureId, $languageId, $context);
-            $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
             $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
-
+            $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
             /** @var IndexStructureTranslationEntity $indexStructureTranslation */
             foreach ($indexStructure->get('translations') as $indexStructureTranslation) {
 
                 $this->indicesSettings->setTemplateVariable('languageId', $indexStructureTranslation->getLanguageId());
                 $indexName = $this->indicesSettings->getIndexNameByTemplate();
+                $indexId = $this->indicesSettings->getIndexId();
 
-                if($this->checkIndicesExists($indexName)) {
-                    $this->removeIndices($indexName);
+                $createBody = new CreateIndicesBody($this->settings);
+                $createBody->setIndexName($indexName);
+                $createBody->setIndexId($indexId);
+                $this->setIndicesSettings($indexStructureTranslation->get('settings'), $createBody);
+                $this->setIndicesMappings($indexStructureTranslation->get('mappings'), $createBody);
+
+                if(!$this->checkIndicesExists($indexName)) {
+                    $this->createNewIndices($createBody);
+                } else {
+                    $this->logger->warning('Index already exits');
                 }
             }
-
-            $this->indexStructure->removeIndexStructureById($indexStructureId, $context);
         }
     }
 
-    public function removeIndicesByIndexName(string $indexName)
+    public function removeIndicesByIndexStructureId(
+        string $indexStructureId,
+        string $languageId,
+        Context $context
+    ): void
+    {
+        if(Uuid::isValid($indexStructureId)) {
+
+            $indexStructure = $this->indexStructure->getIndexStructureById($indexStructureId, $languageId, $context);
+            if($indexStructure) {
+
+                $this->indicesSettings->setTemplateVariable('salesChannelId', $indexStructure->getSalesChannelId());
+                $this->indicesSettings->setTemplateVariable('entity', $indexStructure->getEntity());
+
+                /** @var IndexStructureTranslationEntity $indexStructureTranslation */
+                foreach ($indexStructure->get('translations') as $indexStructureTranslation) {
+
+                    $this->indicesSettings->setTemplateVariable(
+                        'languageId',
+                        $indexStructureTranslation->getLanguageId()
+                    );
+                    $indexName = $this->indicesSettings->getIndexNameByTemplate();
+
+                    if($this->checkIndicesExists($indexName)) {
+                        $this->removeIndices($indexName);
+                    }
+                }
+
+                $this->indexStructure->removeIndexStructureById($indexStructureId, $context);
+            }
+        }
+    }
+
+    public function removeIndicesByIndexName(string $indexName): void
     {
         if($indexName !== '' && $this->checkIndicesExists($indexName)) {
             $this->removeIndices($indexName);
@@ -177,97 +178,5 @@ class Client extends ClientActions implements SearchClientInterface
         }
 
         return $mappings;
-    }
-
-    public function createSalesChannelProductCollection(
-        array $resultByServer,
-        string $salesChannelId,
-        SalesChannelRepository $salesChannelRepository,
-        SalesChannelContext $salesChannelContext
-    ): SalesChannelProductCollection
-    {
-        $alesChannelProductCollection = new SalesChannelProductCollection();
-
-        if(array_key_exists('items', $resultByServer)) {
-
-            foreach ($resultByServer['items'] as $item) {
-
-                foreach ($item['source'] as $sourceKey => $sourceValue) {
-
-                    if($sourceKey === 'id') {
-
-                        $salesChannelProduct = $this->getSalesChannelProductById(
-                            $salesChannelRepository,
-                            $sourceValue,
-                            $salesChannelId,
-                            $salesChannelContext
-                        )->first();
-
-                        if(array_key_exists('highlight', $item)) {
-
-                            foreach ($item['highlight'] as $highlightKey =>  $highlightValue) {
-
-                                $fieldPath = explode('.',$highlightKey);
-                                if(count($fieldPath) === 1) {
-                                    $salesChannelProduct->{$fieldPath[0]} = $highlightValue[0];
-                                } else {
-
-                                    if (in_array('translations', $fieldPath)) {
-
-                                        $productTranslated = $salesChannelProduct->getTranslated();
-                                        $productTranslated[$fieldPath[2]] = $highlightValue[0];
-                                        $salesChannelProduct->setTranslated($productTranslated);
-
-                                    } else {
-                                        $salesChannelProduct->{$highlightKey} = $highlightValue[0];
-                                    }
-                                }
-                            }
-                        }
-                        $alesChannelProductCollection->add($salesChannelProduct);
-                    }
-                }
-            }
-        }
-
-        return $alesChannelProductCollection;
-    }
-
-    protected function getSalesChannelProductById(
-        SalesChannelRepository $salesChannelRepository,
-        string $productId,
-        string $salesChannelId,
-        SalesChannelContext $salesChannelContext
-    )
-    {
-        $criteria = $this->getCriteriaAssociations($salesChannelId);
-        $criteria->addFilter(new EqualsFilter('id', $productId));
-        $criteria->setLimit(1);
-
-        return $salesChannelRepository->search($criteria, $salesChannelContext);
-    }
-
-    protected function getCriteriaAssociations(string $salesChannelId): Criteria
-    {
-        return (new Criteria())
-            ->addAssociation('translations')
-            ->addAssociation('manufacturer.media')
-            ->addAssociation('options.group')
-            ->addAssociation('properties.group')
-            ->addAssociation('mainCategories.category')
-            ->addAssociation('media')
-            ->addAssociation('visibilities')
-            ->addAssociation('seoUrls')
-            ->addAssociation('tags')
-            ->addAssociation('categories')
-            ->addAssociation('cover')
-            ->addFilter(new EqualsFilter('active', true))
-            ->addFilter(new EqualsFilter('seoUrls.isCanonical', true))
-            ->addFilter(new EqualsFilter('visibilities.salesChannelId', $salesChannelId))
-            ->addFilter(new MultiFilter(MultiFilter::CONNECTION_OR, [
-                new EqualsFilter('visibilities.visibility', 20),
-                new EqualsFilter('visibilities.visibility', 30)
-            ]))
-            ;
     }
 }

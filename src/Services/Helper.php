@@ -54,6 +54,7 @@ class Helper
             if(is_array($propertyPath)) {
 
                 foreach ($propertyPath as $property) {
+
                     if (!isset($currentLayer[$property])) {
                         $currentLayer[$property] = [];
                     }
@@ -74,7 +75,7 @@ class Helper
         string $property,
         string $searchField,
         int $fieldCounter
-    )
+    ): ?array
     {
         foreach ($mappings as $mapping) {
 
@@ -85,6 +86,28 @@ class Helper
         }
 
         return null;
+    }
+    
+    public function checkIndexSearchResults(?array $searchResult): bool
+    {
+        if(
+            is_array($searchResult) &&
+            array_key_exists('items', $searchResult) &&
+            !empty($searchResult['items']) &&
+            array_key_exists('id', $searchResult['items'][0])
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getHashData(array|string $data): string
+    {
+        if(is_array($data)) {
+            return md5(serialize($data));
+        }
+        return md5($data);
     }
 }
 

@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 
 use MuckiSearchPlugin\Entities\SearchMapping;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\WriteException;
 use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureEntity;
 
@@ -64,6 +65,7 @@ class IndexStructure
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
+        $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
         $criteria->addAssociation('translations');
         $criteria->addAssociation('translations.language');
         $criteria->addAssociation('translations.language.translationCode');

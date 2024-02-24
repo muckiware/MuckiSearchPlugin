@@ -46,7 +46,7 @@ class Checkup extends Command
         parent::__construct(self::$defaultName);
     }
 
-    public function setContainer(ContainerInterface $container)
+    public function setContainer(ContainerInterface $container): void
     {
         $this->container = $container;
     }
@@ -56,16 +56,18 @@ class Checkup extends Command
      */
     public function getContainer(): ContainerInterface
     {
+        if (!$this->container) {
+            throw new \LogicException('Cannot retrieve the container from a non-booted kernel.');
+        }
         return $this->container;
     }
 
     /**
      * @internal
      */
-    public function configure() {
-        $this
-            ->setDescription('Checkup Elasticsearch server items')
-        ;
+    public function configure(): void
+    {
+        $this->setDescription('Checkup Elasticsearch server items');
     }
 
     /**
@@ -74,10 +76,15 @@ class Checkup extends Command
      * @return int
      * @throws \Exception
      */
-    public function execute(InputInterface $input, OutputInterface $output): int {
+    public function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $serverInfoAsString = $this->searchClientFactory->createSearchClient()->getServerInfoAsString();
+        if($serverInfoAsString) {
 
-        $output->writeln($this->searchClientFactory->createSearchClient()->getServerInfoAsString());
+            $output->writeln($serverInfoAsString);
+            return self::SUCCESS;
+        }
 
-        return self::SUCCESS;
+        return self::FAILURE;
     }
 }
