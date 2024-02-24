@@ -1,0 +1,38 @@
+{% sw_extends '@Storefront/storefront/component/product/card/box-standard.html.twig' %}
+
+{% block component_product_box_image_link %}
+    <a href="{{ seoUrl('frontend.detail.page', { 'productId': id }) }}"
+       title="{{ muwa_removeHighlightMarkers(name) }}"
+       class="product-image-link is-{{ displayMode }}">
+        {% block component_product_box_image_link_inner %}
+            {% if cover.url and cover.isSpatialObject() == false %}
+                {% set attributes = {
+                    'class': 'product-image is-'~displayMode,
+                    'alt': (cover.translated.alt ?: muwa_removeHighlightMarkers(name)),
+                    'title': (cover.translated.title ?: muwa_removeHighlightMarkers(name)),
+                    'loading': 'lazy'
+                } %}
+
+                {% if displayMode == 'cover' or displayMode == 'contain' %}
+                    {% set attributes = attributes|merge({ 'data-object-fit': displayMode }) %}
+                {% endif %}
+
+                {% block component_product_box_image_thumbnail %}
+                    {{ parent() }}
+                {% endblock %}
+            {% else %}
+                {% block component_product_box_image_placeholder %}
+                    {{ parent() }}
+                {% endblock %}
+            {% endif %}
+        {% endblock %}
+    </a>
+{% endblock %}
+
+{% block component_product_box_name %}
+    <a href="{{ seoUrl('frontend.detail.page', {'productId': id}) }}"
+       class="product-name"
+       title="{{ muwa_removeHighlightMarkers(name) }}">
+        {{ name|raw }}
+    </a>
+{% endblock %}

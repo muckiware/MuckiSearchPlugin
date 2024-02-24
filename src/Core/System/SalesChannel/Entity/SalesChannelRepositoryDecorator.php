@@ -2,9 +2,6 @@
 
 namespace MuckiSearchPlugin\Core\System\SalesChannel\Entity;
 
-use MuckiSearchPlugin\Search\Content\Category;
-use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\Processor\CompositeListingProcessor;
 use Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -66,6 +63,7 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         protected ContentCategory $contentCategory
     ) {
         $this->originalSalesChannelRepository = $salesChannelRepository;
+        $this->entitySearchResult = null;
 
         parent::__construct(
             $definition,
@@ -81,11 +79,13 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
     {
         if($this->pluginSettings->isEnabled()) {
 
-            if($this->entitySearchResult->getEntities()->count() <= 0) {
+            $this->pluginSearch($criteria, $salesChannelContext);
+            if(!$this->entitySearchResult || $this->entitySearchResult->getEntities()->count() <= 0) {
                 $this->entitySearchResult = $this->pluginSearch($criteria, $salesChannelContext);
-            } else {
-                return $this->entitySearchResult;
             }
+
+            return $this->entitySearchResult;
+
         }
 
         return $this->regularSearch($criteria, $salesChannelContext);
@@ -163,11 +163,11 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
 
     private function doSearch(Criteria $criteria, SalesChannelContext $salesChannelContext): IdSearchResult
     {
-        if($this->pluginSettings->isEnabled()) {
+        if($this->pluginSettings->isEnabled() && !empty($criteria->getQueries())) {
             $this->entitySearchResult = $this->pluginSearch($criteria, $salesChannelContext);
         }
 
-        if($this->entitySearchResult->getEntities()->count() >= 1) {
+        if($this->entitySearchResult && $this->entitySearchResult->getEntities()->count() >= 1) {
 
             $data = array();
             foreach ($this->entitySearchResult->getElements() as $elementKey => $elementItems) {
