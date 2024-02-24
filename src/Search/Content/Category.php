@@ -79,7 +79,7 @@ class Category
 
                             $category = $categories->get($sourceValue);
 
-                            if(array_key_exists('highlight', $item)) {
+                            if(array_key_exists('highlight', $item) && is_array($item['highlight'])) {
 
                                 foreach ($item['highlight'] as $highlightKey =>  $highlightValue) {
 
