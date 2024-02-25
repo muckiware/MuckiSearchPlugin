@@ -52,6 +52,13 @@
         <service id="MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureTranslation\IndexStructureTranslationDefinition">
             <tag name="shopware.entity.definition" entity="muwa_index_structure_translation"/>
         </service>
+        <service id="MuckiSearchPlugin\Core\Content\SearchRequestLogs\SearchRequestLogsDefinition">
+            <tag name="shopware.entity.definition" entity="muwa_search_request_logs"/>
+        </service>
+        <service id="MuckiSearchPlugin\Core\Content\SearchRequestLogs\SearchRequestLogsTranslation\SearchRequestLogsTranslationDefinition">
+            <tag name="shopware.entity.definition" entity="muwa_search_request_logs_translation"/>
+        </service>
+
         <service id="muckiSearchPlugin.core.salesChannelRepositoryDecorator" class="MuckiSearchPlugin\Core\System\SalesChannel\Entity\SalesChannelRepositoryDecorator" decorates="sales_channel.product.repository" decoration-priority="100">
             <argument type="service" id="muckiSearchPlugin.core.salesChannelRepositoryDecorator.inner" />
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition"/>

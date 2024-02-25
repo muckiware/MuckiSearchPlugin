@@ -1,5 +1,4 @@
 <?php declare(strict_types=1);
-
 /**
  * MuckiSearchPlugin plugin
  *
@@ -11,7 +10,6 @@
  * @author     Muckiware
  *
  */
-
 namespace MuckiSearchPlugin\Migration;
 
 use Doctrine\DBAL\Connection;
@@ -21,7 +19,7 @@ class Migration1703322259 extends MigrationStep
 {
     public function getCreationTimestamp(): int
     {
-        return 1_703_322_259;
+        return 1703322259;
     }
 
     public function update(Connection $connection): void

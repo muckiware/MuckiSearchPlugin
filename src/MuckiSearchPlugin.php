@@ -43,6 +43,7 @@ class MuckiSearchPlugin extends Plugin
             $connection->executeStatement('SET FOREIGN_KEY_CHECKS = 0');
             $connection->executeStatement('DROP TABLE `muwa_index_structure`');
             $connection->executeStatement('DROP TABLE `muwa_index_structure_translation`');
+            $connection->executeStatement('DROP TABLE `muwa_search_request_logs`');
             $connection->executeStatement('SET FOREIGN_KEY_CHECKS = 1');
         }
     }
