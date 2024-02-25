@@ -64,5 +64,14 @@ class Categories
             ->addFilter(new EqualsFilter('type', CategoryDefinition::TYPE_PAGE))
         ;
     }
+
+    public function getItems(?string $itemId, string $salesChannelId): array
+    {
+        if ($itemId) {
+            return $this->getCategoryByCategoryId($itemId, $salesChannelId)->getElements();
+        } else {
+            return $this->getAllActiveCategories($salesChannelId)->getElements();
+        }
+    }
 }
 

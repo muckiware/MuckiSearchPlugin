@@ -7,7 +7,7 @@
       "saveSuccessAlertMessage": "Search index structure was saved successfully."
     },
     "tabs": {
-      "structureList": "Index configurations",
+      "structureList": "Index Configurations",
       "structureIndices": "Indices Structures",
       "serverInfo": "Server Info"
     },

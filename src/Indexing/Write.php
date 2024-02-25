@@ -93,30 +93,12 @@ class Write
 
                 case 'product':
 
-                    if ($itemId) {
-                        $items = $this->products->getProductByProductId(
-                            $itemId,
-                            $indexStructure->getSalesChannelId()
-                        )->getElements();
-                    } else {
-                        $items = $this->products->getAllActiveProduct(
-                            $indexStructure->getSalesChannelId()
-                        )->getElements();
-                    }
+                    $items = $this->products->getItems($itemId, $indexStructure->getSalesChannelId());
                     break;
 
                 case 'category':
 
-                    if ($itemId) {
-                        $items = $this->categories->getCategoryByCategoryId(
-                            $itemId,
-                            $indexStructure->getSalesChannelId()
-                        )->getElements();
-                    } else {
-                        $items = $this->categories->getAllActiveCategories(
-                            $indexStructure->getSalesChannelId()
-                        )->getElements();
-                    }
+                    $items = $this->categories->getItems($itemId, $indexStructure->getSalesChannelId());
                     break;
 
                 default:

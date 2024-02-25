@@ -85,5 +85,14 @@ class Products
             ]))
         ;
     }
+
+    public function getItems(?string $itemId, string $salesChannelId): array
+    {
+        if ($itemId) {
+            return $this->getProductByProductId($itemId, $salesChannelId)->getElements();
+        } else {
+            return $this->getAllActiveProduct($salesChannelId)->getElements();
+        }
+    }
 }
 
