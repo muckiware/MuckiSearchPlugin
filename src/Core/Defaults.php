@@ -11,6 +11,9 @@ final class Defaults
 
     public const DEFAULT_SERVER_PORT = 9200;
 
+    public const DEFAULT_SESSION_FIELD_LAST_SEARCH_REQUEST = 'muwa_last_search_request_timestamp';
+    public const DEFAULT_SESSION_FIELD_SEARCH_REQUESTS = 'muwa_last_search_requests';
+
     public const DEFAULT_INDEX_NAME_PATTERN = '{{salesChannelId}}-{{entity}}-{{languageId}}';
 
     public const DEFAULT_PRODUCT_MAPPINGS = 'id:keyword,productNumber:keyword,translations.DEFAULT.name:text,translations.DEFAULT.description:text,cover.media.url:text';

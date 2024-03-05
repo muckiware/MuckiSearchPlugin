@@ -30,6 +30,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\UpdatedAtField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\VersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
@@ -54,6 +55,7 @@ class SearchRequestLogsDefinition extends EntityDefinition
     protected function defineFields(): FieldCollection {
         return new FieldCollection([
             (new idField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
+            (new VersionField())->addFlags(new ApiAware()),
             (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class))->addFlags(new Required()),
             (new TranslatedField('searchTerm')),
             (new TranslatedField('hits')),

@@ -20,6 +20,15 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
+        <service class="MuckiSearchPlugin\Commands\SearchLogTransfer" id="mucki.search.commands.searchLog.transfer" public="true">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\SearchTermLog"/>
+            <tag name="console.command"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
 
         <service id="MuckiSearchPlugin\Controller\IndicesController" public="true">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
@@ -150,6 +159,13 @@
             <argument type="service" id="searchclient.factory"/>
             <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
         </service>
+        <service id="MuckiSearchPlugin\Services\SearchTermLog" public="true">
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="mucki_search_plugin.filesystem.private"/>
+        </service>
+        <service id="MuckiSearchPlugin\Services\Session" public="true">
+            <argument type="service" id="session.factory"/>
+        </service>
     	<service id="MuckiSearchPlugin\Services\Settings" public="true">
         	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
@@ -166,7 +182,13 @@
             <argument type="service" id="Symfony\Component\HttpFoundation\RequestStack"/>
             <tag name="kernel.event_subscriber" priority="1000"/>
         </service>
-
+        <service id="MuckiSearchPlugin\Subscriber\SearchSubscriber">
+            <argument type="service" id="MuckiSearchPlugin\Services\Session"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\SearchTermLog"/>
+            <argument type="service" id="muwa_search_request_logs.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service class="MuckiSearchPlugin\Subscriber\SearchSuggestSubscriber" id="muckiSearchPlugin.subscriber.searchSuggestSubscriber">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="Symfony\Component\HttpFoundation\RequestStack"/>
