@@ -22,6 +22,7 @@ use Shopware\Storefront\Page\Suggest\SuggestPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntitySearchResultLoadedEvent;
+use Jenssegers\Agent\Agent;
 
 use MuckiSearchPlugin\Core\Defaults as PluginDefaults;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
@@ -60,10 +61,19 @@ class SearchSubscriber implements EventSubscriberInterface
      */
     public function onSearchSuggest(SuggestPageLoadedEvent $event)
     {
+        $agent = new Agent();
+        $agent->setUserAgent($event->getRequest()->server->get('HTTP_USER_AGENT'));
+
+        if($agent->isRobot()) {
+            return;
+        }
+
         $this->pluginSession->setSearchTerm(
             $event->getPage()->getSearchTerm(),
             $event->getSalesChannelContext()->getSalesChannelId(),
-            $event->getPage()->getSearchResult()->getTotal()
+            $event->getPage()->getSearchResult()->getTotal(),
+            $event->getRequest()->server->get('REQUEST_TIME_FLOAT'),
+            $event->getRequest()->server->get('HTTP_USER_AGENT')
         );
         $currentSearchRequests = $this->pluginSession->getCurrentSearchRequests();
 

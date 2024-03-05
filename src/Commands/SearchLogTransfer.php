@@ -13,6 +13,7 @@
 
 namespace MuckiSearchPlugin\Commands;
 
+use League\Flysystem\FilesystemException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -75,10 +76,12 @@ class SearchLogTransfer extends Command
      * @param OutputInterface $output
      * @return int
      * @throws \Exception
+     * @throws FilesystemException
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $serverInfoAsString = $this->searchTermLog->saveSearchLogsIntoDb();
+        $output->writeln( 'Starting search logs into database');
+        $serverInfoAsString = $this->searchTermLog->saveSearchLogsIntoDb($output);
         if($serverInfoAsString) {
 
             $output->writeln($serverInfoAsString);

@@ -22,7 +22,8 @@
 		"shopware/core": "^6.5.3",
 		"shopware/administration": "^6.5.3",
 		"shopware/storefront": "^6.5.3",
-		"elasticsearch/elasticsearch": "^8.11"
+		"elasticsearch/elasticsearch": "^8.11",
+		"jenssegers/agent": "^2.6"
 	},
 	"autoload" : {
 		"psr-4" : {
@@ -36,7 +37,8 @@
 	},
 	"config": {
 		"allow-plugins": {
-			"symfony/runtime": true
+			"symfony/runtime": true,
+			"php-http/discovery": false
 		}
 	}
 }

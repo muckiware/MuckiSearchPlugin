@@ -15,10 +15,11 @@ namespace MuckiSearchPlugin\Services;
 
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Session\SessionFactory;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Jenssegers\Agent\Agent;
 
 use MuckiSearchPlugin\Core\Defaults as PluginDefaults;
 use MuckiSearchPlugin\Entities\SessionSearchRequest;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class Session
 {
@@ -48,7 +49,13 @@ class Session
         return $returnDateTime;
     }
 
-    public function setSearchTerm(string $searchTerm, string $salesChannelId, int $searchTotals): void
+    public function setSearchTerm(
+        string $searchTerm,
+        string $salesChannelId,
+        int $searchTotals,
+        float $requestTimestamp,
+        string $userAgent
+    ): void
     {
         if($searchTerm === '') {
             return;
@@ -77,7 +84,9 @@ class Session
                     $searchTerm,
                     $session,
                     $salesChannelId,
-                    $searchTotals
+                    $searchTotals,
+                    $requestTimestamp,
+                    $userAgent
                 );
             }
 
@@ -90,7 +99,14 @@ class Session
 
             $session->set(
                 PluginDefaults::DEFAULT_SESSION_FIELD_SEARCH_REQUESTS,
-                serialize(array($this->createNewLogSessionItem($searchTerm, $session, $salesChannelId, $searchTotals)))
+                serialize(array($this->createNewLogSessionItem(
+                    $searchTerm,
+                    $session,
+                    $salesChannelId,
+                    $searchTotals,
+                    $requestTimestamp,
+                    $userAgent
+                )))
             );
         }
     }
@@ -99,15 +115,33 @@ class Session
         string $searchTerm,
         SessionInterface $session,
         string $salesChannelId,
-        int $searchTotals
+        int $searchTotals,
+        float $requestTimestamp,
+        string $userAgent
     ): SessionSearchRequest
     {
+        $agent = new Agent();
+        $agent->setUserAgent($userAgent);
+        $platform = $agent->platform();
+        $browser = $agent->browser();
+
         $sessionSearchRequests = new SessionSearchRequest();
         $sessionSearchRequests->setId(Uuid::randomHex());
         $sessionSearchRequests->setSearchTerm($searchTerm);
         $sessionSearchRequests->setSessionId($session->getId());
         $sessionSearchRequests->setSalesChannelId($salesChannelId);
         $sessionSearchRequests->setHits($searchTotals);
+        $sessionSearchRequests->setRequestDateTime(
+            $this->getLastSearchRequestDateTime($requestTimestamp)
+        );
+        $sessionSearchRequests->setUserAgent($userAgent);
+        $sessionSearchRequests->setDevice($agent->device());
+        $sessionSearchRequests->setPlatform($platform);
+        $sessionSearchRequests->setPlatformVersion($agent->version($platform));
+        $sessionSearchRequests->setBrowser($browser);
+        $sessionSearchRequests->setBrowserVersion($agent->version($browser));
+        $sessionSearchRequests->setIsMobile($agent->isMobile());
+        $sessionSearchRequests->setIsDesktop($agent->isDesktop());
 
         return $sessionSearchRequests;
     }
