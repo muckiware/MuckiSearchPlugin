@@ -36,8 +36,7 @@ class SearchSubscriber implements EventSubscriberInterface
     public function __construct(
         protected PluginSession $pluginSession,
         protected PluginSettings $pluginSettings,
-        protected SearchTermLog $searchTermLog,
-        protected EntityRepository $searchRequestLogsRepository,
+        protected SearchTermLog $searchTermLog
     )
     {
         $this->request = $_REQUEST;
@@ -75,25 +74,10 @@ class SearchSubscriber implements EventSubscriberInterface
             $event->getRequest()->server->get('REQUEST_TIME_FLOAT'),
             $event->getRequest()->server->get('HTTP_USER_AGENT')
         );
-        $currentSearchRequests = $this->pluginSession->getCurrentSearchRequests();
-
-//        $logId = Uuid::randomHex();
-//        $logData = array(
-//            'id' => $logId,
-//            'salesChannelId' => $event->getSalesChannelContext()->getSalesChannelId(),
-//            'searchTerm' => $event->getRequest()->query->get('search'),
-//            'hits' => 23
-//        );
-//        $this->searchRequestLogsRepository->create([$logData], $event->getContext());
-//
-//        $versionLogId = $this->searchRequestLogsRepository->createVersion($logId, $event->getContext());
-//        $versionContext = $event->getContext()->createWithVersionId($versionLogId);
 
         $this->searchTermLog->saveSearchLogSessionToFile(
             $this->pluginSession->getSessionId(),
             $this->pluginSession->getCurrentSerializedSearchRequests()
         );
-
-        $checker = 1;
     }
 }

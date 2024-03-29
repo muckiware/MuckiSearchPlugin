@@ -162,6 +162,7 @@
         <service id="MuckiSearchPlugin\Services\SearchTermLog" public="true">
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="mucki_search_plugin.filesystem.private"/>
+            <argument type="service" id="muwa_search_request_logs.repository"/>
         </service>
         <service id="MuckiSearchPlugin\Services\Session" public="true">
             <argument type="service" id="session.factory"/>
@@ -186,7 +187,6 @@
             <argument type="service" id="MuckiSearchPlugin\Services\Session"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="MuckiSearchPlugin\Services\SearchTermLog"/>
-            <argument type="service" id="muwa_search_request_logs.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service class="MuckiSearchPlugin\Subscriber\SearchSuggestSubscriber" id="muckiSearchPlugin.subscriber.searchSuggestSubscriber">

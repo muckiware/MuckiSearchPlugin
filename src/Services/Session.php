@@ -177,4 +177,13 @@ class Session
         }
         return $session->getId();
     }
+    
+    public function cleanSearchRequestsSession(SessionInterface $session = null): void
+    {
+        if(!$session) {
+            $session = $this->sessionFactory->createSession();
+        }
+        
+        $session->remove(PluginDefaults::DEFAULT_SESSION_FIELD_SEARCH_REQUESTS);
+    }
 }
