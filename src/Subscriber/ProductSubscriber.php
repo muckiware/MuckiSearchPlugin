@@ -3,8 +3,10 @@
 namespace MuckiSearchPlugin\Subscriber;
 
 use Shopware\Core\Content\Product\ProductEvents;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
@@ -17,22 +19,21 @@ use MuckiSearchPlugin\Core\Content\IndexStructure\IndexStructureEntity;
 use MuckiSearchPlugin\Entities\IndexStructureInstance;
 use MuckiSearchPlugin\Services\IndicesSettings;
 use MuckiSearchPlugin\Services\Content\Products as ContentProducts;
+use MuckiSearchPlugin\Services\Searching as ServicesSearching;
 
 class ProductSubscriber implements EventSubscriberInterface
 {
-    protected array $request;
-
     public function __construct(
         protected IndexingProduct $indexingProduct,
         protected IndexingWrite $indexingWrite,
         protected SearchClientFactory $searchClientFactory,
         protected IndexStructure $indexStructure,
         protected IndicesSettings $indicesSettings,
-        protected ContentProducts $contentProducts
+        protected ContentProducts $contentProducts,
+        protected ServicesSearching $servicesSearching,
+        protected RequestStack $requestStack
     )
-    {
-        $this->request = $_REQUEST;
-    }
+    {}
 
     public static function getSubscribedEvents(): array
     {
@@ -86,7 +87,13 @@ class ProductSubscriber implements EventSubscriberInterface
                 if($writeResult->getOperation() === 'update' || $writeResult->getOperation() === 'create') {
 
                     $payload = $writeResult->getPayload();
-                    $indexStructureInstances = $this->indexingWrite->getIndexStructureInstances($payload['id']);
+                    if(array_key_exists('id', $payload) && Uuid::isValid($payload['id'])) {
+                        $productId = $payload['id'];
+                    } else {
+                        continue;
+                    }
+
+                    $indexStructureInstances = $this->indexingWrite->getIndexStructureInstances($productId);
                     /** @var IndexStructureInstance $indexStructureInstance */
                     foreach ($indexStructureInstances as $indexStructureInstance) {
 
@@ -95,11 +102,50 @@ class ProductSubscriber implements EventSubscriberInterface
                         }
 
                         if($indexStructureInstance->getEntity() === 'product') {
-                            $this->indexingProduct->indexingProducts($indexStructureInstance, $searchClient);
+
+                            $requestPayload = $this->searchPayloadInRequestParams($productId);
+                            if($this->servicesSearching->checkProductNeedToRemove($requestPayload)) {
+
+                                $this->indexingProduct->removeProduct(
+                                    $productId,
+                                    $indexStructureInstance,
+                                    $searchClient
+                                );
+                            } else {
+                                $this->indexingProduct->indexingProducts($indexStructureInstance, $searchClient);
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    protected function searchPayloadInRequestParams(string $productId): array
+    {
+        $getCurrentRequest = $this->requestStack->getCurrentRequest();
+        if($getCurrentRequest) {
+
+            foreach ($getCurrentRequest->request->all() as $requestParameters) {
+
+                foreach ($requestParameters as $requestParameter) {
+
+                    if(is_array($requestParameter)) {
+
+                        foreach ($requestParameter as $payload) {
+
+                            if(
+                                array_key_exists('id', $payload) &&
+                                Uuid::isValid($payload['id']) &&
+                                in_array($productId, $payload)
+                            ) {
+                                return $payload;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return array();
     }
 }

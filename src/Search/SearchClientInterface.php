@@ -26,7 +26,7 @@ use MuckiSearchPlugin\Services\Settings as PluginSettings;
 
 interface SearchClientInterface
 {
-    public function getClient(): ElasticsearchClient | OpenSearchClient | null;
+    public function getClient(): ElasticsearchClient | OpenSearchClient;
 
     public function searching(array $params): ?array;
 
@@ -42,11 +42,11 @@ interface SearchClientInterface
 
     public function getIndices(): ?array;
 
-    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context);
+    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context): void;
 
-    public function removeIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context);
+    public function removeIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context): void;
 
-    public function removeIndicesByIndexName(string $indexName);
+    public function removeIndicesByIndexName(string $indexName): void;
 
     public function checkIndicesExists(string $indexName): bool;
 
@@ -54,5 +54,5 @@ interface SearchClientInterface
 
     public function createHighlightObject(PluginSettings $pluginSettings, array $mappings): array;
 
-    public function createSalesChannelProductCollection(array $resultByServer, string $salesChannelId, SalesChannelRepository $salesChannelRepository, SalesChannelContext $salesChannelContext): SalesChannelProductCollection;
+    public function getClusterHealth(string $indexName): ?object;
 }

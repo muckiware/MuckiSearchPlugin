@@ -32,9 +32,9 @@ use MuckiSearchPlugin\Indexing\Write as WriteIndex;
 class Indexing extends Command
 {
     /**
-     * @var null
+     * @var ContainerInterface|null
      */
-    protected $container = null;
+    protected ?ContainerInterface $container = null;
 
     public function __construct(
         protected PluginSettings $settings,
@@ -45,7 +45,7 @@ class Indexing extends Command
         parent::__construct(self::$defaultName);
     }
 
-    public function setContainer(ContainerInterface $container)
+    public function setContainer(ContainerInterface $container): void
     {
         $this->container = $container;
     }
@@ -55,16 +55,18 @@ class Indexing extends Command
      */
     public function getContainer(): ContainerInterface
     {
+        if (!$this->container) {
+            throw new \LogicException('Cannot retrieve the container from a non-booted kernel.');
+        }
         return $this->container;
     }
 
     /**
      * @internal
      */
-    public function configure() {
-        $this
-            ->setDescription('Added shop items into Elasticsearch database')
-        ;
+    public function configure(): void
+    {
+        $this->setDescription('Added shop items into Elasticsearch database');
     }
 
     /**
@@ -73,8 +75,8 @@ class Indexing extends Command
      * @return int
      * @throws \Exception
      */
-    public function execute(InputInterface $input, OutputInterface $output): int {
-
+    public function execute(InputInterface $input, OutputInterface $output): int
+    {
         $executionStart = microtime(true);
 
         $output->writeln( 'Starting search indexing');

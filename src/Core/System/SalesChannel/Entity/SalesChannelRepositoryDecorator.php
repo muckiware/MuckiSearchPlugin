@@ -2,8 +2,6 @@
 
 namespace MuckiSearchPlugin\Core\System\SalesChannel\Entity;
 
-use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\Processor\CompositeListingProcessor;
 use Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -20,6 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearcherInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\Event\SalesChannelProcessCriteriaEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -31,11 +30,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 use MuckiSearchPlugin\Search\SearchClientFactory;
-use MuckiSearchPlugin\Services\IndicesSettings;
-use MuckiSearchPlugin\Services\Content\IndexStructure;
-use MuckiSearchPlugin\Search\SearchClientInterface;
-use MuckiSearchPlugin\Services\Searching as ServicesSearching;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
+use MuckiSearchPlugin\Search\Content\Product as ContentProduct;
+use MuckiSearchPlugin\Search\Content\Category as ContentCategory;
 
 /**
  *
@@ -44,6 +41,7 @@ use MuckiSearchPlugin\Services\Settings as PluginSettings;
 #[Package('buyers-experience')]
 class SalesChannelRepositoryDecorator extends SalesChannelRepository
 {
+    protected ?EntitySearchResult $entitySearchResult;
     private SalesChannelRepository $originalSalesChannelRepository;
     /**
      * @internal
@@ -56,16 +54,16 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
         protected EntityAggregatorInterface $aggregator,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly EntityLoadedEventFactory $eventFactory,
-        protected ServicesSearching $servicesSearching,
         protected SearchClientFactory $searchClientFactory,
-        protected IndexStructure $indexStructure,
         protected RequestStack $requestStack,
         protected CompositeListingProcessor $processor,
         protected ProductSearchBuilderInterface $searchBuilder,
-        protected IndicesSettings $indicesSettings,
-        protected PluginSettings $pluginSettings
+        protected PluginSettings $pluginSettings,
+        protected ContentProduct $contentProduct,
+        protected ContentCategory $contentCategory
     ) {
         $this->originalSalesChannelRepository = $salesChannelRepository;
+        $this->entitySearchResult = null;
 
         parent::__construct(
             $definition,
@@ -79,87 +77,46 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
 
     public function search(Criteria $criteria, SalesChannelContext $salesChannelContext): EntitySearchResult
     {
-        $request = $this->requestStack->getCurrentRequest();
-        $searchEngineAvailable = $this->servicesSearching->checkSearchEngineAvailable(
-            $request,
-            $salesChannelContext->getContext()->getScope()
-        );
+        if($this->pluginSettings->isEnabled()) {
 
-        if($searchEngineAvailable) {
-            return $this->pluginSearch($request, $criteria, $salesChannelContext);
+            $this->pluginSearch($criteria, $salesChannelContext);
+            if(!$this->entitySearchResult || $this->entitySearchResult->getEntities()->count() <= 0) {
+                $this->entitySearchResult = $this->pluginSearch($criteria, $salesChannelContext);
+            }
+
+            return $this->entitySearchResult;
+
         }
 
         return $this->regularSearch($criteria, $salesChannelContext);
     }
 
-    public function pluginSearch(
-        Request $request,
-        Criteria $criteria,
-        SalesChannelContext $salesChannelContext
-    ): EntitySearchResult
+    public function pluginSearch(Criteria $criteria, SalesChannelContext $salesChannelContext): ?EntitySearchResult
     {
         $searchClient = $this->searchClientFactory->createSearchClient();
+        $request = $this->requestStack->getCurrentRequest();
 
-        $this->processor->prepare($request, $criteria, $salesChannelContext);
-        $this->searchBuilder->build($request, $criteria, $salesChannelContext);
+        if($request->get('search')) {
 
-        $salesChannelProductCollection = $searchClient->createSalesChannelProductCollection(
-            $this->getResultsByServer($searchClient, $criteria, $salesChannelContext),
-            $salesChannelContext->getSalesChannelId(),
-            $this->salesChannelRepository,
+            $this->processor->prepare($request, $criteria, $salesChannelContext);
+            $this->searchBuilder->build($request, $criteria, $salesChannelContext);
+        }
+
+        $productSearchCollection = $this->contentProduct->productSearch(
+            $searchClient,
+            $criteria,
+            $this->originalSalesChannelRepository,
             $salesChannelContext
         );
 
         return new EntitySearchResult(
             $this->definition->getEntityName(),
-            0,
-            $salesChannelProductCollection,
+            $productSearchCollection->count(),
+            $productSearchCollection,
             null,
             $criteria,
             $salesChannelContext->getContext()
         );
-    }
-
-    protected function getResultsByServer(
-        SearchClientInterface $searchClient,
-        Criteria $criteria,
-        SalesChannelContext $salesChannelContext
-    ): ?array
-    {
-        $currentIndexStructure = $this->indexStructure->getCurrentIndexStructure(
-            'product',
-            $salesChannelContext->getLanguageId(),
-            $salesChannelContext->getSalesChannelId(),
-            $salesChannelContext->getContext()
-        );
-
-        $this->indicesSettings->setTemplateVariable('entity', 'product');
-        $this->indicesSettings->setTemplateVariable('salesChannelId', $salesChannelContext->getSalesChannelId());
-        $this->indicesSettings->setTemplateVariable('languageId', $salesChannelContext->getLanguageId());
-
-        $searchQueryRequestBody = array(
-            'query' => array (
-                'bool' => array(
-                    'should' => $searchClient->createQueryObject(
-                        $criteria,
-                        $currentIndexStructure->get('mappings')
-                    )
-                )
-            )
-        );
-
-        $highlightObject = $searchClient->createHighlightObject(
-            $this->pluginSettings,
-            $currentIndexStructure->get('mappings')
-        );
-        if(!empty($highlightObject)) {
-            $searchQueryRequestBody['highlight'] = $highlightObject;
-        }
-
-        return $searchClient->searching(array(
-            'index' => $this->indicesSettings->getIndexNameByTemplate(),
-            'body' => $searchQueryRequestBody
-        ));
     }
 
     /**
@@ -170,6 +127,15 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
     public function regularSearch(Criteria $criteria, SalesChannelContext $salesChannelContext): EntitySearchResult
     {
         return parent::search($criteria, $salesChannelContext);
+    }
+
+    public function searchIds(Criteria $criteria, SalesChannelContext $salesChannelContext): IdSearchResult
+    {
+        $criteria = clone $criteria;
+
+        $this->processCriteria($criteria, $salesChannelContext);
+
+        return $this->doSearch($criteria, $salesChannelContext);
     }
 
     /**
@@ -197,7 +163,32 @@ class SalesChannelRepositoryDecorator extends SalesChannelRepository
 
     private function doSearch(Criteria $criteria, SalesChannelContext $salesChannelContext): IdSearchResult
     {
-        $result = $this->searcher->search($this->definition, $criteria, $salesChannelContext->getContext());
+        if($this->pluginSettings->isEnabled() && !empty($criteria->getQueries())) {
+            $this->entitySearchResult = $this->pluginSearch($criteria, $salesChannelContext);
+        }
+
+        if($this->entitySearchResult && $this->entitySearchResult->getEntities()->count() >= 1) {
+
+            $data = array();
+            foreach ($this->entitySearchResult->getElements() as $elementKey => $elementItems) {
+                $data[$elementKey] = array(
+                    'primaryKey' => $elementKey,
+                    'data' => array(
+                        'id' => $elementKey
+                    )
+                );
+            }
+
+            $result = new IdSearchResult(
+                $this->entitySearchResult->getEntities()->count(),
+                $data,
+                $criteria,
+                $salesChannelContext->getContext()
+            );
+
+        } else {
+            $result = $this->searcher->search($this->definition, $criteria, $salesChannelContext->getContext());
+        }
 
         $event = new SalesChannelEntityIdSearchResultLoadedEvent($this->definition, $result, $salesChannelContext);
         $this->eventDispatcher->dispatch($event, $event->getName());

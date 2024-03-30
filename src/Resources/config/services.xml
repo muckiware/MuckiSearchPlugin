@@ -29,6 +29,14 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
+        <service id="MuckiSearchPlugin\Controller\ServerController" public="true">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
+            <argument type="service" id="searchclient.factory"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
         <service id="MuckiSearchPlugin\Controller\SettingsMappingsController" public="true">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
@@ -52,14 +60,13 @@
             <argument type="service" id="Shopware\Elasticsearch\Framework\DataAbstractionLayer\ElasticsearchEntityAggregator"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedEventFactory"/>
-            <argument type="service" id="muckiSearchPlugin.Services.Searching"/>
             <argument type="service" id="searchclient.factory"/>
-            <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
             <argument type="service" id="Symfony\Component\HttpFoundation\RequestStack"/>
             <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\Processor\CompositeListingProcessor"/>
             <argument type="service" id="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface"/>
-            <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="muckiSearchPlugin.search.content.product"/>
+            <argument type="service" id="muckiSearchPlugin.search.content.category"/>
         </service>
 
         <service id="serverOptions.factory" class="MuckiSearchPlugin\Core\Content\ServerOptions\ServerOptionsFactory">
@@ -67,6 +74,13 @@
             <argument type="service" id="Psr\Log\LoggerInterface"/>
         </service>
 
+        <service id="MuckiSearchPlugin\Indexing\Category" public="true">
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\CliOutput"/>
+            <argument type="service" id="searchclient.factory"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Helper"/>
+        </service>
         <service id="MuckiSearchPlugin\Indexing\Product" public="true">
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiSearchPlugin\Services\CliOutput"/>
@@ -78,6 +92,7 @@
         <service id="MuckiSearchPlugin\Indexing\Write" public="true">
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Content\Products"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Content\Categories"/>
             <argument type="service" id="MuckiSearchPlugin\Services\CliOutput"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
             <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
@@ -85,6 +100,7 @@
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Helper"/>
             <argument type="service" id="MuckiSearchPlugin\Indexing\Product"/>
+            <argument type="service" id="MuckiSearchPlugin\Indexing\Category"/>
         </service>
 
         <service id="searchclient.factory" class="MuckiSearchPlugin\Search\SearchClientFactory" public="true">
@@ -109,6 +125,10 @@
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="product.repository"/>
         </service>
+        <service id="MuckiSearchPlugin\Services\Content\Categories" public="true">
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="category.repository"/>
+        </service>
         <service id="MuckiSearchPlugin\Services\Content\SalesChannel" public="true">
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="sales_channel.repository"/>
@@ -121,6 +141,7 @@
         <service id="muckiSearchPlugin.Services.Searching" class="MuckiSearchPlugin\Services\Searching">
             <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <argument type="service" id="searchclient.factory"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
         </service>
     	<service id="MuckiSearchPlugin\Services\Settings" public="true">
         	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
@@ -134,12 +155,37 @@
             <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
             <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
             <argument type="service" id="MuckiSearchPlugin\Services\Content\Products"/>
+            <argument type="service" id="muckiSearchPlugin.Services.Searching"/>
+            <argument type="service" id="Symfony\Component\HttpFoundation\RequestStack"/>
             <tag name="kernel.event_subscriber" priority="1000"/>
         </service>
-<!--        <service class="MuckiSearchPlugin\Subscriber\SearchSubscriber" id="muckiSearchPlugin.subscriber.searchSubscriber">-->
-<!--            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>-->
-<!--            <argument type="service" id="searchclient.factory"/>-->
-<!--            <tag name="kernel.event_subscriber" priority="1000"/>-->
-<!--        </service>-->
+
+        <service class="MuckiSearchPlugin\Subscriber\SearchSuggestSubscriber" id="muckiSearchPlugin.subscriber.searchSuggestSubscriber">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <argument type="service" id="Symfony\Component\HttpFoundation\RequestStack"/>
+            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Listing\Processor\CompositeListingProcessor"/>
+            <argument type="service" id="searchclient.factory"/>
+            <argument type="service" id="Shopware\Core\Content\Product\SearchKeyword\ProductSearchBuilderInterface"/>
+            <argument type="service" id="muckiSearchPlugin.search.content.category"/>
+            <tag name="kernel.event_subscriber" priority="1000"/>
+        </service>
+
+        <service id="muckiSearchPlugin.search.content.category" class="MuckiSearchPlugin\Search\Content\Category">
+            <argument type="service" id="muckiSearchPlugin.search.content.SearchRequest"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Content\Categories"/>
+        </service>
+        <service id="muckiSearchPlugin.search.content.product" class="MuckiSearchPlugin\Search\Content\Product">
+            <argument type="service" id="muckiSearchPlugin.search.content.SearchRequest"/>
+        </service>
+        <service id="muckiSearchPlugin.search.content.SearchRequest" class="MuckiSearchPlugin\Search\Content\SearchRequest">
+            <argument type="service" id="MuckiSearchPlugin\Services\Content\IndexStructure"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\IndicesSettings"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+        </service>
+
+        <service id="MuckiSearchPlugin\Twig\Extension\HighlightRemoverExtension" class="MuckiSearchPlugin\Twig\Extension\HighlightRemoverExtension">
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
+            <tag name="twig.extension"/>
+        </service>
     </services>
 </container>

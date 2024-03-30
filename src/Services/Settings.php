@@ -83,8 +83,9 @@ class Settings
     public function getMappingProductFields(): array
     {
         $mappingProductFields = array();
-        if($this->config->getString($this::CONFIG_PATH_MAPPING_PRODUCT_FIELDS) !== '') {
-            $configDefaultProductMappings = $this->config->getString($this::CONFIG_PATH_MAPPING_PRODUCT_FIELDS);
+        $configStr = $this->config->getString($this::CONFIG_PATH_MAPPING_PRODUCT_FIELDS);
+        if($configStr !== '' && str_contains(':', $configStr)) {
+            $configDefaultProductMappings = $configStr;
         } else {
             $configDefaultProductMappings = Defaults::DEFAULT_PRODUCT_MAPPINGS;
         }

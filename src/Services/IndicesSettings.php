@@ -4,6 +4,7 @@ namespace MuckiSearchPlugin\Services;
 
 use Psr\Log\LoggerInterface;
 
+use Shopware\Core\Framework\Uuid\Uuid;
 use Twig\Environment;
 
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
@@ -26,12 +27,12 @@ class IndicesSettings
         $this->templateVariables[$key] = $value;
     }
 
-    public function getTemplateVariables(): array
+    public function getTemplateVariable(): array
     {
         return $this->templateVariables;
     }
 
-    public function getIndexNameByTemplate(): ?string
+    public function getIndexNameByTemplate(): string
     {
         if(!empty($this->templateVariables)) {
 
@@ -50,7 +51,7 @@ class IndicesSettings
             }
         }
 
-        return null;
+        return Uuid::randomHex();
     }
 
     public function getIndexId(): string

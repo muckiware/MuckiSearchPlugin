@@ -25,9 +25,14 @@ class CliOutput
         OutputInterface $cliOutput
     ): ProgressBar
     {
+        if(!$progress->getTotal()) {
+            $progressTotal = 0;
+        } else {
+            $progressTotal = $progress->getTotal();
+        }
         $progressBar = new ProgressBar($cliOutput, $totalCounter);
-        $progressBar->setMaxSteps($progress->getTotal());
-        $progressBar->setFormat('[%bar%] %current%/%max% indexing for '.$languageName."\n");
+        $progressBar->setMaxSteps($progressTotal);
+        $progressBar->setFormat('[%bar%] %current%/%max% indexing products for '.$languageName."\n");
         $progressBar->start();
 
         return $progressBar;
@@ -42,14 +47,49 @@ class CliOutput
         return $progress;
     }
 
+    public function prepareCategoryProgressBar(
+        Progress $progress,
+        string $languageName,
+        int $totalCounter,
+        OutputInterface $cliOutput
+    ): ProgressBar
+    {
+        if(!$progress->getTotal()) {
+            $progressTotal = 0;
+        } else {
+            $progressTotal = $progress->getTotal();
+        }
+        $progressBar = new ProgressBar($cliOutput, $totalCounter);
+        $progressBar->setMaxSteps($progressTotal);
+        $progressBar->setFormat('[%bar%] %current%/%max% indexing categories for '.$languageName."\n");
+        $progressBar->start();
+
+        return $progressBar;
+    }
+
+    public function prepareCategoryProgress(int $totalCounter): Progress
+    {
+        $progress = new Progress(Uuid::randomHex(), Progress::STATE_PROGRESS, self::PROGRESS_BAR_OFFSET);
+        $progress->setTotal($totalCounter);
+        $progress->setOffset(self::PROGRESS_BAR_OFFSET);
+
+        return $progress;
+    }
+
     public function prepareIndexStructureProgressBar(
         Progress $progress,
         int $totalCounter,
         OutputInterface $cliOutput
     ): ProgressBar
     {
+        if(!$progress->getTotal()) {
+            $progressTotal = 0;
+        } else {
+            $progressTotal = $progress->getTotal();
+        }
+
         $progressBar = new ProgressBar($cliOutput, $totalCounter);
-        $progressBar->setMaxSteps($progress->getTotal());
+        $progressBar->setMaxSteps($progressTotal);
         $progressBar->setFormat('[%bar%] %current%/%max% Index Structure');
         $cliOutput->write('',true);
         $progressBar->start();
@@ -66,7 +106,7 @@ class CliOutput
         return $progress;
     }
 
-    public function printCliOutput(OutputInterface $cliOutput, $message = ''): void
+    public function printCliOutput(OutputInterface $cliOutput, string $message = ''): void
     {
         if($message !== '') {
             $cliOutput->writeln($message);

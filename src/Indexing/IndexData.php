@@ -18,6 +18,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\System\Language\LanguageEntity;
 use Symfony\Component\Console\Output\OutputInterface;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductTranslation\ProductTranslationEntity;
 
 use MuckiSearchPlugin\Services\CliOutput;
@@ -47,7 +48,7 @@ class IndexData
 
     protected function getBodyItems(
         array $mappings,
-        ProductEntity $product,
+        ProductEntity|CategoryEntity $items,
         LanguageEntity $language
     ): array
     {
@@ -64,22 +65,22 @@ class IndexData
 
                 $originPropertyKey = $propertyKey;
                 if($propertyKey === 'DEFAULT') {
-                    $propertyKey = $product->getId().'-'.ShopwareDefaults::LANGUAGE_SYSTEM;
+                    $propertyKey = $items->getId().'-'.ShopwareDefaults::LANGUAGE_SYSTEM;
                 }
                 if($propertyKey === $language->getTranslationCode()->getCode()) {
-                    $propertyKey = $product->getId().'-'.$language->getId();
+                    $propertyKey = $items->getId().'-'.$language->getId();
                 }
                 if(
                     !$propertyContent &&
-                    $product->has($propertyKey) &&
-                    $product->get($propertyKey)
+                    $items->has($propertyKey) &&
+                    $items->get($propertyKey)
                 ) {
                     if($originPropertyKey !== $propertyKey) {
                         $bodyKey[] = $originPropertyKey;
                     } else {
                         $bodyKey[] = $propertyKey;
                     }
-                    $propertyContent = $product->get($propertyKey);
+                    $propertyContent = $items->get($propertyKey);
                 } else {
 
                     if(

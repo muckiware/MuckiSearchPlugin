@@ -13,14 +13,7 @@
 
 namespace MuckiSearchPlugin\Search\Elasticsearch;
 
-use Elastic\Elasticsearch\Exception\ClientResponseException;
-use Elastic\Elasticsearch\Exception\ServerResponseException;
-use Elastic\Elasticsearch\Response\Elasticsearch;
-use Http\Promise\Promise;
-use Psr\Log\LoggerInterface;
-use Elastic\Elasticsearch\ClientBuilder;
-use Elastic\Elasticsearch\ClientInterface;
-use Elastic\Elasticsearch\Exception\AuthenticationException;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\Filter as SearchFilter;
 
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use MuckiSearchPlugin\Entities\CreateIndicesBody;
@@ -52,6 +45,7 @@ class ClientQuery
         /** @var AndFilter $filter */
         foreach($criteria->getFilters() as $filter) {
 
+            /** @var SearchFilter $query */
             foreach ($filter->getQueries() as $query) {
 
                 if($query->getField() === 'product.searchKeywords.keyword') {

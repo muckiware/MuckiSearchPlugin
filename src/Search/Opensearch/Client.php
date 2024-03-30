@@ -5,8 +5,8 @@
  *
  * @category   Muckiware
  * @package    MuckiSearch
- * @copyright  Copyright (c) 2023 by Muckiware
- *
+ * @copyright  Copyright (c) 2023-2024 by Muckiware
+ * @license    MIT
  * @author     Muckiware
  *
  */
@@ -14,15 +14,12 @@
 namespace MuckiSearchPlugin\Search\Opensearch;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductCollection;
 use Shopware\Core\Framework\Context;
 use OpenSearch\Client as OpenSearchClient;
 
 use MuckiSearchPlugin\Search\SearchClientInterface;
 use MuckiSearchPlugin\Services\Settings as PluginSettings;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class Client implements SearchClientInterface
 {
@@ -32,9 +29,9 @@ class Client implements SearchClientInterface
     )
     {}
 
-    public function getClient(): ?OpenSearchClient
+    public function getClient(): OpenSearchClient
     {
-        return null;
+        return OpenSearchClient::class;
     }
 
     public function searching(array $params): ?array
@@ -71,19 +68,19 @@ class Client implements SearchClientInterface
         return null;
     }
 
-    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
+    public function saveIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context): void
     {
-        return null;
+        //TODO saveIndicesByIndexStructureId
     }
 
-    public function removeIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context)
+    public function removeIndicesByIndexStructureId(string $indexStructureId, string $languageId, Context $context): void
     {
-        return null;
+        //TODO removeIndicesByIndexStructureId
     }
 
-    public function removeIndicesByIndexName(string $indexName)
+    public function removeIndicesByIndexName(string $indexName): void
     {
-        return null;
+        //TODO removeIndicesByIndexName
     }
 
     public function checkIndicesExists(string $indexName): bool
@@ -101,8 +98,8 @@ class Client implements SearchClientInterface
         return array();
     }
 
-    public function createSalesChannelProductCollection(array $resultByServer, string $salesChannelId, SalesChannelRepository $salesChannelRepository, SalesChannelContext $salesChannelContext): SalesChannelProductCollection
+    public function getClusterHealth(string $indexName): ?object
     {
-        return new SalesChannelProductCollection();
+        return null;
     }
 }
