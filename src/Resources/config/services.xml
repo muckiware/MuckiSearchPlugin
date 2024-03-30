@@ -166,6 +166,7 @@
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="mucki_search_plugin.filesystem.private"/>
             <argument type="service" id="muwa_search_request_logs.repository"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\CliOutput"/>
         </service>
         <service id="MuckiSearchPlugin\Services\Session" public="true">
             <argument type="service" id="session.factory"/>

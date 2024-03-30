@@ -106,10 +106,17 @@ class CliOutput
         return $progress;
     }
 
-    public function printCliOutput(OutputInterface $cliOutput, string $message = ''): void
+    public function printCliOutput(OutputInterface $cliOutput = null, string $message = ''): void
     {
         if($message !== '') {
-            $cliOutput->writeln($message);
+            $cliOutput?->writeln($message);
+        }
+    }
+
+    public function printCliOutputNewline(OutputInterface $cliOutput = null, ?string $message = ''): void
+    {
+        if($message && $message !== '') {
+            $cliOutput?->write($message, true);
         }
     }
 }

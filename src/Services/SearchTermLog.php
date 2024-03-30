@@ -17,22 +17,22 @@ use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\FileAttributes;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Write\WriteException;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\Command\WriteTypeIntendException;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 use MuckiSearchPlugin\Entities\SessionSearchRequest;
-use Shopware\Core\Framework\Uuid\Uuid;
-use Symfony\Component\Console\Output\OutputInterface;
+use MuckiSearchPlugin\Services\CliOutput as ServicesCliOutput;
 
 class SearchTermLog
 {
     public function __construct(
         protected LoggerInterface $logger,
         private readonly FilesystemOperator $fileSystemPrivate,
-        protected EntityRepository $searchRequestLogsRepository
+        protected EntityRepository $searchRequestLogsRepository,
+        protected ServicesCliOutput $servicesCliOutput
     ){}
 
     /**
@@ -57,7 +57,8 @@ class SearchTermLog
     public function saveSearchLogsIntoDb(OutputInterface $cliOutput = null): bool
     {
         $listContents = $this->fileSystemPrivate->listContents('', true)->toArray();
-        $cliOutput->write( 'Found '.count($listContents).' log files', true);
+        $this->servicesCliOutput->printCliOutputNewline($cliOutput, 'Found '.count($listContents).' log files');
+
         $writeData = array();
 
         foreach ($listContents as $listContent) {
@@ -67,11 +68,12 @@ class SearchTermLog
                 $writeData[] = $searchLog->toArray();
             }
 
-            $cliOutput->write( 'Remove search logs session file', true);
+            $this->servicesCliOutput->printCliOutputNewline($cliOutput,'Remove search logs session file');
             $this->removeSearchLogsSessionFile($listContent->path());
         }
 
-        $cliOutput->write( 'Remove search logs session file', true);
+        $this->servicesCliOutput->printCliOutputNewline($cliOutput,'Remove search logs session file');
+
         try {
             $this->searchRequestLogsRepository->create($writeData, Context::createDefaultContext());
         } catch (WriteTypeIntendException $exception) {
