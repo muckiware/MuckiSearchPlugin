@@ -3,3 +3,5 @@ vendor
 composer.lock
 
 /src/Resources/public/
+/.phpunit.result.cache
+/var/
