@@ -123,4 +123,24 @@
             <label lang="de-DE">Post Tags als html-Highlight. Standard: <![CDATA[</b>]]></label>
         </input-field>
     </card>
+    <card>
+        <title>Search Statistics</title>
+        <title lang="de-DE">Suchstatistiken</title>
+        <input-field type="bool">
+            <name>createSearchStatistics</name>
+            <label>Create search statistics</label>
+            <label lang="de-DE">Suchstatistiken erzeugen</label>
+        </input-field>
+        <input-field type="bool">
+            <name>saveSearchStatisticsViaTask</name>
+            <label>Save search statistics via task</label>
+            <label lang="de-DE">Suchstatistiken speichern über Task</label>
+        </input-field>
+        <input-field type="int">
+            <name>defaultTaskInterval</name>
+            <label>Default task interval in secounds</label>
+            <label lang="de-DE">Standard Aufgabenintervall in Sekunden</label>
+            <defaultValue>1</defaultValue>
+        </input-field>
+    </card>
 </config>

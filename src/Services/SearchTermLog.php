@@ -25,6 +25,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 use MuckiSearchPlugin\Entities\SessionSearchRequest;
 use MuckiSearchPlugin\Services\CliOutput as ServicesCliOutput;
+use MuckiSearchPlugin\Services\Session as ServicesSession;
 
 class SearchTermLog
 {
@@ -32,7 +33,8 @@ class SearchTermLog
         protected LoggerInterface $logger,
         private readonly FilesystemOperator $fileSystemPrivate,
         protected EntityRepository $searchRequestLogsRepository,
-        protected ServicesCliOutput $servicesCliOutput
+        protected ServicesCliOutput $servicesCliOutput,
+        protected ServicesSession $servicesSession
     ){}
 
     /**
@@ -70,6 +72,7 @@ class SearchTermLog
 
             $this->servicesCliOutput->printCliOutputNewline($cliOutput,'Remove search logs session file');
             $this->removeSearchLogsSessionFile($listContent->path());
+            $this->servicesSession->cleanSearchRequestsSession();
         }
 
         $this->servicesCliOutput->printCliOutputNewline($cliOutput,'Remove search logs session file');

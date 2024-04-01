@@ -27,4 +27,6 @@ final class Defaults
 
     public const SEARCH_REQUEST_SETTINGS_PRE_TAGS = '<b>';
     public const SEARCH_REQUEST_SETTINGS_POST_TAGS = '</b>';
+
+    public const DEFAULT_TASK_INTERVAL_IN_SECONDS = 300;
 }

@@ -18,6 +18,7 @@ use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 
 use MuckiSearchPlugin\Services\SearchTermLog;
+use MuckiSearchPlugin\Services\Settings as PluginSettings;
 
 #[AsMessageHandler(handles: WriteSearchLogsTask::class)]
 class WriteSearchLogsTaskHandler extends ScheduledTaskHandler
@@ -25,7 +26,8 @@ class WriteSearchLogsTaskHandler extends ScheduledTaskHandler
     public function __construct(
         EntityRepository $scheduledTaskRepository,
         protected LoggerInterface $logger,
-        protected SearchTermLog $searchTermLog
+        protected SearchTermLog $searchTermLog,
+        protected PluginSettings $pluginSettings
     )
     {
         parent::__construct($scheduledTaskRepository, $logger);
@@ -40,11 +42,13 @@ class WriteSearchLogsTaskHandler extends ScheduledTaskHandler
      */
     public function run(): void
     {
-        $this->logger->debug('Run WriteSearchLogsTask', array('mucki','search'));
+        if($this->pluginSettings->isSaveSearchStatisticsViaTask()) {
 
-        $serverInfoAsString = $this->searchTermLog->saveSearchLogsIntoDb();
-        if($serverInfoAsString) {
-            $this->logger->debug('Run WriteSearchLogsTask is done', array('mucki','search'));
+            $this->logger->debug('Run WriteSearchLogsTask', array('mucki','search'));
+
+            if($this->searchTermLog->saveSearchLogsIntoDb()) {
+                $this->logger->debug('Run WriteSearchLogsTask is done', array('mucki','search'));
+            }
         }
     }
 }

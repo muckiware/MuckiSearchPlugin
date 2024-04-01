@@ -14,6 +14,8 @@ namespace MuckiSearchPlugin\Schedules;
 
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
 
+use MuckiSearchPlugin\Core\Defaults as PluginDefaults;
+
 class WriteSearchLogsTask extends ScheduledTask
 {
     public static function getTaskName(): string
@@ -23,6 +25,6 @@ class WriteSearchLogsTask extends ScheduledTask
 
     public static function getDefaultInterval(): int
     {
-        return 300; // 5 minutes
+        return PluginDefaults::DEFAULT_TASK_INTERVAL_IN_SECONDS;
     }
 }

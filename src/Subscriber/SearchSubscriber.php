@@ -60,6 +60,10 @@ class SearchSubscriber implements EventSubscriberInterface
      */
     public function onSearchSuggest(SuggestPageLoadedEvent $event)
     {
+        if(!$this->pluginSettings->isCreateSearchStatistics()) {
+            return;
+        }
+
         $agent = new Agent();
         $agent->setUserAgent($event->getRequest()->server->get('HTTP_USER_AGENT'));
 

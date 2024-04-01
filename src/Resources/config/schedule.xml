@@ -8,6 +8,7 @@
             <argument type="service" id="scheduled_task.repository" />
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiSearchPlugin\Services\SearchTermLog"/>
+            <argument type="service" id="MuckiSearchPlugin\Services\Settings"/>
             <tag name="messenger.message_handler" />
         </service>
     </services>

@@ -45,6 +45,10 @@ class Settings
     const CONFIG_PATH_SEARCH_REQUEST_SETTINGS_PRE_TAGS = 'MuckiSearchPlugin.config.searchRequestSettingsPreTags';
     const CONFIG_PATH_SEARCH_REQUEST_SETTINGS_POST_TAGS = 'MuckiSearchPlugin.config.searchRequestSettingsPostTags';
 
+    const CONFIG_PATH_SAVE_SEARCH_STATISTICS_VIA_TASK = 'MuckiSearchPlugin.config.saveSearchStatisticsViaTask';
+    const CONFIG_PATH_CREATE_SEARCH_STATISTICS = 'MuckiSearchPlugin.config.createSearchStatistics';
+    const CONFIG_PATH_DEFAULT_TASK_INTERVAL = 'MuckiSearchPlugin.config.defaultTaskInterval';
+
     public function __construct(
         protected SystemConfigService $config
     ){}
@@ -230,5 +234,23 @@ class Settings
             return $this->config->getString($this::CONFIG_PATH_SEARCH_REQUEST_SETTINGS_POST_TAGS);
         }
         return Defaults::SEARCH_REQUEST_SETTINGS_POST_TAGS;
+    }
+
+    public function isCreateSearchStatistics(): bool
+    {
+        return $this->config->getBool($this::CONFIG_PATH_CREATE_SEARCH_STATISTICS);
+    }
+
+    public function isSaveSearchStatisticsViaTask(): bool
+    {
+        return $this->config->getBool($this::CONFIG_PATH_SAVE_SEARCH_STATISTICS_VIA_TASK);
+    }
+
+    public function getDefaultTaskInterval(): int
+    {
+        if($this->config->getInt($this::CONFIG_PATH_DEFAULT_TASK_INTERVAL) >= 60) {
+            return $this->config->getInt($this::CONFIG_PATH_DEFAULT_TASK_INTERVAL);
+        }
+        return Defaults::DEFAULT_TASK_INTERVAL_IN_SECONDS;
     }
 }
